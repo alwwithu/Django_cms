@@ -1,0 +1,12 @@
+{% extends 'cms_articles/base.html' %}
+{% load cms_tags i18n %}
+
+{% block content %}
+
+<h1 class="articles_index">{% page_attribute "title" %}</h1>
+
+{% for article in object_list %}
+{% include 'cms_articles/article_preview.html' %}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,8 @@
+{% load cms_articles %}
+<div class="article_preview">
+    <h2>
+        <a href="{{ article.get_absolute_url }}">{{ article.get_title }}</a>
+        <small> {{ article.publication_date }}</small>
+    </h2>
+    {% show_article_placeholder_by_id "excerpt" article %}
+</div>

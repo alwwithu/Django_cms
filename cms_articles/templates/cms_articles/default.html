@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load cms_articles %}
+
+{% block page_title %}{% article_attribute "page_title" %}{% endblock %}
+{% block meta_description %}{% article_attribute "meta_description" %}{% endblock %}
+
+{% block base_content %}
+
+<!-- Breadcrumb begin -->
+<div class="pad-left-10">
+    <div id="pkb-crumbs">
+        {% show_article_breadcrumb %}
+    </div>
+</div>
+<!-- Breadcrumb end -->
+
+
+<div class="article_title round_6">
+    <h1 class="replace">{% block title %}{% article_attribute "title" %}{% endblock %}</h1>
+</div>
+
+<div id="content">
+    {% if request.toolbar.edit_mode %}
+    <div class="article-excerpt">
+        {% article_placeholder "excerpt" %}
+    </div>
+    {% endif %}
+    {% block content %}{% article_placeholder "content" %}{% endblock %}
+</div>
+
+{% endblock %}

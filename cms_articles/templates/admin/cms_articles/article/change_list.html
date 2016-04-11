@@ -1,0 +1,134 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_list admin_static admin_urls cms_admin cms_static %}
+{# load i18n admin_list admin_static admin_urls cms_admin cms_js_tags cms_static cms_tags #}
+
+{% block extrahead %}
+    {{ block.super }}
+    {# INFO: we need to add styles here instead of "extrastyle" to avoid conflicts with adminstyle #}
+    <link rel="stylesheet" href="{% static_with_version 'xcms/css/cms.base.css' %}">
+    <link rel="stylesheet" href="{% static_with_version 'cms/css/cms.pagetree.css' %}">
+    <link rel="stylesheet" href="{% static 'cms_articles/css/changelist.css' %}">
+    <script src="{% static_with_version 'xcms/js/modules/jquery.noconflict.pre.js' %}"></script>
+    <script src="{% static_with_version 'cms/js/dist/bundle.admin.base.min.js' %}"></script>
+    <script src="{% static_with_version 'xcms/js/dist/bundle.admin.pagetree.min.js' %}"></script>
+    <script src="{% static_with_version 'xcms/js/modules/jquery.noconflict.post.js' %}"></script>
+    <script src="{% static 'cms_articles/js/changelist.js' %}"></script>
+{% endblock extrahead %}
+
+{% block result_list %}
+{% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+
+{% if cl.result_list %}
+<div class="results">
+<table id="result_list">
+<thead>
+    <tr>
+        <th scope="col" class="action-checkbox-column">
+            <div class="text"><span><input id="action-toggle" type="checkbox"></span></div>
+            <div class="clear"></div>
+        </th>        
+        <th scope="col"><div class="text"><span>{% trans 'Article' %}</span></div><div class="clear"></div></th>
+        <th scope="col"><div class="text"><span>{% trans 'Date' %}</span></div><div class="clear"></div></th>
+        <th scope="col" width="1%"><div class="text"><span>{% trans 'View' %}</span></div><div class="clear"></div></th>
+        {% for lang in languages %}
+        <th scope="col" width="1%"><div class="text"><span title="{{ lang.1 }}">{{ lang.0|upper }}</span></div><div class="clear"></div></th>
+        {% endfor %}
+        <th scope="col" width="1%"><div class="text"><span>{% trans 'Actions' %}</span></div><div class="clear"></div></th>
+    </tr>
+</thead>
+<tbody>
+    {% for article in cl.result_list %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td class="action-checkbox"><input class="action-select" name="_selected_action" value="{{ article.id }}" type="checkbox"></td>
+        <td><a href="{% url 'admin:cms_articles_article_change' article.id %}">{{ article }}</a></td>
+        <td>{{ article.creation_date }}</td>
+        <td>
+            <div class="cms-tree-item cms-tree-item-preview">
+                <a href="{% url 'admin:cms_articles_article_preview_article' article.id language %}"{% if language in article.languages %} target="_top"{% endif %} title="{% trans "View on site" %}">
+                    <span>{% trans 'View on site' %}</span>
+                </a>
+            </div>
+        </td>
+        {% for lang in languages %}
+        <td>
+            <div class="cms-tree-item cms-tree-item-lang">
+                <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang.0 %}"
+                    class="cms-tree-lang-container js-cms-tree-tooltip-trigger"
+                    {# INFO: delegate click event to parent window when in sideframe #}
+                    {% if lang.0 in article.languages %} target="_top"{% endif %}>
+                    {# INFO: renders <span class="{cls}" title="{title}"></span> #}
+                    {% tree_publish_row article lang.0 %}
+                </a>
+
+                <div class="cms-tree-tooltip-container js-cms-tree-tooltip-container cms-tree-tooltip-container-openx">
+                    <h3>{% trans "Pick an action:" %}</h3>
+                    <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang.0 %}" target="_top">
+                        <span class="cms-icon cms-icon-eye" title="{% blocktrans with lang.0|upper as language %}Edit this article in {{ language }} {% endblocktrans %}"></span> {% trans "Preview" %}
+                    </a>
+                    {# hide if article is empty #}
+                    {% if has_publish_permission and lang.0 in article.languages %}
+                        {% if article|is_dirty:lang.0 or not article|is_published:lang.0 %}
+                            <a href="{% url 'admin:cms_articles_article_publish_article' article.id lang.0 %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                <span class="cms-icon cms-icon-check-o"></span> {% trans "Publish" %}
+                            </a>
+                        {% endif %}
+                        {% if article|is_published:lang.0 %}
+                            <a href="{% url 'admin:cms_articles_article_unpublish' article.id lang.0 %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                <span class="cms-icon cms-icon-forbidden"></span> {% trans "Unpublish" %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    <a href="{% url 'admin:cms_articles_article_change' article.id %}?language={{ lang.0 }}">
+                        <span class="cms-icon cms-icon-cogs"></span> {% if lang.0 in article.languages %}{% trans "Settings" %}{% else %}{% trans "Translate" %}{% endif %}
+                    </a>
+                </div>
+            </div>
+        </td>
+        {% endfor %}
+        <td>
+            {% if has_delete_permission %}
+                <div class="cms-tree-item cms-tree-item-icons cms-tree-item-icons-dark">
+                    <a href="{% url 'admin:cms_articles_article_delete' article.id %}?language={{ preview_language }}" title="{% trans 'Delete' %}">
+                        <span class="cms-icon cms-icon-bin"></span>
+                    </a>
+                </div>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+<script type="text/javascript">
+$('.js-cms-tree-tooltip-trigger').click(function(e) {
+    
+    var triggerCls = '.js-cms-tree-tooltip-trigger';
+    var containerCls = '.js-cms-tree-tooltip-container';
+    var triggers;
+    var containers;
+    var index;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    triggers = $(triggerCls);
+    containers = $(containerCls);
+    index = triggers.index(this);
+
+    // cancel if opened tooltip is triggered again
+    if (containers.eq(index).is(':visible')) {
+        containers.removeClass('cms-tree-tooltip-container-open');
+        return false;
+    }
+
+    // otherwise show the dropdown
+    containers
+        .removeClass('cms-tree-tooltip-container-open')
+        .eq(index)
+        .addClass('cms-tree-tooltip-container-open');
+});
+</script>
+</div>
+{% endif %}
+
+{% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+{% endblock %}

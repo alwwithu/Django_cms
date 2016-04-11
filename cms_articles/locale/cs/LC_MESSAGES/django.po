@@ -1,0 +1,350 @@
+# CMS Articles
+# Copyright (C) 2016 Jakub Dorňák
+# This file is distributed under the same license as the CMS Articles package.
+# Jakub Dorňák <jakub.dornak@misli.cz>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-04-11 17:23+0200\n"
+"Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
+"Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: admin/article.py:75
+msgid "Language dependent settings"
+msgstr "Jazykově závislá nastavení"
+
+#: admin/article.py:76
+msgid "Other settings"
+msgstr "Ostatní nastevení"
+
+#: admin/article.py:310
+msgid "You do not have permission to publish this article"
+msgstr "Nemáte oprávnění publikovat tento článek"
+
+#: admin/article.py:325
+msgid "The content was successfully published."
+msgstr "Obsah byl úspěšně publikován."
+
+#: admin/article.py:334
+msgid "There was a problem publishing your content"
+msgstr "Nastal problém při publikování obsahu"
+
+#: admin/article.py:366
+msgid "You do not have permission to unpublish this article"
+msgstr "Nemáte oprávnění depublikovat tento článek"
+
+#: admin/article.py:368
+msgid "This article was never published"
+msgstr "Článek nebyl nikdy publikován"
+
+#: admin/article.py:371
+#, python-format
+msgid "The %(language)s article \"%(article)s\" was successfully unpublished"
+msgstr ""
+"Překlad do jazyka %(language)s článku \"%(article)s\" byl úspěšně "
+"depublikován"
+
+#: admin/article.py:413
+msgid "You do not have permission to change this article"
+msgstr "Nemáte oprávnění upravovat tento článek"
+
+#: admin/article.py:417
+#, python-format
+msgid "%(name)s object with primary key %(key)r does not exist."
+msgstr "Objekt typu %(name)s s id %(key)r neexistuje."
+
+#: admin/article.py:423
+msgid "There only exists one translation for this article"
+msgstr "Existuje pouze jeden překlad tohoto článku"
+
+#: admin/article.py:465
+#, python-format
+msgid "Title and plugins with language %(language)s was deleted"
+msgstr "Obsah pro jazyk %(language)s byl odstraněn"
+
+#: admin/article.py:484
+msgid "Are you sure?"
+msgstr "Jste si jisti?"
+
+#: admin/forms.py:21 admin/forms.py:69
+msgid "Language"
+msgstr "Jazyk"
+
+#: admin/forms.py:22 admin/forms.py:70
+msgid "The current language of the content fields."
+msgstr "Aktuální jazyk obsahu."
+
+#: admin/forms.py:23
+msgid "Title"
+msgstr "Titulek"
+
+#: admin/forms.py:24
+msgid "The default title"
+msgstr "Výchozí titulek"
+
+#: admin/forms.py:25
+msgid "Slug"
+msgstr "Identifikátor"
+
+#: admin/forms.py:26
+msgid "The part of the title that is used in the URL"
+msgstr "Část titulku, která bude použita v URL adrese"
+
+#: admin/forms.py:27
+msgid "Page Title"
+msgstr "Titulek stránky"
+
+#: admin/forms.py:28
+msgid "Overwrites what is displayed at the top of your browser or in bookmarks"
+msgstr "Přepíše, co se zobrazuje nahoře v záhlaví prohlížeče nebo v záložkách."
+
+#: admin/forms.py:29
+msgid "Menu Title"
+msgstr "Titulek v menu"
+
+#: admin/forms.py:30
+msgid "Overwrite what is displayed in the menu"
+msgstr "Přepíše, co se zobrazuje menu a drobečkové navigaci."
+
+#: admin/forms.py:31
+msgid "Description meta tag"
+msgstr "Meta tag \"description\" (popis)"
+
+#: admin/forms.py:33
+msgid "A description of the article used by search engines."
+msgstr "Popis článku použitý vyhledávači."
+
+#: admin/forms.py:54
+msgid "Another article with this slug already exists"
+msgstr "Článek s tímto identifikátorem již existuje"
+
+#: admin/forms.py:61
+msgid "Slug must not be empty."
+msgstr "Identifikátor nesmí být prázdný."
+
+#: apps.py:9
+msgid "django CMS articles"
+msgstr "django CMS Články"
+
+#: cms_app.py:12
+msgid "Articles category"
+msgstr "Kategorie článků"
+
+#: cms_plugins.py:12 cms_toolbars.py:24
+#: templates/admin/cms_articles/article/change_list.html:30
+msgid "Article"
+msgstr "Článek"
+
+#: cms_plugins.py:28 cms_toolbars.py:19 cms_toolbars.py:21
+msgid "Articles"
+msgstr "Články"
+
+#: cms_toolbars.py:28
+msgid "Article Settings"
+msgstr "Nastavení článku"
+
+#: cms_toolbars.py:30
+msgid "Edit this article"
+msgstr "Upravit tento článek"
+
+#: cms_toolbars.py:34
+msgid "New Article"
+msgstr "Nový článek"
+
+#: cms_toolbars.py:42
+msgid "Publish article now"
+msgstr "Publikovat článek teď"
+
+#: conf/default_settings.py:9 conf/default_settings.py:18
+#: conf/default_settings.py:23
+msgid "Default"
+msgstr "Výchozí"
+
+#: models/article.py:23
+msgid "created by"
+msgstr "vytvořil(a)"
+
+#: models/article.py:24
+msgid "changed by"
+msgstr "změnil(a)"
+
+#: models/article.py:28
+msgid "publication date"
+msgstr "datum zveřejnění"
+
+#: models/article.py:29
+msgid ""
+"When the article should go live. Status must be \"Published\" for article to "
+"go live."
+msgstr ""
+"Od kdy má být článek veřejně dostupný. Stav musí být \"Publikován\", aby byl "
+"článek veřejný."
+
+#: models/article.py:30
+msgid "publication end date"
+msgstr "konec zveřejnění"
+
+#: models/article.py:31
+msgid "When to expire the article. Leave empty to never expire."
+msgstr ""
+"Do kdy má být článek veřejně dostupný. Ponechte prázdné, pokud chcete, aby "
+"byl dostupný navždy."
+
+#: models/article.py:32
+msgid "template"
+msgstr "šablona"
+
+#: models/article.py:34
+msgid "The template used to render the content."
+msgstr "Šablona, která bude použita k zobrazení článku."
+
+#: models/article.py:35
+msgid "category"
+msgstr "kategorie"
+
+#: models/article.py:36
+msgid "The page the article is accessible at."
+msgstr "Stránka, na které bude článek dostupný."
+
+#: models/article.py:41
+msgid "login required"
+msgstr "vyžadovat přihlášení"
+
+#: models/article.py:60 models/title.py:32
+msgid "article"
+msgstr "článek"
+
+#: models/article.py:61
+msgid "articles"
+msgstr "články"
+
+#: models/plugins.py:18 models/plugins.py:36
+msgid "Template"
+msgstr "Šablona"
+
+#: models/plugins.py:21 models/plugins.py:39
+msgid "The template used to render plugin."
+msgstr "Šablone použitá k zobrazení obsahu."
+
+#: models/plugins.py:35
+msgid "Number of last articles"
+msgstr "Počet zobrazených článků"
+
+#: models/plugins.py:43
+msgid "last {} articles"
+msgstr "posledních {} článků"
+
+#: models/title.py:22
+msgid "language"
+msgstr "jazyk"
+
+#: models/title.py:23 models/title.py:25 models/title.py:27
+msgid "title"
+msgstr "titulek"
+
+#: models/title.py:26
+msgid "overwrite the title (html title tag)"
+msgstr "přepíše, co se zobrazuje v záhlaví stránky"
+
+#: models/title.py:28
+msgid "overwrite the title in the menu"
+msgstr "přepíše, co se zobrazuje v menu a drobečkové navigaci"
+
+#: models/title.py:29
+msgid "description"
+msgstr "popis"
+
+#: models/title.py:30
+msgid "The text displayed in search engines."
+msgstr "Text zobrazovaný vyhledávači."
+
+#: models/title.py:31
+msgid "slug"
+msgstr "identifikátor"
+
+#: models/title.py:33
+msgid "creation date"
+msgstr "datum vytvoření"
+
+#: models/title.py:36
+msgid "is published"
+msgstr "je publikován"
+
+#: templates/admin/cms_articles/article/change_form.html:5
+msgid "Add an article"
+msgstr "Přidat článek"
+
+#: templates/admin/cms_articles/article/change_form.html:5
+msgid "Change an article"
+msgstr "Úprava článku"
+
+#: templates/admin/cms_articles/article/change_list.html:31
+msgid "Date"
+msgstr "Datum"
+
+#: templates/admin/cms_articles/article/change_list.html:32
+msgid "View"
+msgstr "Zobrazení"
+
+#: templates/admin/cms_articles/article/change_list.html:36
+msgid "Actions"
+msgstr "Akce"
+
+#: templates/admin/cms_articles/article/change_list.html:47
+#: templates/admin/cms_articles/article/change_list.html:48
+msgid "View on site"
+msgstr "Zobrazit na webu"
+
+#: templates/admin/cms_articles/article/change_list.html:64
+msgid "Pick an action:"
+msgstr "Vyberte akci:"
+
+#: templates/admin/cms_articles/article/change_list.html:66
+#, python-format
+msgid "Edit this article in %(language)s "
+msgstr "Upravit tento článek v jazyce %(language)s"
+
+#: templates/admin/cms_articles/article/change_list.html:66
+msgid "Preview"
+msgstr "Náhled"
+
+#: templates/admin/cms_articles/article/change_list.html:72
+msgid "Publish"
+msgstr "Publikovat"
+
+#: templates/admin/cms_articles/article/change_list.html:77
+msgid "Unpublish"
+msgstr "Depublikovat"
+
+#: templates/admin/cms_articles/article/change_list.html:82
+msgid "Settings"
+msgstr "Nastavení"
+
+#: templates/admin/cms_articles/article/change_list.html:82
+msgid "Translate"
+msgstr "Přeložit"
+
+#: templates/admin/cms_articles/article/change_list.html:91
+msgid "Delete"
+msgstr "Smazat"
+
+#: templatetags/cms_articles.py:112
+#, python-format
+msgid "Article not found on %(domain)s"
+msgstr "Článek nebyl v doméně %(domain)s nalezen"
+
+#: templatetags/cms_articles.py:113
+#, python-format
+msgid ""
+"A template tag couldn't find the article with lookup arguments `"
+"%(article_lookup)s\n"
+"`. The URL of the request was: http://%(host)s%(path)s"
+msgstr ""

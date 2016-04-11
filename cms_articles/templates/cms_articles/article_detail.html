@@ -1,0 +1,13 @@
+{% extends 'cms_articles/base.html' %}
+{% load cms_tags i18n %}
+
+{% block content %}
+
+<h1 class="articles_detail">
+    {{ article.title }}
+    <small>{{ article.pub_date }}</small>
+</h1>
+
+{% render_placeholder article.text %}
+
+{% endblock %}
