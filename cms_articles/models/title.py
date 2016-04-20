@@ -21,7 +21,6 @@ from .managers import TitleManager
 class Title(models.Model):
     language            = models.CharField(_('language'), max_length=15, db_index=True)
     title               = models.CharField(_('title'), max_length=255)
-    excerpt             = PlaceholderField('excerpt')
     page_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
                             help_text=_('overwrite the title (html title tag)'))
     menu_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
