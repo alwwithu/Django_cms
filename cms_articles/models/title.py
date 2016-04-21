@@ -19,16 +19,16 @@ from .managers import TitleManager
 
 @python_2_unicode_compatible
 class Title(models.Model):
+    article             = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set')
     language            = models.CharField(_('language'), max_length=15, db_index=True)
     title               = models.CharField(_('title'), max_length=255)
+    slug                = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
     page_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
                             help_text=_('overwrite the title (html title tag)'))
     menu_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
                             help_text=_('overwrite the title in the menu'))
     meta_description    = models.TextField(_('description'), max_length=155, blank=True, null=True,
                             help_text=_('The text displayed in search engines.'))
-    slug                = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
-    article             = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set')
     creation_date       = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
 
     # Publisher fields

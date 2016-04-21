@@ -50,7 +50,7 @@ class ArticleForm(forms.ModelForm):
         if not lang:
             return cleaned_data
         category = self.cleaned_data.get('category', None)
-        if category and not is_valid_article_slug(article, lang, slug, category):
+        if category and not is_valid_article_slug(article, lang, slug):
             self._errors['slug'] = ErrorList([_('Another article with this slug already exists')])
             del cleaned_data['slug']
         return cleaned_data

@@ -20,24 +20,23 @@ from .managers import ArticleManager
 
 @python_2_unicode_compatible
 class Article(models.Model):
-    created_by      = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
-    changed_by      = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
-
-    creation_date   = models.DateTimeField(auto_now_add=True)
-    changed_date    = models.DateTimeField(auto_now=True)
-    publication_date        = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True,
-                                help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
-    publication_end_date    = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True,
-                                help_text=_('When to expire the article. Leave empty to never expire.'))
-    template        = models.CharField(_('template'), max_length=100,
-                                choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
-                                help_text=_('The template used to render the content.'))
     category        = models.ForeignKey(Page, verbose_name=_('category'), related_name='cms_articles',
                                 help_text=_('The page the article is accessible at.'), limit_choices_to={
                                     'publisher_is_draft': False,
                                     'application_urls': 'CMSArticlesApp',
                                     'site_id':  settings.SITE_ID,
                                 })
+    template        = models.CharField(_('template'), max_length=100,
+                                choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
+                                help_text=_('The template used to render the content.'))
+    created_by      = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
+    changed_by      = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
+    creation_date   = models.DateTimeField(auto_now_add=True)
+    changed_date    = models.DateTimeField(auto_now=True)
+    publication_date        = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True,
+                                help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
+    publication_end_date    = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True,
+                                help_text=_('When to expire the article. Leave empty to never expire.'))
     login_required  = models.BooleanField(_('login required'), default=False)
 
     # Placeholders (plugins)
@@ -47,7 +46,7 @@ class Article(models.Model):
     publisher_is_draft  = models.BooleanField(default=True, editable=False, db_index=True)
     # This is misnamed - the one-to-one relation is populated on both ends
     publisher_public    = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
-    languages       = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    languages           = models.CharField(max_length=255, editable=False, blank=True, null=True)
 
     # Managers
     objects = ArticleManager()
