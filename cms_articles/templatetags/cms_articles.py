@@ -431,14 +431,14 @@ class ArticleAttribute(AsTag):
          {% article_attribute "field-name" article_lookup as varname %}
 
     Example
-         {# Output current article's article_title attribute: #}
-         {% article_attribute "article_title" %}
-         {# Output article_title attribute of the article with reverse_id "the_article": #}
-         {% article_attribute "article_title" "the_article" %}
+         {# Output current article's page_title attribute: #}
+         {% article_attribute "page_title" %}
+         {# Output page_title attribute of the article with reverse_id "the_article": #}
+         {% article_attribute "page_title" "the_article" %}
          {# Output slug attribute of the article with pk 10: #}
          {% article_attribute "slug" 10 %}
-         {# Assign article_title attribute to a variable: #}
-         {% article_attribute "article_title" as title %}
+         {# Assign page_title attribute to a variable: #}
+         {% article_attribute "page_title" as title %}
 
     Keyword arguments:
     field-name -- the name of the field to output. Use one of:
@@ -467,11 +467,13 @@ class ArticleAttribute(AsTag):
     valid_attributes = [
         "title",
         "slug",
-        "meta_description",
-        "article_title",
+        "description",
+        "page_title",
         "menu_title",
+        "meta_description",
         "changed_date",
         "changed_by",
+        "image",
     ]
 
     def get_value(self, context, name, article_lookup):
@@ -486,7 +488,7 @@ class ArticleAttribute(AsTag):
         if article and name in self.valid_attributes:
             func = getattr(article, "get_%s" % name)
             ret_val = func(language=lang, fallback=True)
-            if not isinstance(ret_val, datetime):
+            if not name in ("changed_date", "image"):
                 ret_val = escape(ret_val)
             return ret_val
         return ''

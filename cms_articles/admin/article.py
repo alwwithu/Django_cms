@@ -67,13 +67,14 @@ require_POST = method_decorator(require_POST)
 
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     search_fields   = ('=id', 'title_set__slug', 'title_set__title')
-    list_filter     = ['category', 'template', 'changed_by']
+    list_filter     = ['tree', 'categories', 'template', 'changed_by']
     date_hierarchy  = ('creation_date')
+    filter_horizontal = ['categories']
 
     fieldsets       = [
-        (None, {'fields': ['category', 'template']}),
+        (None, {'fields': ['tree', 'template']}),
         (_('Language dependent settings'), {'fields': ['title', 'slug', 'description', 'page_title', 'menu_title', 'meta_description', 'image']}),
-        (_('Other settings'), {'fields': ['publication_date', 'publication_end_date', 'login_required']}),
+        (_('Other settings'), {'fields': ['categories', 'publication_date', 'publication_end_date', 'login_required']}),
     ]
 
     def get_urls(self):
@@ -97,7 +98,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super(ArticleAdmin, self).get_queryset(request).filter(
-            category__site_id = settings.SITE_ID,
+            tree__site_id = settings.SITE_ID,
             publisher_is_draft=True,
         )
 
@@ -110,7 +111,6 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             form.cleaned_data['language'],
         )
 
-    # ok
     def get_form(self, request, obj=None, **kwargs):
         """
         Get ArticleForm for the Article model and modify its fields depending on

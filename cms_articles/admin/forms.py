@@ -30,11 +30,14 @@ class ArticleForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ['category', 'template', 'login_required']
+        fields = ['tree', 'template', 'login_required']
 
     def __init__(self, *args, **kwargs):
         super(ArticleForm, self).__init__(*args, **kwargs)
         self.fields['language'].widget = forms.HiddenInput()
+        if self.fields['tree'].widget.choices.queryset.count() == 1:
+            self.fields['tree'].initial = self.fields['tree'].widget.choices.queryset.first()
+            self.fields['tree'].widget = forms.HiddenInput()
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -45,8 +48,8 @@ class ArticleForm(forms.ModelForm):
         # No language, can not go further, but validation failed already
         if not lang:
             return cleaned_data
-        category = self.cleaned_data.get('category', None)
-        if category and not is_valid_article_slug(article, lang, slug):
+        tree = self.cleaned_data.get('tree', None)
+        if tree and not is_valid_article_slug(article, lang, slug):
             self._errors['slug'] = ErrorList([_('Another article with this slug already exists')])
             del cleaned_data['slug']
         return cleaned_data

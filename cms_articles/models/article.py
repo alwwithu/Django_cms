@@ -10,17 +10,19 @@ from cms.utils.helpers import reversion_register
 from django.db import models
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
+from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, ugettext_lazy as _
 
 from ..conf import settings
 
+from .category import Category
 from .managers import ArticleManager
 
 
 @python_2_unicode_compatible
 class Article(models.Model):
-    category        = models.ForeignKey(Page, verbose_name=_('category'), related_name='cms_articles',
+    tree            = models.ForeignKey(Page, verbose_name=_('tree'), related_name='cms_articles',
                                 help_text=_('The page the article is accessible at.'), limit_choices_to={
                                     'publisher_is_draft': False,
                                     'application_urls': 'CMSArticlesApp',
@@ -29,6 +31,7 @@ class Article(models.Model):
     template        = models.CharField(_('template'), max_length=100,
                                 choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
                                 help_text=_('The template used to render the content.'))
+    categories      = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='articles', blank=True)
     created_by      = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
     changed_by      = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
     creation_date   = models.DateTimeField(auto_now_add=True)
@@ -85,7 +88,7 @@ class Article(models.Model):
         if not language:
             language = get_language()
         return '{}{}{}{}'.format(
-            self.category.get_absolute_url(language, fallback),
+            self.tree.get_absolute_url(language, fallback),
             '' if settings.APPEND_SLASH else '/',
             self.get_slug(language, fallback),
             '/' if settings.APPEND_SLASH else '',
@@ -181,11 +184,14 @@ class Article(models.Model):
         target.placeholders.add(*new_phs)
 
     def _copy_attributes(self, target):
-        target.category             = self.category
+        target.tree                 = self.tree
         target.template             = self.template
         target.publication_date     = self.publication_date
         target.publication_end_date = self.publication_end_date
         target.login_required       = self.login_required
+
+    def _copy_relations(self, target):
+        target.categories           = self.categories.all()
 
     def delete(self, *args, **kwargs):
         articles = [self.pk]
@@ -248,7 +254,7 @@ class Article(models.Model):
 
     def is_new_dirty(self):
         if self.pk:
-            fields = ['category', 'publication_date', 'publication_end_date', 'template', 'login_required']
+            fields = ['tree', 'publication_date', 'publication_end_date', 'template', 'login_required']
             try:
                 old_article = Article.objects.get(pk=self.pk)
             except Article.DoesNotExist:
@@ -309,6 +315,7 @@ class Article(models.Model):
         # The target article now has a pk, so can be used as a target
         self._copy_titles(public_article, language)
         self._copy_contents(public_article, language)
+        self._copy_relations(public_article)
 
         self.publisher_public = public_article
         self._publisher_keep_state = True
@@ -463,7 +470,8 @@ class Article(models.Model):
         '''
         get content for the description meta tag for the article depending on the given language
         '''
-        return self.get_title_obj_attribute('meta_description', language, fallback, force_reload)
+        return (self.get_title_obj_attribute('meta_description', language, fallback, force_reload)
+            or strip_tags(self.get_title_obj_attribute('description', language, fallback, force_reload)))
 
     def _get_title_cache(self, language, fallback, force_reload):
         if not language:
@@ -561,5 +569,5 @@ class Article(models.Model):
         return found
 
     def get_xframe_options(self):
-        return self.category.get_xframe_options()
+        return self.tree.get_xframe_options()
 

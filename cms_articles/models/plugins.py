@@ -8,6 +8,7 @@ from django.utils.translation import get_language, ugettext_lazy as _
 
 from ..conf import settings
 
+from .category import Category
 from .article import Article
 
 
@@ -42,26 +43,38 @@ class ArticlePlugin(CMSPlugin):
 
 
 
-@python_2_unicode_compatible
-class ArticlesPlugin(CMSPlugin):
+class ArticlesPluginBase(CMSPlugin):
     number      = models.IntegerField(_('Number of last articles'), default = 3)
     template    = models.CharField(_('Template'), max_length = 100,
         choices     = settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES,
         default     = settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES[0][0],
         help_text=_('The template used to render plugin.'),
     )
-    category    = models.ForeignKey(Page, verbose_name=_('category'), related_name='+', blank=True, null=True,
-                    help_text=_('Keep empty to show articles from current page, if current page is a category.'), limit_choices_to={
+
+    class Meta:
+        abstract = True
+
+    @cached_property
+    def render_template(self):
+        return 'cms_articles/articles/%s.html' % self.template
+
+
+
+@python_2_unicode_compatible
+class ArticlesPlugin(ArticlesPluginBase):
+    tree        = models.ForeignKey(Page, verbose_name=_('tree'), related_name='+', blank=True, null=True,
+                    help_text=_('Keep empty to show articles from current page, if current page is a tree.'), limit_choices_to={
                         'publisher_is_draft': False,
                         'application_urls': 'CMSArticlesApp',
                         'site_id':  settings.SITE_ID,
                     })
+    categories  = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='+', blank=True)
 
     def __str__(self):
         return _('last {} articles').format(self.number)
 
     def get_articles(self, context):
-        category = self.category or self.placeholder.page
+        tree = self.tree or self.placeholder.page
 
         try:
             edit_mode = context['request'].toolbar.edit_mode
@@ -69,14 +82,53 @@ class ArticlesPlugin(CMSPlugin):
             edit_mode = False
 
         if edit_mode:
-            articles = Article.objects.drafts().filter(category=category.get_public_object())
+            articles = Article.objects.drafts().filter(tree=tree.get_public_object())
         else:
-            articles = Article.objects.public().published().filter(category=category)
+            articles = Article.objects.public().published().filter(tree=tree)
+
+        if self.categories.count():
+            articles = articles.filter(categories=self.categories.all())
 
         return articles.order_by('-publication_date')[:self.number]
 
-    @cached_property
-    def render_template(self):
-        return 'cms_articles/articles/%s.html' % self.template
+
+
+@python_2_unicode_compatible
+class ArticlesCategoryPlugin(ArticlesPluginBase):
+    subcategories   = models.BooleanField(_('include sub-categories'), default=False,
+                        help_text=_('Check, if you want to include articles from sub-categories of this category.'))
+
+    def __str__(self):
+        return _('last {} articles in this category').format(self.number)
+
+    def get_articles(self, context):
+        try:
+            page = self.placeholder.page.get_public_object()
+        except:
+            return []
+
+        try:
+            category = page.cms_articles_category
+        except:
+            category = Category.objects.create(page=page)
+
+        try:
+            edit_mode = context['request'].toolbar.edit_mode
+        except:
+            edit_mode = False
+
+        if edit_mode:
+            articles = Article.objects.drafts()
+        else:
+            articles = Article.objects.public().published()
+
+        if self.subcategories:
+            if not page.is_home:
+                articles = articles.filter(categories__page__in=page.get_descendants(True))
+            # if page.is_home, take all
+        else:
+            articles = articles.filter(categories=category)
+
+        return articles.order_by('-publication_date')[:self.number]
 
 

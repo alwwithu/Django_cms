@@ -1,7 +1,7 @@
 {% load cms_articles thumbnail %}
 <div class="article_preview">
     <h2>
-        <a href="{{ article.get_absolute_url }}">{{ article.get_title }}</a>
+        <a href="{{ article.get_absolute_url }}">{{ article.get_menu_title }}</a>
         <small> {{ article.publication_date }}</small>
     </h2>
     {% with image=article.get_image %}

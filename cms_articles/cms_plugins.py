@@ -4,12 +4,13 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext as _
 
-from .models import ArticlePlugin, ArticlesPlugin
+from .models import ArticlePlugin, ArticlesPlugin, ArticlesCategoryPlugin
 
 
 class ArticlePlugin(CMSPluginBase):
-    model = ArticlePlugin
-    name = _('Article')
+    module  = _('Articles')
+    name    = _('Article')
+    model   = ArticlePlugin
     text_enabled = True
     raw_id_fields = ['article']
 
@@ -24,9 +25,11 @@ class ArticlePlugin(CMSPluginBase):
 plugin_pool.register_plugin(ArticlePlugin)
 
 
+
 class ArticlesPlugin(CMSPluginBase):
-    model = ArticlesPlugin
-    name = _('Articles')
+    module  = _('Articles')
+    name    = _('Articles')
+    model   = ArticlesPlugin
     text_enabled = True
 
     def render(self, context, instance, placeholder):
@@ -38,5 +41,13 @@ class ArticlesPlugin(CMSPluginBase):
         return context
 
 plugin_pool.register_plugin(ArticlesPlugin)
+
+
+
+class ArticlesCategoryPlugin(ArticlesPlugin):
+    name    = _('Articles category')
+    model   = ArticlesCategoryPlugin
+
+plugin_pool.register_plugin(ArticlesCategoryPlugin)
 
 

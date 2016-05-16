@@ -1,3 +1,4 @@
+from .category import Category
 from .article import Article
 from .title import Title, EmptyTitle
-from .plugins import ArticlePlugin, ArticlesPlugin
+from .plugins import ArticlePlugin, ArticlesPlugin, ArticlesCategoryPlugin

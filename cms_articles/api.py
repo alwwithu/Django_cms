@@ -11,6 +11,7 @@ import datetime
 
 from django.template.defaultfilters import slugify
 from django.template.loader import get_template
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
@@ -24,26 +25,25 @@ from .models import Article, Title
 
 
 def create_article(
-        category, template, title, language,
-        slug=None, page_title=None, menu_title=None, meta_description=None,
-        created_by=None, publication_date=None, publication_end_date=None,
-        published=False, login_required=False, creation_date=None,
-        contents=[],
+        tree, template, title, language, slug=None, description=None,
+        page_title=None, menu_title=None, meta_description=None,
+        created_by=None, image=None, publication_date=None, publication_end_date=None,
+        published=False, login_required=False, creation_date=None, categories=[],
     ):
     """
     Create a CMS Article and it's title for the given language
     """
 
-    # validate category
-    category = category.get_public_object()
-    assert category.application_urls == 'CMSArticlesApp'
+    # validate tree
+    tree = tree.get_public_object()
+    assert tree.application_urls == 'CMSArticlesApp'
 
     # validate template
     assert template in [tpl[0] for tpl in settings.CMS_ARTICLES_TEMPLATES]
     get_template(template)
 
     # validate language:
-    assert language in get_language_list(category.site_id), settings.CMS_LANGUAGES.get(category.site_id)
+    assert language in get_language_list(tree.site_id), settings.CMS_LANGUAGES.get(tree.site_id)
 
     # validate publication date
     if publication_date:
@@ -53,27 +53,34 @@ def create_article(
     if publication_end_date:
         assert isinstance(publication_end_date, datetime.date)
 
-    # validate publication end date
+    # validate creation date
+    if not creation_date:
+        creation_date = publication_date
     if creation_date:
         assert isinstance(creation_date, datetime.date)
 
     # get username
     if created_by:
-        username = created_by.get_username()
+        try:
+            username = created_by.get_username()
+        except:
+            username = force_text(created_by)
     else:
         username = 'script'
 
     with current_user(username):
         # create article
         article = Article.objects.create(
+            tree                = tree,
             template            = template,
-            category            = category,
             login_required      = login_required,
             creation_date       = creation_date,
             publication_date    = publication_date,
             publication_end_date= publication_end_date,
             languages           = language,
         )
+        for category in categories:
+            article.categories.add(category)
 
         # create title
         create_title(
@@ -81,15 +88,13 @@ def create_article(
             language            = language,
             title               = title,
             slug                = slug,
+            description         = description,
             page_title          = page_title,
             menu_title          = menu_title,
             meta_description    = meta_description,
             creation_date       = creation_date,
+            image               = image,
         )
-
-        for slot, body in contents.items():
-            placeholder = article.placeholders.get(slot=slot)
-            add_plugin(placeholder, TextPlugin, language, body=body)
 
         # publish article
         if published:
@@ -100,9 +105,9 @@ def create_article(
 
 
 def create_title(
-        article, language, title, slug=None,
-        menu_title=None, page_title=None, meta_description=None,
-        creation_date=None,
+        article, language, title, slug=None, description=None,
+        page_title=None, menu_title=None, meta_description=None,
+        creation_date=None, image=None,
     ):
     """
     Create an article title.
@@ -111,12 +116,16 @@ def create_title(
     assert isinstance(article, Article)
 
     # validate language:
-    assert language in get_language_list(article.category.site_id)
+    assert language in get_language_list(article.tree.site_id)
+
+    # validate creation date
+    if creation_date:
+        assert isinstance(creation_date, datetime.date)
 
     # set default slug:
     if not slug:
         slug = settings.CMS_ARTICLES_SLUG_FORMAT.format(
-            now = now(),
+            now = creation_date or now(),
             slug = slugify(title),
         )
 
@@ -135,12 +144,23 @@ def create_title(
         language    = language,
         title       = title,
         slug        = slug,
+        description = description,
         page_title  = page_title,
         menu_title  = menu_title,
         meta_description = meta_description,
+        image       = image,
     )
 
     return title
+
+
+
+def add_content(obj, language, slot, content):
+    """
+    Adds a TextPlugin with given content to given slot
+    """
+    placeholder = obj.placeholders.get(slot=slot)
+    add_plugin(placeholder, TextPlugin, language, body=content)
 
 
 

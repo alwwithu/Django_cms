@@ -30,12 +30,12 @@ from .models import Article
 
 def article(request, slug):
 
-    # Get current CMS Page as article category
-    category = request.current_page
+    # Get current CMS Page as article tree
+    tree = request.current_page
 
-    # Check whether it really is a category.
+    # Check whether it really is a tree.
     # It could also be one of its sub-pages.
-    if category.application_urls != 'CMSArticlesApp':
+    if tree.application_urls != 'CMSArticlesApp':
         # In such case show regular CMS Page
         return page(request, slug)
 
@@ -44,11 +44,11 @@ def article(request, slug):
     preview = 'preview' in request.GET and request.user.has_perm('cms_articles.change_article')
 
     if draft:
-        articles = category.cms_articles.drafts()
+        articles = tree.cms_articles.drafts()
     elif preview:
-        articles = category.cms_articles.public()
+        articles = tree.cms_articles.public()
     else:
-        articles = category.cms_articles.public().published()
+        articles = tree.cms_articles.public().published()
 
     try:
         article = articles.filter(title_set__slug=slug).distinct().get()
@@ -160,7 +160,7 @@ def article(request, slug):
     #response.add_post_render_callback(set_article_cache)
 
     # Add headers for X Frame Options - this really should be changed upon moving to class based views
-    xframe_options = article.category.get_xframe_options()
+    xframe_options = article.tree.get_xframe_options()
     # xframe_options can be None if there's no xframe information on the article
     # (eg. a top-level article which has xframe options set to "inherit")
     if xframe_options == Page.X_FRAME_OPTIONS_INHERIT or xframe_options is None:
@@ -170,7 +170,7 @@ def article(request, slug):
     # We want to prevent django setting this in their middleware
     response.xframe_options_exempt = True
 
-    if xframe_options == article.category.X_FRAME_OPTIONS_ALLOW:
+    if xframe_options == article.tree.X_FRAME_OPTIONS_ALLOW:
         # Do nothing, allowed is no header.
         return response
     elif xframe_options == Page.X_FRAME_OPTIONS_SAMEORIGIN:

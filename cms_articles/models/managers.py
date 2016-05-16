@@ -34,7 +34,7 @@ class ArticleManager(PublisherManager):
 
         if current_site_only:
             site = Site.objects.get_current()
-            qs = qs.filter(category__site=site)
+            qs = qs.filter(tree__site=site)
 
         qt = Q(title_set__title__icontains=q)
 
@@ -110,6 +110,7 @@ class TitleManager(PublisherManager):
             'title',
             'description',
             'page_title',
+            'menu_title',
             'meta_description',
             'image',
         ]

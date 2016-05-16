@@ -9,7 +9,7 @@ from .urls import urlpatterns
 
 
 class CMSArticlesApp(CMSApp):
-    name = _('Articles category')
+    name = _('Articles tree')
     urls = [urlpatterns]
     app_name = 'cms_articles'
 
