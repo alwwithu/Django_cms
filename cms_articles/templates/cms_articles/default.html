@@ -20,11 +20,6 @@
 </div>
 
 <div id="content">
-    {% if request.toolbar.edit_mode %}
-    <div class="article-excerpt">
-        {% article_placeholder "excerpt" %}
-    </div>
-    {% endif %}
     {% block content %}{% article_placeholder "content" %}{% endblock %}
 </div>
 

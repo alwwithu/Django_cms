@@ -72,7 +72,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
     fieldsets       = [
         (None, {'fields': ['category', 'template']}),
-        (_('Language dependent settings'), {'fields': ['title', 'slug', 'page_title', 'menu_title', 'meta_description']}),
+        (_('Language dependent settings'), {'fields': ['title', 'slug', 'description', 'page_title', 'menu_title', 'meta_description', 'image']}),
         (_('Other settings'), {'fields': ['publication_date', 'publication_end_date', 'login_required']}),
     ]
 
@@ -130,7 +130,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         if obj:
             title_obj = obj.get_title_obj(language=language, fallback=False, force_reload=True)
 
-            for name in ('title', 'page_title', 'menu_title', 'meta_description'):
+            for name in ('title', 'description', 'page_title', 'menu_title', 'meta_description', 'image'):
                 if name in form.base_fields:
                     form.base_fields[name].initial = getattr(title_obj, name)
             try:

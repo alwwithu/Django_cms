@@ -1,8 +1,15 @@
-{% load cms_articles %}
+{% load cms_articles thumbnail %}
 <div class="article_preview">
     <h2>
         <a href="{{ article.get_absolute_url }}">{{ article.get_title }}</a>
         <small> {{ article.publication_date }}</small>
     </h2>
-    {% show_article_placeholder_by_id "excerpt" article %}
+    {% with image=article.get_image %}
+        {% if image %}
+        <a href="{% thumbnail image 1500x1500 %}" data-toggle="lightbox" data-title="{{ image.name }}">
+            <img alt="{{ image.name }}" src="{% thumbnail image 200x200 %}" />
+        </a>
+        {% endif %}
+    {% endwith %}
+    {{ article.get_description | safe }}
 </div>

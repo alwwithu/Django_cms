@@ -13,24 +13,20 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _, get_language
 
 from ..conf import settings
-from ..models import Article, EmptyTitle
+from ..models import Article, Title, EmptyTitle
 from ..utils import is_valid_article_slug
 
 
 class ArticleForm(forms.ModelForm):
     language            = forms.ChoiceField(label=_('Language'), choices=get_language_tuple(),
                             help_text=_('The current language of the content fields.'))
-    title               = forms.CharField(label=_('Title'), widget=forms.TextInput(),
-                            help_text=_('The default title'))
-    slug                = forms.CharField(label=_('Slug'), widget=forms.TextInput(),
-                            help_text=_('The part of the title that is used in the URL'))
-    page_title          = forms.CharField(label=_('Page Title'), widget=forms.TextInput(), required=False,
-                            help_text=_('Overwrites what is displayed at the top of your browser or in bookmarks'))
-    menu_title          = forms.CharField(label=_('Menu Title'), widget=forms.TextInput(), required=False,
-                            help_text=_('Overwrite what is displayed in the menu'))
-    meta_description    = forms.CharField(label=_('Description meta tag'), required=False, max_length=155,
-                            widget=forms.Textarea(attrs={'maxlength': '155', 'rows': '4'}),
-                            help_text=_('A description of the article used by search engines.'))
+    title               = Title._meta.get_field('title').formfield()
+    slug                = Title._meta.get_field('slug').formfield()
+    description         = Title._meta.get_field('description').formfield()
+    page_title          = Title._meta.get_field('page_title').formfield()
+    menu_title          = Title._meta.get_field('menu_title').formfield()
+    meta_description    = Title._meta.get_field('meta_description').formfield()
+    image               = Title._meta.get_field('image').formfield()
 
     class Meta:
         model = Article

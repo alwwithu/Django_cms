@@ -412,6 +412,18 @@ class Article(models.Model):
         '''
         return self.get_title_obj_attribute('title', language, fallback, force_reload)
 
+    def get_image(self, language=None, fallback=True, force_reload=False):
+        '''
+        get the image of the article depending on the given language
+        '''
+        return self.get_title_obj_attribute('image', language, fallback, force_reload)
+
+    def get_description(self, language=None, fallback=True, force_reload=False):
+        '''
+        get description of the article depending on the given language
+        '''
+        return self.get_title_obj_attribute('description', language, fallback, force_reload)
+
     def get_placeholders(self):
         if not hasattr(self, '_placeholder_cache'):
             self._placeholder_cache = self.placeholders.all()

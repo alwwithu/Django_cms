@@ -108,8 +108,10 @@ class TitleManager(PublisherManager):
         base_fields = [
             'slug',
             'title',
+            'description',
             'page_title',
             'meta_description',
+            'image',
         ]
         cleaned_data = form.cleaned_data
         try:

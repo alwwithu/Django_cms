@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import get_language, ugettext_lazy as _
+from djangocms_text_ckeditor.fields import HTMLField
+from filer.fields.image import FilerImageField
 
 from ..conf import settings
 
@@ -23,13 +25,16 @@ class Title(models.Model):
     language            = models.CharField(_('language'), max_length=15, db_index=True)
     title               = models.CharField(_('title'), max_length=255)
     slug                = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
-    page_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
+    description         = HTMLField(_('description'), blank=True, default='',
+                            help_text=_('The text displayed in an articles overview.'))
+    page_title          = models.CharField(_('page title'), max_length=255, blank=True, null=True,
                             help_text=_('overwrite the title (html title tag)'))
-    menu_title          = models.CharField(_('title'), max_length=255, blank=True, null=True,
-                            help_text=_('overwrite the title in the menu'))
-    meta_description    = models.TextField(_('description'), max_length=155, blank=True, null=True,
+    menu_title          = models.CharField(_('menu title'), max_length=255, blank=True, null=True,
+                            help_text=_('overwrite the title in the articles overview'))
+    meta_description    = models.TextField(_('meta description'), max_length=155, blank=True, null=True,
                             help_text=_('The text displayed in search engines.'))
     creation_date       = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
+    image               = FilerImageField(verbose_name=_('image'), related_name='+', blank=True, null=True)
 
     # Publisher fields
     published           = models.BooleanField(_('is published'), blank=True, default=False)
