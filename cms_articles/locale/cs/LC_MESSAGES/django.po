@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-18 00:47+0200\n"
+"POT-Creation-Date: 2016-05-20 21:47+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -133,37 +133,389 @@ msgstr "Publikovat článek teď"
 msgid "Default"
 msgstr "Výchozí"
 
-#: models/article.py:25 models/plugins.py:65
+#: import_wordpress/admin.py:41
+msgid "Failed to create user {}: {}"
+msgstr "Selhalo vytvoření uživatele {}: {}"
+
+#: import_wordpress/admin.py:43
+msgid "Successfully created user {}"
+msgstr "Úspěšně vytvořen uživatel {}"
+
+#: import_wordpress/admin.py:44
+msgid "Create users for selected authors"
+msgstr "Vytvořit uživatele pro vybrané autory"
+
+#: import_wordpress/admin.py:64
+msgid "Successfully found user {} for author"
+msgstr "Úspěšně nalezen uživatel {} pro autora"
+
+#: import_wordpress/admin.py:66
+msgid "Failed to find user for author {}"
+msgstr "Odpovídající uživatele pro autora {} nenalezen"
+
+#: import_wordpress/admin.py:67
+msgid "Find users for selected authors"
+msgstr "Najít odpovídající uživatele pro vybrané autory"
+
+#: import_wordpress/admin.py:105
+msgid "Successfullty imported {} authors"
+msgstr "Úspěšně importováno {} autorů"
+
+#: import_wordpress/admin.py:106
+msgid "Successfullty imported {} categories"
+msgstr "Úspěšně importováno {} kategorií"
+
+#: import_wordpress/admin.py:107
+msgid "Successfullty imported {} items"
+msgstr "Úspěšně importováno {} položek"
+
+#: import_wordpress/admin.py:128
+msgid "post parent"
+msgstr "nadřazená položka"
+
+#: import_wordpress/admin.py:144
+msgid "post children"
+msgstr "podřízené položky"
+
+#: import_wordpress/admin.py:152 import_wordpress/models.py:75
+#: models/title.py:26
+msgid "title"
+msgstr "titulek"
+
+#: import_wordpress/admin.py:171
+msgid "imported as"
+msgstr "imporováno jako"
+
+#: import_wordpress/admin.py:181
+msgid "Selected items were imported into CMS."
+msgstr "Vybrané položky byly naimportovány do CMS."
+
+#: import_wordpress/admin.py:186
+msgid "Select predefined import options"
+msgstr "Vyberte předdefinované volby importu"
+
+#: import_wordpress/admin.py:192
+msgid "Import selected items into CMS"
+msgstr "Imporovat vybrané položky do CMS"
+
+#: import_wordpress/admin.py:203
+msgid "Global options"
+msgstr "Všeobecné volby"
+
+#: import_wordpress/admin.py:204
+msgid "Article specific options"
+msgstr "Volby importu článků"
+
+#: import_wordpress/admin.py:205
+msgid "Page specific options"
+msgstr "Volby importu stránek"
+
+#: import_wordpress/admin.py:206
+msgid "File specific options"
+msgstr "Volby importu souborů"
+
+#: import_wordpress/admin.py:207
+msgid "Gallery specific options"
+msgstr "Volby importu fotogalerií"
+
+#: import_wordpress/admin.py:208
+msgid "Slide specific options"
+msgstr "Volby importu slidů"
+
+#: import_wordpress/apps.py:9
+msgid "django CMS articles - import from WordPress"
+msgstr "django CMS Články - import z WordPressu"
+
+#: import_wordpress/forms.py:15
+msgid "WordPress XML file"
+msgstr "XML soubor z WordPressu"
+
+#: import_wordpress/forms.py:16
+msgid "Select XML file with posts exported from WP."
+msgstr "Vyberte XML soubor s položkami exportovanými z WP."
+
+#: import_wordpress/forms.py:29
+msgid "Options"
+msgstr "Volby"
+
+#: import_wordpress/models.py:26
+msgid "author id"
+msgstr "id autora"
+
+#: import_wordpress/models.py:27
+msgid "login name"
+msgstr "přihlašovací jméno"
+
+#: import_wordpress/models.py:28
+msgid "email"
+msgstr "email"
+
+#: import_wordpress/models.py:29
+msgid "first name"
+msgstr "jméno"
+
+#: import_wordpress/models.py:30
+msgid "last name"
+msgstr "příjmení"
+
+#: import_wordpress/models.py:31
+msgid "user"
+msgstr "uživatel"
+
+#: import_wordpress/models.py:38
+msgid "author"
+msgstr "autor"
+
+#: import_wordpress/models.py:39
+msgid "authors"
+msgstr "autoři"
+
+#: import_wordpress/models.py:45
+msgid "term id"
+msgstr "id kategorie"
+
+#: import_wordpress/models.py:46 import_wordpress/models.py:49
+#: import_wordpress/models.py:261
+msgid "name"
+msgstr "název"
+
+#: import_wordpress/models.py:47 models/title.py:27
+msgid "slug"
+msgstr "identifikátor"
+
+#: import_wordpress/models.py:48
+msgid "parent slug"
+msgstr "id rodiče"
+
+#: import_wordpress/models.py:50
+msgid "articles category"
+msgstr "kategorie článků"
+
+#: import_wordpress/models.py:68 models/category.py:17
+msgid "category"
+msgstr "kategorie"
+
+#: import_wordpress/models.py:69 import_wordpress/models.py:89
+#: models/article.py:34 models/category.py:18 models/plugins.py:71
+msgid "categories"
+msgstr "kategorie"
+
+#: import_wordpress/models.py:76
+msgid "link"
+msgstr "odkaz"
+
+#: import_wordpress/models.py:77 models/article.py:39
+msgid "publication date"
+msgstr "datum zveřejnění"
+
+#: import_wordpress/models.py:78 models/article.py:35
+msgid "created by"
+msgstr "vytvořil(a)"
+
+#: import_wordpress/models.py:79
+msgid "url"
+msgstr "url"
+
+#: import_wordpress/models.py:80 models/title.py:28
+msgid "description"
+msgstr "popis"
+
+#: import_wordpress/models.py:81
+msgid "content"
+msgstr "obsah"
+
+#: import_wordpress/models.py:82
+msgid "excerpt"
+msgstr "perex"
+
+#: import_wordpress/models.py:83
+msgid "post id"
+msgstr "id"
+
+#: import_wordpress/models.py:84
+msgid "post date"
+msgstr "datum"
+
+#: import_wordpress/models.py:85
+msgid "post name"
+msgstr "slug"
+
+#: import_wordpress/models.py:86
+msgid "status"
+msgstr "stav"
+
+#: import_wordpress/models.py:87
+msgid "parent post id"
+msgstr "id rodiče"
+
+#: import_wordpress/models.py:88
+msgid "type"
+msgstr "typ"
+
+#: import_wordpress/models.py:90
+msgid "metadata"
+msgstr "metadata"
+
+#: import_wordpress/models.py:91
+msgid "imported article"
+msgstr "článek"
+
+#: import_wordpress/models.py:93
+msgid "imported page"
+msgstr "importovaná stránka"
+
+#: import_wordpress/models.py:95
+msgid "imported file"
+msgstr "importovaný soubor"
+
+#: import_wordpress/models.py:97 import_wordpress/models.py:280
+#: import_wordpress/models.py:297
+msgid "attachments folder"
+msgstr "adresář pro přílohy"
+
+#: import_wordpress/models.py:104
+msgid "item"
+msgstr "položka"
+
+#: import_wordpress/models.py:105
+msgid "items"
+msgstr "položky"
+
+#: import_wordpress/models.py:264 models/title.py:25
+msgid "language"
+msgstr "jazyk"
+
+#: import_wordpress/models.py:265
+msgid "The language of the content fields."
+msgstr "Jazyk obsahu."
+
+#: import_wordpress/models.py:268 models/article.py:25 models/plugins.py:65
 msgid "tree"
 msgstr "strom"
+
+#: import_wordpress/models.py:269
+msgid "All posts will be imported as articles in this tree."
+msgstr ""
+"Všechny položky typy post budou naimportovány jako články do tohoto stromu."
+
+#: import_wordpress/models.py:275 import_wordpress/models.py:292
+#: models/article.py:31
+msgid "template"
+msgstr "šablona"
+
+#: import_wordpress/models.py:278 import_wordpress/models.py:295
+msgid "slot"
+msgstr "slot"
+
+#: import_wordpress/models.py:279 import_wordpress/models.py:296
+msgid "The name of placeholder used to create content plugins in."
+msgstr "Název placeholderu, ve kterém bude zobrazen obsah."
+
+#: import_wordpress/models.py:282
+msgid ""
+"Select folder for articles. Subfolder will be created for each article with "
+"attachments."
+msgstr ""
+"Vyberte složku pro články. Pro každý článek, který má přílohy, bude "
+"vytvořena podsložka."
+
+#: import_wordpress/models.py:283 import_wordpress/models.py:300
+msgid "create redirects"
+msgstr "vytvořit přesměrování"
+
+#: import_wordpress/models.py:284
+msgid ""
+"Create django redirects for each article from the old path to the new "
+"imported path"
+msgstr ""
+"Vytvořit přesměrování pro každý článek z původní (WordPress) adresy na novou."
+
+#: import_wordpress/models.py:285 import_wordpress/models.py:302
+msgid "publish"
+msgstr "publikovat"
+
+#: import_wordpress/models.py:286
+msgid "Publish imported articles."
+msgstr "Publikovat importované články."
+
+#: import_wordpress/models.py:289
+msgid "root"
+msgstr "kořen"
+
+#: import_wordpress/models.py:291
+msgid "All pages will be imported as sub-pages of this page."
+msgstr "Všechny stránky budou importovány jako podstránky této stránky."
+
+#: import_wordpress/models.py:299
+msgid ""
+"Select folder for pages. Subfolder will be created for each page with "
+"attachments."
+msgstr ""
+"Vyberte složku pro stránky. Pro každou stránku, která má přílohy, bude "
+"vytvořena podsložka."
+
+#: import_wordpress/models.py:301
+msgid ""
+"Create django redirects for each page from the old path to the new imported "
+"path"
+msgstr ""
+"Vytvořit přesměrování pro každou stránku z původní (WordPress) adresy na "
+"novou."
+
+#: import_wordpress/models.py:303
+msgid "Publish imported pages."
+msgstr "Publikovat importované stránky."
+
+#: import_wordpress/models.py:306 import_wordpress/models.py:311
+#: import_wordpress/models.py:316
+msgid "folder"
+msgstr "složka"
+
+#: import_wordpress/models.py:308
+msgid ""
+"Select folder for galleries. Subfolder will be created for each gallery."
+msgstr ""
+"Vyberte složku pro galerie. Pro každou galerii bude vytvořena podsložka."
+
+#: import_wordpress/models.py:313
+msgid "Select folder for slides."
+msgstr "Vyberte složku pro slidy."
+
+#: import_wordpress/models.py:318
+msgid "Select folder for other attachments."
+msgstr "Vyberte složku pro ostatní přílohy."
+
+#: import_wordpress/models.py:324 import_wordpress/models.py:325
+msgid "options"
+msgstr "volby"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/form.html:8
+msgid "Home"
+msgstr "Domů"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/form.html:11
+msgid "Import into CMS"
+msgstr "Import do CMS"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/form.html:23
+msgid "Proceed"
+msgstr "Provést"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/form.html:24
+msgid "Cancel"
+msgstr "Zrušit"
 
 #: models/article.py:26
 msgid "The page the article is accessible at."
 msgstr "Stránka, na které bude článek dostupný."
 
-#: models/article.py:31
-msgid "template"
-msgstr "šablona"
-
 #: models/article.py:33
 msgid "The template used to render the content."
 msgstr "Šablona, která bude použita k zobrazení článku."
 
-#: models/article.py:34 models/category.py:18 models/plugins.py:71
-msgid "categories"
-msgstr "kategorie"
-
-#: models/article.py:35
-msgid "created by"
-msgstr "vytvořil(a)"
-
 #: models/article.py:36
 msgid "changed by"
 msgstr "změnil(a)"
-
-#: models/article.py:39
-msgid "publication date"
-msgstr "datum zveřejnění"
 
 #: models/article.py:40
 msgid ""
@@ -198,10 +550,6 @@ msgstr "články"
 #: models/category.py:13
 msgid "page"
 msgstr "stránka"
-
-#: models/category.py:17
-msgid "category"
-msgstr "kategorie"
 
 #: models/plugins.py:20 models/plugins.py:48
 msgid "Template"
@@ -238,22 +586,6 @@ msgstr "Zaškrtněte, pokud chcete zahrnout články z podkategorií."
 #: models/plugins.py:102
 msgid "last {} articles in this category"
 msgstr "posledních {} článků v této kategorii"
-
-#: models/title.py:25
-msgid "language"
-msgstr "jazyk"
-
-#: models/title.py:26
-msgid "title"
-msgstr "titulek"
-
-#: models/title.py:27
-msgid "slug"
-msgstr "identifikátor"
-
-#: models/title.py:28
-msgid "description"
-msgstr "popis"
 
 #: models/title.py:29
 msgid "The text displayed in an articles overview."
