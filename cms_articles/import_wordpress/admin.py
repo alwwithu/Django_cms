@@ -4,11 +4,16 @@ from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
+from django.conf.urls import url
+from django.db import transaction
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from cms_articles.conf import settings
+from json import dumps
 
 from .forms import XMLImportForm, CMSImportForm
 from .models import Category, Author, Item, Options
@@ -88,6 +93,13 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter     = ['post_type', 'status', 'categories']
     list_display    = ['post_id', 'parent_link', 'children_link', 'title_link', 'post_type', 'post_date', 'status', 'imported_link']
     actions         = ['cms_import']
+
+    def get_urls(self):
+        return [
+            url(r'^import/$', self.import_item, name="{}_{}_import_item".format(
+                self.model._meta.app_label, self.model._meta.model_name,
+            )),
+        ] + super(ItemAdmin, self).get_urls()
 
     def save_model(self, request, obj, form, change):
         pass
@@ -175,11 +187,13 @@ class ItemAdmin(admin.ModelAdmin):
         if request.POST.get('post', 'no') == 'yes':
             form = CMSImportForm(request.POST)
             if form.is_valid():
-                # import posts
-                for item in queryset.all():
-                    item.cms_import(form.cleaned_data['options'])
-                self.message_user(request, _('Selected items were imported into CMS.'))
-                return
+                return render_to_response('cms_articles/import_wordpress/cms_import.html', {
+                    'title': _('Running import'),
+                    'items': queryset,
+                    'options': form.cleaned_data['options'],
+                    'media':    self.media,
+                    'opts': self.model._meta,
+                }, context_instance=RequestContext(request))
         else:
             form = CMSImportForm()
         return render_to_response('cms_articles/import_wordpress/form.html', {
@@ -191,12 +205,25 @@ class ItemAdmin(admin.ModelAdmin):
         }, context_instance=RequestContext(request))
     cms_import.short_description = _('Import selected items into CMS')
 
+    @transaction.atomic
+    def import_item(self, request):
+        try:
+            item_id     = int(request.GET['item_id'])
+            options_id  = int(request.GET['options_id'])
+        except:
+            return HttpResponseBadRequest()
+        item    = get_object_or_404(Item, id=item_id)
+        options = get_object_or_404(Options, id=options_id)
+        item.cms_import(options)
+        return HttpResponse('0', content_type="text/json")
+
 admin.site.register(Item, ItemAdmin)
 
 
 
 class OptionsAdmin(admin.ModelAdmin):
     search_fields   = ['name']
+    save_as         = True
 
     fieldsets       = [
         (None, {'fields': ['name']}),
