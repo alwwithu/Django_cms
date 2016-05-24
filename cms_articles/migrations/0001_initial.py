@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             name='ArticlePlugin',
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('template', models.CharField(choices=[('default', 'Default')], default='default', help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
+                ('template', models.CharField(choices=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES, default=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES[0][0], help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
                 ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='cms_articles.Article', verbose_name='article')),
             ],
             options={
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('number', models.IntegerField(default=3, verbose_name='Number of last articles')),
-                ('template', models.CharField(choices=[('default', 'Default')], default='default', help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
+                ('template', models.CharField(choices=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES[0][0], help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
                 ('category', models.ForeignKey(blank=True, help_text='Keep empty to show articles from current page, if current page is a category.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='cms.Page', verbose_name='category')),
             ],
             options={

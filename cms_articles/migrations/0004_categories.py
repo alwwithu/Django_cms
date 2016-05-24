@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+from cms_articles.conf import settings
+
 
 class Migration(migrations.Migration):
 
@@ -60,7 +62,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('number', models.IntegerField(default=3, verbose_name='Number of last articles')),
-                ('template', models.CharField(choices=[('default', 'Default')], default='default', help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
+                ('template', models.CharField(choices=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES[0][0], help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
                 ('subcategories', models.BooleanField(default=False, help_text='Check, if you want to include articles from sub-categories of this category.', verbose_name='include sub-categories')),
             ],
             options={
