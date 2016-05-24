@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 21:47+0200\n"
+"POT-Creation-Date: 2016-05-24 02:20+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -17,60 +17,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: admin/article.py:76
+#: admin/article.py:75
 msgid "Language dependent settings"
 msgstr "Jazykově závislá nastavení"
 
-#: admin/article.py:77
+#: admin/article.py:76
 msgid "Other settings"
 msgstr "Ostatní nastevení"
 
-#: admin/article.py:222
+#: admin/article.py:218
 msgid "You do not have permission to publish this article"
 msgstr "Nemáte oprávnění publikovat tento článek"
 
-#: admin/article.py:237
+#: admin/article.py:233
 msgid "The content was successfully published."
 msgstr "Obsah byl úspěšně publikován."
 
-#: admin/article.py:246
+#: admin/article.py:242
 msgid "There was a problem publishing your content"
 msgstr "Nastal problém při publikování obsahu"
 
-#: admin/article.py:278
+#: admin/article.py:274
 msgid "You do not have permission to unpublish this article"
 msgstr "Nemáte oprávnění depublikovat tento článek"
 
-#: admin/article.py:280
+#: admin/article.py:276
 msgid "This article was never published"
 msgstr "Článek nebyl nikdy publikován"
 
-#: admin/article.py:283
+#: admin/article.py:279
 #, python-format
 msgid "The %(language)s article \"%(article)s\" was successfully unpublished"
 msgstr ""
 "Překlad do jazyka %(language)s článku \"%(article)s\" byl úspěšně "
 "depublikován"
 
-#: admin/article.py:325
+#: admin/article.py:321
 msgid "You do not have permission to change this article"
 msgstr "Nemáte oprávnění upravovat tento článek"
 
-#: admin/article.py:329
+#: admin/article.py:325
 #, python-format
 msgid "%(name)s object with primary key %(key)r does not exist."
 msgstr "Objekt typu %(name)s s id %(key)r neexistuje."
 
-#: admin/article.py:335
+#: admin/article.py:331
 msgid "There only exists one translation for this article"
 msgstr "Existuje pouze jeden překlad tohoto článku"
 
-#: admin/article.py:377
+#: admin/article.py:373
 #, python-format
 msgid "Title and plugins with language %(language)s was deleted"
 msgstr "Obsah pro jazyk %(language)s byl odstraněn"
 
-#: admin/article.py:396
+#: admin/article.py:392
 msgid "Are you sure?"
 msgstr "Jste si jisti?"
 
@@ -98,17 +98,17 @@ msgstr "django CMS Články"
 msgid "Articles tree"
 msgstr "Strom článků"
 
-#: cms_plugins.py:11 cms_plugins.py:30 cms_plugins.py:31 cms_toolbars.py:19
+#: cms_plugins.py:12 cms_plugins.py:34 cms_plugins.py:35 cms_toolbars.py:19
 #: cms_toolbars.py:21
 msgid "Articles"
 msgstr "Články"
 
-#: cms_plugins.py:12 cms_toolbars.py:24
+#: cms_plugins.py:13 cms_toolbars.py:24
 #: templates/admin/cms_articles/article/change_list.html:30
 msgid "Article"
 msgstr "Článek"
 
-#: cms_plugins.py:48
+#: cms_plugins.py:66
 msgid "Articles category"
 msgstr "Kategorie článků"
 
@@ -133,92 +133,92 @@ msgstr "Publikovat článek teď"
 msgid "Default"
 msgstr "Výchozí"
 
-#: import_wordpress/admin.py:41
+#: import_wordpress/admin.py:46
 msgid "Failed to create user {}: {}"
 msgstr "Selhalo vytvoření uživatele {}: {}"
 
-#: import_wordpress/admin.py:43
+#: import_wordpress/admin.py:48
 msgid "Successfully created user {}"
 msgstr "Úspěšně vytvořen uživatel {}"
 
-#: import_wordpress/admin.py:44
+#: import_wordpress/admin.py:49
 msgid "Create users for selected authors"
 msgstr "Vytvořit uživatele pro vybrané autory"
 
-#: import_wordpress/admin.py:64
+#: import_wordpress/admin.py:69
 msgid "Successfully found user {} for author"
 msgstr "Úspěšně nalezen uživatel {} pro autora"
 
-#: import_wordpress/admin.py:66
+#: import_wordpress/admin.py:71
 msgid "Failed to find user for author {}"
 msgstr "Odpovídající uživatele pro autora {} nenalezen"
 
-#: import_wordpress/admin.py:67
+#: import_wordpress/admin.py:72
 msgid "Find users for selected authors"
 msgstr "Najít odpovídající uživatele pro vybrané autory"
 
-#: import_wordpress/admin.py:105
+#: import_wordpress/admin.py:117
 msgid "Successfullty imported {} authors"
 msgstr "Úspěšně importováno {} autorů"
 
-#: import_wordpress/admin.py:106
+#: import_wordpress/admin.py:118
 msgid "Successfullty imported {} categories"
 msgstr "Úspěšně importováno {} kategorií"
 
-#: import_wordpress/admin.py:107
+#: import_wordpress/admin.py:119
 msgid "Successfullty imported {} items"
 msgstr "Úspěšně importováno {} položek"
 
-#: import_wordpress/admin.py:128
+#: import_wordpress/admin.py:140
 msgid "post parent"
 msgstr "nadřazená položka"
 
-#: import_wordpress/admin.py:144
+#: import_wordpress/admin.py:156
 msgid "post children"
 msgstr "podřízené položky"
 
-#: import_wordpress/admin.py:152 import_wordpress/models.py:75
+#: import_wordpress/admin.py:164 import_wordpress/models.py:75
 #: models/title.py:26
 msgid "title"
 msgstr "titulek"
 
-#: import_wordpress/admin.py:171
+#: import_wordpress/admin.py:183
 msgid "imported as"
 msgstr "imporováno jako"
 
-#: import_wordpress/admin.py:181
-msgid "Selected items were imported into CMS."
-msgstr "Vybrané položky byly naimportovány do CMS."
+#: import_wordpress/admin.py:191
+msgid "Running import"
+msgstr "Běžící import"
 
-#: import_wordpress/admin.py:186
+#: import_wordpress/admin.py:200
 msgid "Select predefined import options"
 msgstr "Vyberte předdefinované volby importu"
 
-#: import_wordpress/admin.py:192
+#: import_wordpress/admin.py:206
 msgid "Import selected items into CMS"
 msgstr "Imporovat vybrané položky do CMS"
 
-#: import_wordpress/admin.py:203
+#: import_wordpress/admin.py:230
 msgid "Global options"
 msgstr "Všeobecné volby"
 
-#: import_wordpress/admin.py:204
+#: import_wordpress/admin.py:231
 msgid "Article specific options"
 msgstr "Volby importu článků"
 
-#: import_wordpress/admin.py:205
+#: import_wordpress/admin.py:232
 msgid "Page specific options"
 msgstr "Volby importu stránek"
 
-#: import_wordpress/admin.py:206
+#: import_wordpress/admin.py:233
 msgid "File specific options"
 msgstr "Volby importu souborů"
 
-#: import_wordpress/admin.py:207
+#: import_wordpress/admin.py:234
 msgid "Gallery specific options"
 msgstr "Volby importu fotogalerií"
 
-#: import_wordpress/admin.py:208
+#: import_wordpress/admin.py:235
 msgid "Slide specific options"
 msgstr "Volby importu slidů"
 
@@ -296,7 +296,7 @@ msgid "category"
 msgstr "kategorie"
 
 #: import_wordpress/models.py:69 import_wordpress/models.py:89
-#: models/article.py:34 models/category.py:18 models/plugins.py:71
+#: models/article.py:34 models/category.py:18 models/plugins.py:62
 msgid "categories"
 msgstr "kategorie"
 
@@ -389,7 +389,7 @@ msgstr "jazyk"
 msgid "The language of the content fields."
 msgstr "Jazyk obsahu."
 
-#: import_wordpress/models.py:268 models/article.py:25 models/plugins.py:65
+#: import_wordpress/models.py:268 models/article.py:25 models/plugins.py:56
 msgid "tree"
 msgstr "strom"
 
@@ -489,9 +489,26 @@ msgstr "Vyberte složku pro ostatní přílohy."
 msgid "options"
 msgstr "volby"
 
+#: import_wordpress/templates/cms_articles/import_wordpress/cms_import.html:34
 #: import_wordpress/templates/cms_articles/import_wordpress/form.html:8
 msgid "Home"
 msgstr "Domů"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/cms_import.html:45
+msgid "waiting"
+msgstr "čekající"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/cms_import.html:59
+msgid "running"
+msgstr "běžící"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/cms_import.html:63
+msgid "OK"
+msgstr "OK"
+
+#: import_wordpress/templates/cms_articles/import_wordpress/cms_import.html:67
+msgid "failed"
+msgstr "selhalo"
 
 #: import_wordpress/templates/cms_articles/import_wordpress/form.html:11
 msgid "Import into CMS"
@@ -539,7 +556,7 @@ msgstr ""
 msgid "login required"
 msgstr "vyžadovat přihlášení"
 
-#: models/article.py:62 models/plugins.py:18 models/title.py:24
+#: models/article.py:62 models/plugins.py:17 models/title.py:24
 msgid "article"
 msgstr "článek"
 
@@ -551,39 +568,39 @@ msgstr "články"
 msgid "page"
 msgstr "stránka"
 
-#: models/plugins.py:20 models/plugins.py:48
+#: models/plugins.py:19 models/plugins.py:43
 msgid "Template"
 msgstr "Šablona"
 
-#: models/plugins.py:23 models/plugins.py:51
+#: models/plugins.py:22 models/plugins.py:46
 msgid "The template used to render plugin."
 msgstr "Šablone použitá k zobrazení obsahu."
 
-#: models/plugins.py:47
+#: models/plugins.py:42
 msgid "Number of last articles"
 msgstr "Počet zobrazených článků"
 
-#: models/plugins.py:66
+#: models/plugins.py:57
 msgid ""
 "Keep empty to show articles from current page, if current page is a tree."
 msgstr ""
 "Ponechte prázdné pro zobrazení článků z aktuální stránky, pokud je aktuální "
 "stránka stromem."
 
-#: models/plugins.py:74
+#: models/plugins.py:65
 msgid "last {} articles"
 msgstr "posledních {} článků"
 
-#: models/plugins.py:98
+#: models/plugins.py:92
 msgid "include sub-categories"
 msgstr "zahrnout podkategorie"
 
-#: models/plugins.py:99
+#: models/plugins.py:93
 msgid ""
 "Check, if you want to include articles from sub-categories of this category."
 msgstr "Zaškrtněte, pokud chcete zahrnout články z podkategorií."
 
-#: models/plugins.py:102
+#: models/plugins.py:96
 msgid "last {} articles in this category"
 msgstr "posledních {} článků v této kategorii"
 
@@ -684,6 +701,14 @@ msgstr "Přeložit"
 #: templates/admin/cms_articles/article/change_list.html:91
 msgid "Delete"
 msgstr "Smazat"
+
+#: templates/cms_articles/articles/default.html:10
+msgid "previous"
+msgstr "předchozí"
+
+#: templates/cms_articles/articles/default.html:18
+msgid "next"
+msgstr "další"
 
 #: templatetags/cms_articles.py:112
 #, python-format
