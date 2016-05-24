@@ -47,7 +47,6 @@ from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from cms.admin.views import revert_plugins
 from cms.constants import PUBLISHER_STATE_PENDING
 from cms.models import Page, CMSPlugin, StaticPlaceholder
-from cms.plugin_pool import plugin_pool
 from cms.toolbar_pool import toolbar_pool
 from cms.utils import helpers, permissions, get_language_from_request, admin as admin_utils, copy_plugins
 from cms.utils.i18n import get_language_list, get_language_tuple, get_language_object, force_language
@@ -89,9 +88,6 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             pat(r'^([0-9]+)/([a-z\-]+)/unpublish/$', self.unpublish),
             pat(r'^([0-9]+)/([a-z\-]+)/preview/$', self.preview_article),
         ]
-
-        if plugin_pool.get_all_plugins():
-            url_patterns += plugin_pool.get_patterns()
 
         url_patterns += super(ArticleAdmin, self).get_urls()
         return url_patterns

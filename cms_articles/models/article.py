@@ -373,6 +373,13 @@ class Article(models.Model):
             return self
         return self.publisher_public
 
+    def get_published_object(self):
+        if self.publisher_is_draft:
+            public_id = self.publisher_public_id
+        else:
+            public_id = self.id
+        return Article.objects.public().published().filter(id=public_id).first()
+
     def get_languages(self):
         if self.languages:
             return sorted(self.languages.split(','))

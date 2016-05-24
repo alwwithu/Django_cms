@@ -1,3 +1,22 @@
+{% load i18n %}
+
 {% for article in articles %}
 {% include 'cms_articles/article_preview.html' %}
 {% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if articles.has_previous %}
+            <a href="?page={{ articles.previous_page_number }}">{% trans 'previous' %}</a>
+        {% endif %}
+
+        <span class="current">
+            {{ articles.number }} / {{ articles.paginator.num_pages }}
+        </span>
+
+        {% if articles.has_next %}
+            <a href="?page={{ articles.next_page_number }}">{% trans 'next' %}</a>
+        {% endif %}
+    </span>
+</div>
+

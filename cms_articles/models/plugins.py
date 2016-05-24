@@ -12,11 +12,10 @@ from .category import Category
 from .article import Article
 
 
-
 @python_2_unicode_compatible
 class ArticlePlugin(CMSPlugin):
     article     = models.ForeignKey(Article, verbose_name=_('article'), related_name='+',
-                    limit_choices_to={'publisher_is_draft': False})
+                    limit_choices_to={'publisher_is_draft': True})
     template    = models.CharField(_('Template'), max_length = 100,
         choices     = settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES,
         default     = settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES[0][0],
@@ -33,13 +32,9 @@ class ArticlePlugin(CMSPlugin):
             edit_mode = False
 
         if edit_mode:
-            return self.article.get_draft_object()
-        else:
             return self.article
-
-    @cached_property
-    def render_template(self):
-        return 'cms_articles/article/%s.html' % self.template
+        else:
+            return self.article.get_published_object()
 
 
 
@@ -53,10 +48,6 @@ class ArticlesPluginBase(CMSPlugin):
 
     class Meta:
         abstract = True
-
-    @cached_property
-    def render_template(self):
-        return 'cms_articles/articles/%s.html' % self.template
 
 
 
@@ -89,7 +80,10 @@ class ArticlesPlugin(ArticlesPluginBase):
         if self.categories.count():
             articles = articles.filter(categories=self.categories.all())
 
-        return articles.order_by('-publication_date')[:self.number]
+        return articles.order_by('-publication_date')
+
+    def copy_relations(self, oldinstance):
+        self.categories = oldinstance.categories.all()
 
 
 
@@ -102,33 +96,27 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
         return _('last {} articles in this category').format(self.number)
 
     def get_articles(self, context):
-        try:
-            page = self.placeholder.page.get_public_object()
-        except:
+        # no page - no category
+        if self.placeholder.page is None:
             return []
 
+        page = self.placeholder.page.get_draft_object()
         try:
             category = page.cms_articles_category
         except:
             category = Category.objects.create(page=page)
 
-        try:
-            edit_mode = context['request'].toolbar.edit_mode
-        except:
-            edit_mode = False
-
-        if edit_mode:
+        if self.placeholder.page.publisher_is_draft:
             articles = Article.objects.drafts()
         else:
             articles = Article.objects.public().published()
 
         if self.subcategories:
-            if not page.is_home:
-                articles = articles.filter(categories__page__in=page.get_descendants(True))
-            # if page.is_home, take all
+            if not self.placeholder.page.is_home:
+                articles = articles.filter(categories__page__in=self.placeholder.page.get_descendants(True))
+            # if self.placeholder.page.is_home, take all
         else:
             articles = articles.filter(categories=category)
 
-        return articles.order_by('-publication_date')[:self.number]
-
+        return articles.order_by('-publication_date')
 
