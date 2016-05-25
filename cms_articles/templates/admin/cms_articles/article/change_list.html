@@ -23,10 +23,12 @@
 <table id="result_list">
 <thead>
     <tr>
+        {% if not is_popup %}
         <th scope="col" class="action-checkbox-column">
             <div class="text"><span><input id="action-toggle" type="checkbox"></span></div>
             <div class="clear"></div>
-        </th>        
+        </th>
+        {% endif %}
         <th scope="col"><div class="text"><span>{% trans 'Article' %}</span></div><div class="clear"></div></th>
         <th scope="col"><div class="text"><span>{% trans 'Date' %}</span></div><div class="clear"></div></th>
         <th scope="col" width="1%"><div class="text"><span>{% trans 'View' %}</span></div><div class="clear"></div></th>
@@ -39,8 +41,11 @@
 <tbody>
     {% for article in cl.result_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
+        {% if not is_popup %}
         <td class="action-checkbox"><input class="action-select" name="_selected_action" value="{{ article.id }}" type="checkbox"></td>
-        <td><a href="{% url 'admin:cms_articles_article_change' article.id %}">{{ article }}</a></td>
+        {% endif %}
+        <td><a href="{% url 'admin:cms_articles_article_change' article.id %}"
+            {% if is_popup %} onclick="opener.dismissRelatedLookupPopup(window, &#39;{{ article.id }}&#39;); return false;"{% endif %}>{{ article }}</a></td>
         <td>{{ article.creation_date }}</td>
         <td>
             <div class="cms-tree-item cms-tree-item-preview">
@@ -100,7 +105,7 @@
 </table>
 <script type="text/javascript">
 $('.js-cms-tree-tooltip-trigger').click(function(e) {
-    
+
     var triggerCls = '.js-cms-tree-tooltip-trigger';
     var containerCls = '.js-cms-tree-tooltip-container';
     var triggers;
