@@ -154,6 +154,8 @@ class Item(models.Model):
             publication_date = self.pub_date,
             categories  = [ c.category for c in self.categories.exclude(category=None) ],
         )
+        self.article.creation_date = self.post_date
+        self.article.save()
         content = '\n'.join('<p>{}</p>'.format(p) for p in self.content.split('\n\n'))
         add_content(self.article,
             language    = options.language,
@@ -198,6 +200,8 @@ class Item(models.Model):
             parent      = parent,
             publication_date = self.pub_date,
         )
+        self.page.creation_date = self.post_date
+        self.page.save()
         content = '\n'.join('<p>{}</p>'.format(p) for p in self.content.split('\n\n'))
         add_content(self.page,
             language    = options.language,
