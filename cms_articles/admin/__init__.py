@@ -1,1 +1,1 @@
-from . import article, category
+from . import article, category, attribute

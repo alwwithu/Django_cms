@@ -8,6 +8,7 @@ from django.utils.translation import get_language, ugettext_lazy as _
 
 from ..conf import settings
 
+from .attribute import Attribute
 from .category import Category
 from .article import Article
 
@@ -45,9 +46,13 @@ class ArticlesPluginBase(CMSPlugin):
         default     = settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES[0][0],
         help_text=_('The template used to render plugin.'),
     )
+    attributes  = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='+', blank=True)
 
     class Meta:
         abstract = True
+
+    def copy_relations(self, oldinstance):
+        self.attributes = oldinstance.attributes.all()
 
 
 
@@ -80,10 +85,14 @@ class ArticlesPlugin(ArticlesPluginBase):
         if self.categories.count():
             articles = articles.filter(categories=self.categories.all())
 
-        return articles.order_by('-publication_date')
+        if self.attributes.count():
+            articles = articles.filter(attributes=self.attributes.all())
+
+        return articles
 
     def copy_relations(self, oldinstance):
         self.categories = oldinstance.categories.all()
+        super(ArticlesPlugin, self).copy_relations(oldinstance)
 
 
 
@@ -118,5 +127,8 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
         else:
             articles = articles.filter(categories=category)
 
-        return articles.order_by('-publication_date')
+        if self.attributes.count():
+            articles = articles.filter(attributes=self.attributes.all())
+
+        return articles
 

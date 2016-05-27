@@ -16,6 +16,7 @@ from django.utils.translation import get_language, ugettext_lazy as _
 
 from ..conf import settings
 
+from .attribute import Attribute
 from .category import Category
 from .managers import ArticleManager
 
@@ -31,6 +32,7 @@ class Article(models.Model):
     template        = models.CharField(_('template'), max_length=100,
                                 choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
                                 help_text=_('The template used to render the content.'))
+    attributes      = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='articles', blank=True)
     categories      = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='articles', blank=True)
     created_by      = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
     changed_by      = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
@@ -191,6 +193,7 @@ class Article(models.Model):
         target.login_required       = self.login_required
 
     def _copy_relations(self, target):
+        target.attributes           = self.attributes.all()
         target.categories           = self.categories.all()
 
     def delete(self, *args, **kwargs):
@@ -254,16 +257,20 @@ class Article(models.Model):
 
     def is_new_dirty(self):
         if self.pk:
-            fields = ['tree', 'publication_date', 'publication_end_date', 'template', 'login_required']
             try:
                 old_article = Article.objects.get(pk=self.pk)
             except Article.DoesNotExist:
                 return True
+            fields = ['tree', 'publication_date', 'publication_end_date', 'template', 'login_required']
             for field in fields:
                 old_val = getattr(old_article, field)
                 new_val = getattr(self, field)
                 if not old_val == new_val:
                     return True
+            if not self.attributes.all() == old_article.attributes.all():
+                return True
+            if not self.categories.all() == old_article.categories.all():
+                return True
             return False
         return True
 
