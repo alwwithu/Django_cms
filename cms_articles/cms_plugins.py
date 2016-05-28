@@ -12,6 +12,7 @@ class ArticlePlugin(CMSPluginBase):
     module  = _('Articles')
     name    = _('Article')
     model   = ArticlePlugin
+    cache   = False
     text_enabled = True
     raw_id_fields = ['article']
 
@@ -34,6 +35,7 @@ class ArticlesPlugin(CMSPluginBase):
     module  = _('Articles')
     name    = _('Articles')
     model   = ArticlesPlugin
+    cache   = False
     text_enabled = True
 
     def render(self, context, instance, placeholder):
