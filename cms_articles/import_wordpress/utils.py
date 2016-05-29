@@ -7,10 +7,11 @@ from django.utils.timezone import make_aware
 from json import dumps
 from xml.etree.ElementTree import ElementTree
 
+from ..conf import settings
+
 
 if is_installed('django.contrib.redirects'):
     from django.contrib.redirects.models import Redirect
-    from django.contrib.sites.models import Site
     try:
         from urllib.parse import urlparse
     except ImportError:
@@ -18,12 +19,14 @@ if is_installed('django.contrib.redirects'):
     def create_redirect(old_url, new_url):
         old_path = urlparse(old_url).path
         new_path = urlparse(new_url).path
-        if new_path != old_path:
-            return Redirect.objects.get_or_create(
-                site        = Site.objects.get_current(),
+        if old_path != '/' and new_path != old_path:
+            redirect = Redirect.objects.get_or_create(
+                site_id     = settings.SITE_ID,
                 old_path    = urlparse(old_path).path,
-                new_path    = new_path,
             )[0]
+            redirect.new_path = new_path
+            redirect.save()
+            return redirect
 else:
     create_redirect = lambda old_path, new_path: None
 

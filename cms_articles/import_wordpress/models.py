@@ -163,10 +163,14 @@ class Item(models.Model):
             content     = content,
         )
         if options.article_publish:
-            publish_article(
+            self.article = publish_article(
                 article     = self.article,
                 language    = options.language,
+                changed_by  = self.created_by.user or self.created_by.login,
             )
+            public = self.article.get_public_object()
+            public.creation_date = self.pub_date
+            public.save()
         if options.article_redirects:
             create_redirect(self.link, self.article.get_absolute_url())
         self.save()
@@ -210,6 +214,9 @@ class Item(models.Model):
         )
         if options.page_publish:
             self.page.publish(options.language)
+            public = self.page.get_public_object()
+            public.creation_date = self.pub_date
+            public.save()
         if options.page_redirects:
             create_redirect(self.link, self.page.get_absolute_url())
         self.save()
