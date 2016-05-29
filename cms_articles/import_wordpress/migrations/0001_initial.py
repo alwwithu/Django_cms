@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, unique=True, verbose_name='name')),
                 ('language', models.CharField(help_text='The language of the content fields.', max_length=15, verbose_name='language')),
                 ('article_template', models.CharField(choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0], max_length=100, verbose_name='template')),
-                ('article_slot', models.CharField(default='content', help_text='The name of placeholder used to create content plugins in.', max_length=255, verbose_name='slot')),
+                ('article_slot', models.CharField(default=settings.CMS_ARTICLES_SLOT, help_text='The name of placeholder used to create content plugins in.', max_length=255, verbose_name='slot')),
                 ('article_redirects', models.BooleanField(default=True, help_text='Create django redirects for each article from the old path to the new imported path', verbose_name='create redirects')),
                 ('article_publish', models.BooleanField(default=False, help_text='Publish imported articles.', verbose_name='publish')),
                 ('page_template', models.CharField(choices=Page.template_choices, default=Page.TEMPLATE_DEFAULT, max_length=100, verbose_name='template')),

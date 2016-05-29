@@ -56,10 +56,11 @@ from cms.utils.conf import get_cms_setting
 from cms.utils.helpers import find_placeholder_relation, current_site
 from cms.utils.urlutils import add_url_parameters, admin_reverse
 
+from ..api import add_content
 from ..conf import settings
 from ..models import Article, Title
 
-from .forms import ArticleForm, PublicationDatesForm
+from .forms import ArticleForm, ArticleCreateForm, PublicationDatesForm
 
 require_POST = method_decorator(require_POST)
 
@@ -70,11 +71,15 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     date_hierarchy  = ('creation_date')
     filter_horizontal = ['attributes', 'categories']
 
-    fieldsets       = [
-        (None, {'fields': ['tree', 'template']}),
-        (_('Language dependent settings'), {'fields': ['title', 'slug', 'description', 'page_title', 'menu_title', 'meta_description', 'image']}),
-        (_('Other settings'), {'fields': ['attributes', 'categories', 'publication_date', 'publication_end_date', 'login_required']}),
-    ]
+    def get_fieldsets(self, request, obj=None):
+        language_dependent = ['title', 'slug', 'description', 'content', 'page_title', 'menu_title', 'meta_description', 'image']
+        if obj:
+            language_dependent.remove('content')
+        return [
+            (None, {'fields': ['tree', 'template']}),
+            (_('Language dependent settings'), {'fields': language_dependent}),
+            (_('Other settings'), {'fields': ['attributes', 'categories', 'publication_date', 'publication_end_date', 'login_required']}),
+        ]
 
     def get_urls(self):
         """Get the admin urls
@@ -99,6 +104,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         )
 
     def save_model(self, request, obj, form, change):
+        new = obj.id is None
         super(ArticleAdmin, self).save_model(request, obj, form, change)
         Title.objects.set_or_create(
             request,
@@ -106,6 +112,12 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             form,
             form.cleaned_data['language'],
         )
+        if new:
+            add_content(obj,
+                language    = form.cleaned_data['language'],
+                slot        = settings.CMS_ARTICLES_SLOT,
+                content     = form.cleaned_data['content'],
+            )
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -113,7 +125,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         the request.
         """
         language = get_language_from_request(request)
-        form = super(ArticleAdmin, self).get_form(request, obj, form=ArticleForm, **kwargs)
+        form = super(ArticleAdmin, self).get_form(request, obj, form=(obj and ArticleForm or ArticleCreateForm), **kwargs)
         # get_form method operates by overriding initial fields value which
         # may persist across invocation. Code below deepcopies fields definition
         # to avoid leaks

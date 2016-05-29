@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _, get_language
+from djangocms_text_ckeditor.fields import HTMLFormField
 
 from ..conf import settings
 from ..models import Article, Title, EmptyTitle
@@ -62,6 +63,12 @@ class ArticleForm(forms.ModelForm):
             now = self.instance.creation_date or now(),
             slug = slug,
         )
+
+
+
+class ArticleCreateForm(ArticleForm):
+    content = HTMLFormField(label=_('Text'), help_text=_('Initial content of the article.'))
+
 
 
 class PublicationDatesForm(forms.ModelForm):

@@ -286,7 +286,7 @@ class Options(models.Model):
     article_template = models.CharField(_('template'), max_length = 100,
                         choices=settings.CMS_ARTICLES_TEMPLATES,
                         default=settings.CMS_ARTICLES_TEMPLATES[0][0])
-    article_slot    = models.CharField(_('slot'), max_length=255, default='content',
+    article_slot    = models.CharField(_('slot'), max_length=255, default=settings.CMS_ARTICLES_SLOT,
                         help_text=_('The name of placeholder used to create content plugins in.'))
     article_folder  = FilerFolderField(verbose_name=_('attachments folder'),
                         related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
