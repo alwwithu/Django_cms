@@ -112,7 +112,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             form,
             form.cleaned_data['language'],
         )
-        if new:
+        if new and form.cleaned_data['content']:
             add_content(obj,
                 language    = form.cleaned_data['language'],
                 slot        = settings.CMS_ARTICLES_SLOT,

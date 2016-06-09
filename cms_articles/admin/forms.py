@@ -67,7 +67,7 @@ class ArticleForm(forms.ModelForm):
 
 
 class ArticleCreateForm(ArticleForm):
-    content = HTMLFormField(label=_('Text'), help_text=_('Initial content of the article.'))
+    content = HTMLFormField(label=_('Text'), help_text=_('Initial content of the article.'), required=False)
 
 
 
