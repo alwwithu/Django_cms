@@ -78,7 +78,6 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
     """
     The `article_lookup` argument can be of any of the following types:
     - Integer: interpreted as `pk` of the desired article
-    - String: interpreted as `reverse_id` of the desired article
     - `dict`: a dictionary containing keyword arguments to find the desired article
     (for instance: `{'pk': 1}`)
     - `Article`: you can also pass a Article object directly, in which case there will be no database lookup.
@@ -433,8 +432,6 @@ class ArticleAttribute(AsTag):
     Example
          {# Output current article's page_title attribute: #}
          {% article_attribute "page_title" %}
-         {# Output page_title attribute of the article with reverse_id "the_article": #}
-         {% article_attribute "page_title" "the_article" %}
          {# Output slug attribute of the article with pk 10: #}
          {% article_attribute "slug" 10 %}
          {# Assign page_title attribute to a variable: #}
@@ -553,7 +550,7 @@ class ShowArticlePlaceholderById(InclusionTag):
 
     options = Options(
         Argument('placeholder_name'),
-        Argument('reverse_id'),
+        Argument('article_id'),
         Argument('lang', required=False, default=None),
         Argument('site', required=False, default=None),
     )
@@ -561,14 +558,14 @@ class ShowArticlePlaceholderById(InclusionTag):
     def get_context(self, *args, **kwargs):
         return _show_placeholder_for_article(**self.get_kwargs(*args, **kwargs))
 
-    def get_kwargs(self, context, placeholder_name, reverse_id, lang, site):
+    def get_kwargs(self, context, placeholder_name, article_id, lang, site):
         cache_result = True
         if 'preview' in context['request'].GET:
             cache_result = False
         return {
             'context': context,
             'placeholder_name': placeholder_name,
-            'article_lookup': reverse_id,
+            'article_lookup': article_id,
             'lang': lang,
             'site': site,
             'cache_result': cache_result
