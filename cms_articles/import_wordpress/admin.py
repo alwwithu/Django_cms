@@ -170,7 +170,7 @@ class ItemAdmin(admin.ModelAdmin):
         if obj.article or obj.page:
             url = (obj.article or obj.page).get_absolute_url()
         elif obj.file:
-            url = obj.file
+            url = obj.file.file.url
         elif obj.folder:
             url = obj.folder.get_admin_directory_listing_url_path()
         if url:
