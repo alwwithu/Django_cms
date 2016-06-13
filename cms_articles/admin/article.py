@@ -68,7 +68,7 @@ require_POST = method_decorator(require_POST)
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     search_fields   = ('=id', 'title_set__slug', 'title_set__title')
     list_filter     = ['tree', 'attributes', 'categories', 'template', 'changed_by']
-    date_hierarchy  = ('creation_date')
+    date_hierarchy  = ('order_date')
     filter_horizontal = ['attributes', 'categories']
 
     def get_fieldsets(self, request, obj=None):

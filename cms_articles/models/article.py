@@ -42,6 +42,7 @@ class Article(models.Model):
                                 help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
     publication_end_date    = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True,
                                 help_text=_('When to expire the article. Leave empty to never expire.'))
+    order_date      = models.DateTimeField(auto_now_add=True, editable=False)
     login_required  = models.BooleanField(_('login required'), default=False)
 
     # Placeholders (plugins)
@@ -63,7 +64,7 @@ class Article(models.Model):
         app_label           = 'cms_articles'
         verbose_name        = _('article')
         verbose_name_plural = _('articles')
-        ordering            = ('-creation_date',)
+        ordering            = ('-order_date',)
 
     def __str__(self):
         try:
@@ -236,6 +237,8 @@ class Article(models.Model):
             self.changed_by = 'script'
         if created:
             self.created_by = self.changed_by
+
+        self.order_date = self.publication_date or self.creation_date
 
         if commit:
             super(Article, self).save(**kwargs)

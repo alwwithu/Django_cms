@@ -46,7 +46,7 @@
         {% endif %}
         <td><a href="{% url 'admin:cms_articles_article_change' article.id %}"
             {% if is_popup %} onclick="opener.dismissRelatedLookupPopup(window, &#39;{{ article.id }}&#39;); return false;"{% endif %}>{{ article }}</a></td>
-        <td>{{ article.creation_date }}</td>
+        <td>{{ article.order_date }}</td>
         <td>
             <div class="cms-tree-item cms-tree-item-preview">
                 <a href="{% url 'admin:cms_articles_article_preview_article' article.id language %}"{% if language in article.languages %} target="_top"{% endif %} title="{% trans "View on site" %}">
