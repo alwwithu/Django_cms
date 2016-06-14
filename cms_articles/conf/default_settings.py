@@ -26,3 +26,4 @@ CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES = [
 # the main slot for initial content to be stored in
 CMS_ARTICLES_SLOT = 'content'
 
+CMS_ARTICLES_USE_HAYSTACK = True
