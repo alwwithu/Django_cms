@@ -18,7 +18,6 @@ from cms.cache.page import get_page_cache
 from cms.models import Page
 from cms.page_rendering import _handle_no_page, render_page
 from cms.utils import get_language_code, get_language_from_request, get_cms_setting
-from cms.utils.compat import DJANGO_1_7
 from cms.utils.i18n import (get_fallback_languages, force_language, get_public_languages,
                             get_redirect_on_fallback, get_language_list,
                             is_language_prefix_patterns_used)
@@ -146,10 +145,7 @@ def article(request, slug):
         request.toolbar.set_object(article)
 
     # fill the context
-    if DJANGO_1_7:
-        context = RequestContext(request)
-    else:
-        context = {}
+    context = {}
     context['article'] = article
     context['lang'] = current_language
     context['current_article'] = article

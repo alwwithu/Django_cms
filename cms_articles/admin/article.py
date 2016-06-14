@@ -11,8 +11,6 @@ import warnings
 
 from django.utils.formats import localize
 
-from cms.utils.compat import DJANGO_1_7
-
 import django
 from django.contrib.admin.helpers import AdminForm
 from django.conf.urls import url
@@ -352,28 +350,16 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             'using': using
         }
 
-        if DJANGO_1_7:
-            deleted_objects, perms_needed = get_deleted_objects(
-                [titleobj],
-                titleopts,
-                **kwargs
-            )[:2]
-            to_delete_plugins, perms_needed_plugins = get_deleted_objects(
-                saved_plugins,
-                pluginopts,
-                **kwargs
-            )[:2]
-        else:
-            deleted_objects, __, perms_needed = get_deleted_objects(
-                [titleobj],
-                titleopts,
-                **kwargs
-            )[:3]
-            to_delete_plugins, __, perms_needed_plugins = get_deleted_objects(
-                saved_plugins,
-                pluginopts,
-                **kwargs
-            )[:3]
+        deleted_objects, __, perms_needed = get_deleted_objects(
+            [titleobj],
+            titleopts,
+            **kwargs
+        )[:3]
+        to_delete_plugins, __, perms_needed_plugins = get_deleted_objects(
+            saved_plugins,
+            pluginopts,
+            **kwargs
+        )[:3]
 
         deleted_objects.append(to_delete_plugins)
         perms_needed = set(list(perms_needed) + list(perms_needed_plugins))
