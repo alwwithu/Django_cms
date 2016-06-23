@@ -186,7 +186,7 @@ class ArticlePlaceholder(Tag):
         content = ''
         try:
             content = get_placeholder_content(context, request, article, name, nodelist)
-        except Placeholder.NotFound:
+        except Placeholder.DoesNotExist:
             if nodelist:
                 return nodelist.render(context)
         if not content:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-29 16:09+0200\n"
+"POT-Creation-Date: 2016-06-23 09:44+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -17,84 +17,84 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: admin/article.py:80
+#: admin/article.py:78
 msgid "Language dependent settings"
 msgstr "Jazykově závislá nastavení"
 
-#: admin/article.py:81
+#: admin/article.py:79
 msgid "Other settings"
 msgstr "Ostatní nastevení"
 
-#: admin/article.py:230
+#: admin/article.py:228
 msgid "You do not have permission to publish this article"
 msgstr "Nemáte oprávnění publikovat tento článek"
 
-#: admin/article.py:245
+#: admin/article.py:243
 msgid "The content was successfully published."
 msgstr "Obsah byl úspěšně publikován."
 
-#: admin/article.py:254
+#: admin/article.py:252
 msgid "There was a problem publishing your content"
 msgstr "Nastal problém při publikování obsahu"
 
-#: admin/article.py:286
+#: admin/article.py:284
 msgid "You do not have permission to unpublish this article"
 msgstr "Nemáte oprávnění depublikovat tento článek"
 
-#: admin/article.py:288
+#: admin/article.py:286
 msgid "This article was never published"
 msgstr "Článek nebyl nikdy publikován"
 
-#: admin/article.py:291
+#: admin/article.py:289
 #, python-format
 msgid "The %(language)s article \"%(article)s\" was successfully unpublished"
 msgstr ""
 "Překlad do jazyka %(language)s článku \"%(article)s\" byl úspěšně "
 "depublikován"
 
-#: admin/article.py:333
+#: admin/article.py:331
 msgid "You do not have permission to change this article"
 msgstr "Nemáte oprávnění upravovat tento článek"
 
-#: admin/article.py:337
+#: admin/article.py:335
 #, python-format
 msgid "%(name)s object with primary key %(key)r does not exist."
 msgstr "Objekt typu %(name)s s id %(key)r neexistuje."
 
-#: admin/article.py:343
+#: admin/article.py:341
 msgid "There only exists one translation for this article"
 msgstr "Existuje pouze jeden překlad tohoto článku"
 
-#: admin/article.py:385
+#: admin/article.py:371
 #, python-format
 msgid "Title and plugins with language %(language)s was deleted"
 msgstr "Obsah pro jazyk %(language)s byl odstraněn"
 
-#: admin/article.py:404
+#: admin/article.py:390
 msgid "Are you sure?"
 msgstr "Jste si jisti?"
 
-#: admin/forms.py:22 admin/forms.py:75
+#: admin/forms.py:22 admin/forms.py:75 forms.py:75
 msgid "Language"
 msgstr "Jazyk"
 
-#: admin/forms.py:23 admin/forms.py:76
+#: admin/forms.py:23 admin/forms.py:76 forms.py:23 forms.py:76
 msgid "The current language of the content fields."
 msgstr "Aktuální jazyk obsahu."
 
-#: admin/forms.py:54
+#: admin/forms.py:54 forms.py:54
 msgid "Another article with this slug already exists"
 msgstr "Článek s tímto identifikátorem již existuje"
 
-#: admin/forms.py:61
+#: admin/forms.py:61 forms.py:61
 msgid "Slug must not be empty."
 msgstr "Identifikátor nesmí být prázdný."
 
-#: admin/forms.py:70
+#: admin/forms.py:70 forms.py:70
 msgid "Text"
 msgstr "Text"
 
-#: admin/forms.py:70
+#: admin/forms.py:70 forms.py:70
 msgid "Initial content of the article."
 msgstr "Počáteční text článku."
 
@@ -304,7 +304,7 @@ msgid "category"
 msgstr "kategorie"
 
 #: import_wordpress/models.py:69 import_wordpress/models.py:89
-#: models/article.py:36 models/category.py:18 models/plugins.py:67
+#: models/article.py:36 models/category.py:18 models/plugins.py:83
 msgid "categories"
 msgstr "kategorie"
 
@@ -397,7 +397,7 @@ msgstr "jazyk"
 msgid "The language of the content fields."
 msgstr "Jazyk obsahu."
 
-#: import_wordpress/models.py:279 models/article.py:26 models/plugins.py:61
+#: import_wordpress/models.py:279 models/article.py:26
 msgid "tree"
 msgstr "strom"
 
@@ -564,15 +564,15 @@ msgstr ""
 "Do kdy má být článek veřejně dostupný. Ponechte prázdné, pokud chcete, aby "
 "byl dostupný navždy."
 
-#: models/article.py:45
+#: models/article.py:46
 msgid "login required"
 msgstr "vyžadovat přihlášení"
 
-#: models/article.py:64 models/plugins.py:18 models/title.py:24
+#: models/article.py:65 models/plugins.py:18 models/title.py:24
 msgid "article"
 msgstr "článek"
 
-#: models/article.py:65
+#: models/article.py:66
 msgid "articles"
 msgstr "články"
 
@@ -596,27 +596,24 @@ msgstr "Šablone použitá k zobrazení obsahu."
 msgid "Number of last articles"
 msgstr "Počet zobrazených článků"
 
-#: models/plugins.py:62
-msgid ""
-"Keep empty to show articles from current page, if current page is a tree."
-msgstr ""
-"Ponechte prázdné pro zobrazení článků z aktuální stránky, pokud je aktuální "
-"stránka stromem."
+#: models/plugins.py:77
+msgid "trees"
+msgstr "stromy"
 
-#: models/plugins.py:70
+#: models/plugins.py:86
 msgid "last {} articles"
 msgstr "posledních {} článků"
 
-#: models/plugins.py:101
+#: models/plugins.py:107
 msgid "include sub-categories"
 msgstr "zahrnout podkategorie"
 
-#: models/plugins.py:102
+#: models/plugins.py:108
 msgid ""
 "Check, if you want to include articles from sub-categories of this category."
 msgstr "Zaškrtněte, pokud chcete zahrnout články z podkategorií."
 
-#: models/plugins.py:105
+#: models/plugins.py:111
 msgid "last {} articles in this category"
 msgstr "posledních {} článků v této kategorii"
 
@@ -726,12 +723,12 @@ msgstr "předchozí"
 msgid "next"
 msgstr "další"
 
-#: templatetags/cms_articles.py:112
+#: templatetags/cms_articles.py:81
 #, python-format
 msgid "Article not found on %(domain)s"
 msgstr "Článek nebyl v doméně %(domain)s nalezen"
 
-#: templatetags/cms_articles.py:113
+#: templatetags/cms_articles.py:82
 #, python-format
 msgid ""
 "A template tag couldn't find the article with lookup arguments `"

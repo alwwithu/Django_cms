@@ -54,12 +54,28 @@ class ArticlesPluginBase(CMSPlugin):
     def copy_relations(self, oldinstance):
         self.attributes = oldinstance.attributes.all()
 
+    def get_articles(self, context):
+        try:
+            edit_mode = context['request'].toolbar.edit_mode
+        except:
+            edit_mode = False
+
+        if edit_mode:
+            articles = Article.objects.drafts()
+        else:
+            articles = Article.objects.public().published()
+
+        if self.attributes.count():
+            articles = articles.filter(attributes=self.attributes.all())
+
+        return articles
+
 
 
 @python_2_unicode_compatible
 class ArticlesPlugin(ArticlesPluginBase):
-    tree        = models.ForeignKey(Page, verbose_name=_('tree'), related_name='+', blank=True, null=True,
-                    help_text=_('Keep empty to show articles from current page, if current page is a tree.'), limit_choices_to={
+    trees       = models.ManyToManyField(Page, verbose_name=_('trees'), related_name='+', blank=True,
+                    limit_choices_to={
                         'publisher_is_draft': False,
                         'application_urls': 'CMSArticlesApp',
                         'site_id':  settings.SITE_ID,
@@ -70,23 +86,13 @@ class ArticlesPlugin(ArticlesPluginBase):
         return _('last {} articles').format(self.number)
 
     def get_articles(self, context):
-        tree = self.tree or self.placeholder.page
+        articles = super(ArticlesPlugin, self).get_articles(context)
 
-        try:
-            edit_mode = context['request'].toolbar.edit_mode
-        except:
-            edit_mode = False
-
-        if edit_mode:
-            articles = Article.objects.drafts().filter(tree=tree.get_public_object())
-        else:
-            articles = Article.objects.public().published().filter(tree=tree)
+        if self.trees.count():
+            articles = articles.filter(tree__in=self.trees.all())
 
         if self.categories.count():
             articles = articles.filter(categories=self.categories.all())
-
-        if self.attributes.count():
-            articles = articles.filter(attributes=self.attributes.all())
 
         return articles
 
@@ -115,10 +121,7 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
         except:
             category = Category.objects.create(page=page)
 
-        if self.placeholder.page.publisher_is_draft:
-            articles = Article.objects.drafts()
-        else:
-            articles = Article.objects.public().published()
+        articles = super(ArticlesPlugin, self).get_articles(context)
 
         if self.subcategories:
             if not self.placeholder.page.is_home:
@@ -126,9 +129,6 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
             # if self.placeholder.page.is_home, take all
         else:
             articles = articles.filter(categories=category)
-
-        if self.attributes.count():
-            articles = articles.filter(attributes=self.attributes.all())
 
         return articles
 
