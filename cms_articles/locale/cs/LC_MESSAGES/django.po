@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-23 09:44+0200\n"
+"POT-Creation-Date: 2016-06-27 00:22+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -74,27 +74,27 @@ msgstr "Obsah pro jazyk %(language)s byl odstraněn"
 msgid "Are you sure?"
 msgstr "Jste si jisti?"
 
-#: admin/forms.py:22 admin/forms.py:75 forms.py:75
+#: admin/forms.py:22 admin/forms.py:75
 msgid "Language"
 msgstr "Jazyk"
 
-#: admin/forms.py:23 admin/forms.py:76 forms.py:23 forms.py:76
+#: admin/forms.py:23 admin/forms.py:76
 msgid "The current language of the content fields."
 msgstr "Aktuální jazyk obsahu."
 
-#: admin/forms.py:54 forms.py:54
+#: admin/forms.py:54
 msgid "Another article with this slug already exists"
 msgstr "Článek s tímto identifikátorem již existuje"
 
-#: admin/forms.py:61 forms.py:61
+#: admin/forms.py:61
 msgid "Slug must not be empty."
 msgstr "Identifikátor nesmí být prázdný."
 
-#: admin/forms.py:70 forms.py:70
+#: admin/forms.py:70
 msgid "Text"
 msgstr "Text"
 
-#: admin/forms.py:70 forms.py:70
+#: admin/forms.py:70
 msgid "Initial content of the article."
 msgstr "Počáteční text článku."
 
@@ -106,17 +106,17 @@ msgstr "django CMS Články"
 msgid "Articles tree"
 msgstr "Strom článků"
 
-#: cms_plugins.py:12 cms_plugins.py:35 cms_plugins.py:36 cms_toolbars.py:19
+#: cms_plugins.py:14 cms_plugins.py:37 cms_plugins.py:38 cms_toolbars.py:19
 #: cms_toolbars.py:21
 msgid "Articles"
 msgstr "Články"
 
-#: cms_plugins.py:13 cms_toolbars.py:24
+#: cms_plugins.py:15 cms_toolbars.py:24
 #: templates/admin/cms_articles/article/change_list.html:32
 msgid "Article"
 msgstr "Článek"
 
-#: cms_plugins.py:68
+#: cms_plugins.py:81
 msgid "Articles category"
 msgstr "Kategorie článků"
 
@@ -722,6 +722,10 @@ msgstr "předchozí"
 #: templates/cms_articles/articles/default.html:18
 msgid "next"
 msgstr "další"
+
+#: templates/cms_articles/articles/default.html:23
+msgid "Archive"
+msgstr "Archiv"
 
 #: templatetags/cms_articles.py:81
 #, python-format

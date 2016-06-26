@@ -5,7 +5,6 @@ from platform import python_version
 
 import django
 from django import template
-from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import mail_managers
 from django.middleware.common import BrokenLinkEmailsMiddleware
@@ -35,6 +34,7 @@ from menus.base import NavigationNode
 
 from sekizai.helpers import Watcher
 
+from ..conf import settings
 from ..models import Article
 
 DJANGO_VERSION = django.get_version()
@@ -454,4 +454,13 @@ class ShowArticleBreadcrumb(ShowBreadcrumb):
         return context
 
 register.tag(ShowArticleBreadcrumb)
+
+
+
+@register.simple_tag(takes_context = True)
+def url_page(context, page):
+    get = context['request'].GET.copy()
+    get[settings.CMS_ARTICLES_PAGE_FIELD] = page
+    return '{}?{}'.format(context['request'].path, get.urlencode())
+
 

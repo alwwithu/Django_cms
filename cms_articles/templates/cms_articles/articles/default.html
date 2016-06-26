@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n cms_articles %}
 
 {% for article in articles %}
 {% include 'cms_articles/article_preview.html' %}
@@ -7,7 +7,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if articles.has_previous %}
-            <a href="?page={{ articles.previous_page_number }}">{% trans 'previous' %}</a>
+            <a href="{% url_page articles.previous_page_number %}">{% trans 'previous' %}</a>
         {% endif %}
 
         <span class="current">
@@ -15,8 +15,27 @@
         </span>
 
         {% if articles.has_next %}
-            <a href="?page={{ articles.next_page_number }}">{% trans 'next' %}</a>
+            <a href="{% url_page articles.next_page_number %}">{% trans 'next' %}</a>
         {% endif %}
     </span>
 </div>
+
+<h3>{% trans 'Archive' %}</h3>
+
+<ul class="archive_years">
+    {% for year_archive in archive.years %}
+    <li>
+        <a href="{{ year_archive.url }}">{{ year_archive.year }}</a>
+        {% if year_archive.active %}
+        <ul class="archive_months">
+            {% for month_archive in year_archive.months %}
+            <li>
+                <a href="{{ month_archive.url }}">{{ month_archive.date|date:"F Y" }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 

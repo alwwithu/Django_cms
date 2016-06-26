@@ -5,6 +5,8 @@ from cms.plugin_pool import plugin_pool
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 
+from .archive import Archive
+from .conf import settings
 from .models import ArticlePlugin, ArticlesPlugin, ArticlesCategoryPlugin
 
 
@@ -39,19 +41,30 @@ class ArticlesPlugin(CMSPluginBase):
     text_enabled = True
 
     def render(self, context, instance, placeholder):
-        articles    = instance.get_articles(context)
-        paginator   = Paginator(articles, instance.number)
+        # get articles based on plugin settings
+        articles = instance.get_articles(context)
+
+        # provide archive
+        archive = Archive(articles, context['request'])
+
+        # filter articles based on query
+        articles = archive.filter_articles()
+
+        # paginate articles
+        paginator = Paginator(articles, instance.number)
         try:
-            articles = paginator.page(context['request'].GET.get('page', 1))
+            articles = paginator.page(context['request'].GET.get(settings.CMS_ARTICLES_PAGE_FIELD, 1))
         except PageNotAnInteger:
             # If page is not an integer, deliver first page.
             articles = paginator.page(1)
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
             articles = paginator.page(paginator.num_pages)
+        articles.page_field = settings.CMS_ARTICLES_PAGE_FIELD
 
         context.update({
             'plugin':       instance,
+            'archive':      archive,
             'articles':     articles,
             'placeholder':  placeholder,
         })
