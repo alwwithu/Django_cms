@@ -1,3 +1,23 @@
-.app-cms_articles.model-article #changelist-form .results {
-    overflow-x: visible;
+th.column-view,
+th[class*="column-lang_"] {
+    width: 1%;
+    text-align: center;
 }
+td.field-view,
+td[class*="field-lang_"] {
+    text-align: center;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+.cms-pagetree-dropdown-menu-open {
+    display: block;
+}
+.cms-hover-tooltip {z-index: auto;}

@@ -33,6 +33,7 @@ from django.db import router, transaction
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.template import Context, Template
 from django.template.defaultfilters import escape
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import unquote
@@ -54,6 +55,8 @@ from cms.utils.conf import get_cms_setting
 from cms.utils.helpers import find_placeholder_relation, current_site
 from cms.utils.urlutils import add_url_parameters, admin_reverse
 
+from threading import local
+
 from ..api import add_content
 from ..conf import settings
 from ..models import Article, Title
@@ -62,12 +65,113 @@ from .forms import ArticleForm, ArticleCreateForm, PublicationDatesForm
 
 require_POST = method_decorator(require_POST)
 
+_thread_locals = local()
+
 
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     search_fields   = ('=id', 'title_set__slug', 'title_set__title')
+    list_display    = ('__str__', 'order_date')
+    list_display    += tuple('lang_{}'.format(lang) for lang in get_language_list())
     list_filter     = ['tree', 'attributes', 'categories', 'template', 'changed_by']
     date_hierarchy  = ('order_date')
     filter_horizontal = ['attributes', 'categories']
+
+    @property
+    def media(self):
+        media = super(ArticleAdmin, self).media
+        css = {
+            'all': (
+                'cms/css/cms.base.css',
+                'cms/css/cms.pagetree.css',
+                'cms_articles/css/changelist.css',
+            )
+        }
+        media.add_css(css)
+        js = (
+            'cms/js/dist/bundle.admin.base.min.js',
+            'cms/js/dist/bundle.admin.pagetree.min.js',
+        )
+        media.add_js(js)
+        return media
+
+    lang_template = Template('''
+{% load i18n admin_list admin_static admin_urls cms_admin cms_static %}
+<div class="cms-tree-item-lang">
+    <div class="cms-tree-item-inner cms-pagetree-dropdown{% if has_change_permission or has_publish_permission %} js-cms-pagetree-dropdown{% endif %}">
+        {% if has_change_permission or has_publish_permission %}
+            <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}"
+                class="cms-pagetree-dropdown-trigger js-cms-pagetree-dropdown-trigger"
+                {# INFO: delegate click event to parent window when in sideframe #}
+                {% if lang in article.languages %} target="_top"{% endif %}>
+                {# INFO: renders <span class="{cls}" title="{title}"></span> #}
+                {% tree_publish_row article lang %}
+            </a>
+            <div class="cms-pagetree-dropdown-menu cms-pagetree-dropdown-menu-arrow-right-top js-cms-pagetree-dropdown-menu">
+                <ul class="cms-pagetree-dropdown-menu-inner">
+                    {% if lang in article.languages %}
+                        {% if has_change_permission %}
+                            <li>
+                                <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}" target="_top">
+                                    <span class="cms-icon cms-icon-pencil" title="{% blocktrans with lang|upper as language %}Edit article in language {{ language }}{% endblocktrans %}"></span>
+                                    {% trans "Edit" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if has_publish_permission %}
+                            {% if article|is_dirty:lang or not article|is_published:lang %}
+                                <li>
+                                    <a href="{% url 'admin:cms_articles_article_publish_article' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                        <span class="cms-icon cms-icon-check-o"></span>
+                                        <span>{% trans "Publish" %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if article|is_published:lang %}
+                                <li>
+                                    <a href="{% url 'admin:cms_articles_article_unpublish' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                        <span class="cms-icon cms-icon-forbidden"></span>
+                                        <span>{% trans "Unpublish" %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if has_change_permission %}
+                        <li>
+                            <a href="{% url 'admin:cms_articles_article_change' article.id %}?language={{ lang }}">
+                                <span class="cms-icon cms-icon-cogs"></span>
+                                <span>{% if lang in article.languages %}{% trans "Settings" %}{% else %}{% trans "Translate" %}{% endif %}</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% else %}
+            <span class="cms-tree-lang-container">
+                {% tree_publish_row article lang %}
+            </span>
+        {% endif %}
+    </div>
+</div>
+    ''')
+    def __getattr__(self, name):
+        if name.startswith('lang_'):
+            lang = name[len('lang_'):]
+            def lang_dropdown(obj):
+                return self.lang_template.render(Context({
+                    'article': obj,
+                    'lang': lang,
+                    'language': _thread_locals.language,
+                    'has_change_permission': obj.has_change_permission(_thread_locals.request),
+                    'has_publish_permission': obj.has_publish_permission(_thread_locals.request),
+                    #'has_change_permission': False,
+                    #'has_publish_permission': False,
+                    'request': _thread_locals.request,
+                }))
+            lang_dropdown.short_description = lang
+            lang_dropdown.allow_tags = True
+            return lang_dropdown
+        raise AttributeError(name)
 
     def get_fieldsets(self, request, obj=None):
         language_dependent = ['title', 'slug', 'description', 'content', 'page_title', 'menu_title', 'meta_description', 'image']
@@ -136,19 +240,17 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         if obj:
             title_obj = obj.get_title_obj(language=language, fallback=False, force_reload=True)
 
-            for name in ('title', 'description', 'page_title', 'menu_title', 'meta_description', 'image'):
-                if name in form.base_fields:
-                    form.base_fields[name].initial = getattr(title_obj, name)
-            try:
-                slug = re.search(settings.CMS_ARTICLES_SLUG_REGEXP, title_obj.slug).groups()[0]
-            except:
-                warnings.warn('Failed to parse slug from CMS_ARTICLES_SLUG_REGEXP. '
-                              'It probably doesn\'t correspond to CMS_ARTICLES_SLUG_FORMAT.')
-                slug = title_obj.slug
-            form.base_fields['slug'].initial = slug
-        else:
-            for name in ('slug', 'title'):
-                form.base_fields[name].initial = u''
+            if hasattr(title_obj, 'id'):
+                for name in ('title', 'description', 'page_title', 'menu_title', 'meta_description', 'image'):
+                    if name in form.base_fields:
+                        form.base_fields[name].initial = getattr(title_obj, name)
+                try:
+                    slug = re.search(settings.CMS_ARTICLES_SLUG_REGEXP, title_obj.slug).groups()[0]
+                except:
+                    warnings.warn('Failed to parse slug from CMS_ARTICLES_SLUG_REGEXP. '
+                                  'It probably doesn\'t correspond to CMS_ARTICLES_SLUG_FORMAT.')
+                    slug = title_obj.slug
+                form.base_fields['slug'].initial = slug
 
         return form
 
@@ -169,10 +271,8 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         return {'unihandecode_lang': uhd_lang, 'unihandecode_urls': uhd_urls}
 
     def changelist_view(self, request, extra_context=None):
-        extra_context = self.update_language_tab_context(request, context=extra_context)
-        extra_context['has_change_permission'] = request.user.has_perm('{}.change_article'.format(self.model._meta.app_label))
-        extra_context['has_delete_permission'] = request.user.has_perm('{}.delete_article'.format(self.model._meta.app_label))
-        extra_context['has_publish_permission'] = request.user.has_perm('{}.publish_article'.format(self.model._meta.app_label))
+        _thread_locals.request = request
+        _thread_locals.language = get_language_from_request(request)
         return super(ArticleAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def add_view(self, request, form_url='', extra_context=None):

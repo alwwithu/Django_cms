@@ -59,7 +59,7 @@ class Article(models.Model):
 
     class Meta:
         permissions = (
-            ('publish_article', 'Can publish page'),
+            ('publish_article', 'Can publish article'),
         )
         app_label           = 'cms_articles'
         verbose_name        = _('article')
@@ -539,10 +539,6 @@ class Article(models.Model):
         if not user:
             user = request.user
         return user.has_perm('cms_articles.change_article')
-
-    def has_view_permission(self, request, user=None):
-        # TODO
-        return True
 
     def has_delete_permission(self, request, user=None):
         if not user:

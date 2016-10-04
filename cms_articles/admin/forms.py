@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _, get_language
 from djangocms_text_ckeditor.fields import HTMLFormField
 
 from ..conf import settings
-from ..models import Article, Title, EmptyTitle
+from ..models import Article, Title
 from ..utils import is_valid_article_slug
 
 
