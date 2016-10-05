@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 00:22+0200\n"
+"POT-Creation-Date: 2016-10-05 02:36+0200\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -17,60 +17,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: admin/article.py:78
+#: admin/article.py:124
 msgid "Language dependent settings"
 msgstr "Jazykově závislá nastavení"
 
-#: admin/article.py:79
+#: admin/article.py:125
 msgid "Other settings"
 msgstr "Ostatní nastevení"
 
-#: admin/article.py:228
+#: admin/article.py:270
 msgid "You do not have permission to publish this article"
 msgstr "Nemáte oprávnění publikovat tento článek"
 
-#: admin/article.py:243
+#: admin/article.py:285
 msgid "The content was successfully published."
 msgstr "Obsah byl úspěšně publikován."
 
-#: admin/article.py:252
+#: admin/article.py:294
 msgid "There was a problem publishing your content"
 msgstr "Nastal problém při publikování obsahu"
 
-#: admin/article.py:284
+#: admin/article.py:326
 msgid "You do not have permission to unpublish this article"
 msgstr "Nemáte oprávnění depublikovat tento článek"
 
-#: admin/article.py:286
+#: admin/article.py:328
 msgid "This article was never published"
 msgstr "Článek nebyl nikdy publikován"
 
-#: admin/article.py:289
+#: admin/article.py:331
 #, python-format
 msgid "The %(language)s article \"%(article)s\" was successfully unpublished"
 msgstr ""
 "Překlad do jazyka %(language)s článku \"%(article)s\" byl úspěšně "
 "depublikován"
 
-#: admin/article.py:331
+#: admin/article.py:373
 msgid "You do not have permission to change this article"
 msgstr "Nemáte oprávnění upravovat tento článek"
 
-#: admin/article.py:335
+#: admin/article.py:377
 #, python-format
 msgid "%(name)s object with primary key %(key)r does not exist."
 msgstr "Objekt typu %(name)s s id %(key)r neexistuje."
 
-#: admin/article.py:341
+#: admin/article.py:383
 msgid "There only exists one translation for this article"
 msgstr "Existuje pouze jeden překlad tohoto článku"
 
-#: admin/article.py:371
+#: admin/article.py:413
 #, python-format
 msgid "Title and plugins with language %(language)s was deleted"
 msgstr "Obsah pro jazyk %(language)s byl odstraněn"
 
-#: admin/article.py:390
+#: admin/article.py:432
 msgid "Are you sure?"
 msgstr "Jste si jisti?"
 
@@ -112,7 +112,6 @@ msgid "Articles"
 msgstr "Články"
 
 #: cms_plugins.py:15 cms_toolbars.py:24
-#: templates/admin/cms_articles/article/change_list.html:32
 msgid "Article"
 msgstr "Článek"
 
@@ -604,16 +603,16 @@ msgstr "stromy"
 msgid "last {} articles"
 msgstr "posledních {} článků"
 
-#: models/plugins.py:107
+#: models/plugins.py:108
 msgid "include sub-categories"
 msgstr "zahrnout podkategorie"
 
-#: models/plugins.py:108
+#: models/plugins.py:109
 msgid ""
 "Check, if you want to include articles from sub-categories of this category."
 msgstr "Zaškrtněte, pokud chcete zahrnout články z podkategorií."
 
-#: models/plugins.py:111
+#: models/plugins.py:112
 msgid "last {} articles in this category"
 msgstr "posledních {} článků v této kategorii"
 
@@ -665,55 +664,34 @@ msgstr "Přidat článek"
 msgid "Change an article"
 msgstr "Úprava článku"
 
-#: templates/admin/cms_articles/article/change_list.html:33
-msgid "Date"
-msgstr "Datum"
-
-#: templates/admin/cms_articles/article/change_list.html:34
-msgid "View"
-msgstr "Zobrazení"
-
-#: templates/admin/cms_articles/article/change_list.html:38
-msgid "Actions"
-msgstr "Akce"
-
-#: templates/admin/cms_articles/article/change_list.html:52
-#: templates/admin/cms_articles/article/change_list.html:53
-msgid "View on site"
-msgstr "Zobrazit na webu"
-
-#: templates/admin/cms_articles/article/change_list.html:69
-msgid "Pick an action:"
-msgstr "Vyberte akci:"
-
-#: templates/admin/cms_articles/article/change_list.html:71
+#: templates/admin/cms_articles/article/change_list_lang.html:18
 #, python-format
-msgid "Edit this article in %(language)s "
-msgstr "Upravit tento článek v jazyce %(language)s"
+#| msgid "Title and plugins with language %(language)s was deleted"
+msgid "Edit article in language %(language)s"
+msgstr "Upravit článek v jazyce %(language)s"
 
-#: templates/admin/cms_articles/article/change_list.html:71
-msgid "Preview"
-msgstr "Náhled"
+#: templates/admin/cms_articles/article/change_list_lang.html:19
+msgid "Edit"
+msgstr "Upravit"
 
-#: templates/admin/cms_articles/article/change_list.html:77
+#: templates/admin/cms_articles/article/change_list_lang.html:28
+#| msgid "publish"
 msgid "Publish"
 msgstr "Publikovat"
 
-#: templates/admin/cms_articles/article/change_list.html:82
+#: templates/admin/cms_articles/article/change_list_lang.html:36
+#| msgid "publish"
 msgid "Unpublish"
 msgstr "Depublikovat"
 
-#: templates/admin/cms_articles/article/change_list.html:87
+#: templates/admin/cms_articles/article/change_list_lang.html:46
+#| msgid "Article Settings"
 msgid "Settings"
 msgstr "Nastavení"
 
-#: templates/admin/cms_articles/article/change_list.html:87
+#: templates/admin/cms_articles/article/change_list_lang.html:46
 msgid "Translate"
 msgstr "Přeložit"
-
-#: templates/admin/cms_articles/article/change_list.html:96
-msgid "Delete"
-msgstr "Smazat"
 
 #: templates/cms_articles/articles/default.html:10
 msgid "previous"

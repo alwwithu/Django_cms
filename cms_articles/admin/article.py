@@ -33,7 +33,8 @@ from django.db import router, transaction
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
-from django.template import Context, Template
+from django.template import Context
+from django.template.loader import get_template
 from django.template.defaultfilters import escape
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import unquote
@@ -69,11 +70,11 @@ _thread_locals = local()
 
 
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
-    search_fields   = ('=id', 'title_set__slug', 'title_set__title')
+    search_fields   = ('=id', 'title_set__slug', 'title_set__title', 'title_set__description')
     list_display    = ('__str__', 'order_date')
     list_display    += tuple('lang_{}'.format(lang) for lang in get_language_list())
     list_filter     = ['tree', 'attributes', 'categories', 'template', 'changed_by']
-    date_hierarchy  = ('order_date')
+    date_hierarchy  = 'order_date'
     filter_horizontal = ['attributes', 'categories']
 
     @property
@@ -94,66 +95,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         media.add_js(js)
         return media
 
-    lang_template = Template('''
-{% load i18n admin_list admin_static admin_urls cms_admin cms_static %}
-<div class="cms-tree-item-lang">
-    <div class="cms-tree-item-inner cms-pagetree-dropdown{% if has_change_permission or has_publish_permission %} js-cms-pagetree-dropdown{% endif %}">
-        {% if has_change_permission or has_publish_permission %}
-            <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}"
-                class="cms-pagetree-dropdown-trigger js-cms-pagetree-dropdown-trigger"
-                {# INFO: delegate click event to parent window when in sideframe #}
-                {% if lang in article.languages %} target="_top"{% endif %}>
-                {# INFO: renders <span class="{cls}" title="{title}"></span> #}
-                {% tree_publish_row article lang %}
-            </a>
-            <div class="cms-pagetree-dropdown-menu cms-pagetree-dropdown-menu-arrow-right-top js-cms-pagetree-dropdown-menu">
-                <ul class="cms-pagetree-dropdown-menu-inner">
-                    {% if lang in article.languages %}
-                        {% if has_change_permission %}
-                            <li>
-                                <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}" target="_top">
-                                    <span class="cms-icon cms-icon-pencil" title="{% blocktrans with lang|upper as language %}Edit article in language {{ language }}{% endblocktrans %}"></span>
-                                    {% trans "Edit" %}
-                                </a>
-                            </li>
-                        {% endif %}
-                        {% if has_publish_permission %}
-                            {% if article|is_dirty:lang or not article|is_published:lang %}
-                                <li>
-                                    <a href="{% url 'admin:cms_articles_article_publish_article' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
-                                        <span class="cms-icon cms-icon-check-o"></span>
-                                        <span>{% trans "Publish" %}</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-                            {% if article|is_published:lang %}
-                                <li>
-                                    <a href="{% url 'admin:cms_articles_article_unpublish' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
-                                        <span class="cms-icon cms-icon-forbidden"></span>
-                                        <span>{% trans "Unpublish" %}</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    {% if has_change_permission %}
-                        <li>
-                            <a href="{% url 'admin:cms_articles_article_change' article.id %}?language={{ lang }}">
-                                <span class="cms-icon cms-icon-cogs"></span>
-                                <span>{% if lang in article.languages %}{% trans "Settings" %}{% else %}{% trans "Translate" %}{% endif %}</span>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        {% else %}
-            <span class="cms-tree-lang-container">
-                {% tree_publish_row article lang %}
-            </span>
-        {% endif %}
-    </div>
-</div>
-    ''')
+    lang_template = get_template('admin/cms_articles/article/change_list_lang.html')
     def __getattr__(self, name):
         if name.startswith('lang_'):
             lang = name[len('lang_'):]
@@ -186,7 +128,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     def get_urls(self):
         """Get the admin urls
         """
-        info = "%s_%s" % (self.model._meta.app_label, self.model._meta.model_name)
+        info = '%s_%s' % (self.model._meta.app_label, self.model._meta.model_name)
         pat = lambda regex, fn: url(regex, self.admin_site.admin_view(fn), name='%s_%s' % (info, fn.__name__))
 
         url_patterns = [
@@ -287,7 +229,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         response = super(ArticleAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
         if language and response.status_code == 302 and response._headers['location'][1] == request.path_info:
             location = response._headers['location']
-            response._headers['location'] = (location[0], "%s?language=%s" % (location[1], language))
+            response._headers['location'] = (location[0], '%s?language=%s' % (location[1], language))
         return response
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
@@ -325,11 +267,11 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         # ensure user has permissions to publish this article
         if article:
             if not self.has_change_permission(request):
-                return HttpResponseForbidden(force_text(_("You do not have permission to publish this article")))
+                return HttpResponseForbidden(force_text(_('You do not have permission to publish this article')))
             article.publish(language)
         statics = request.GET.get('statics', '')
         if not statics and not article:
-            raise Http404("No article or stack found for publishing.")
+            raise Http404('No article or stack found for publishing.')
         all_published = True
         if statics:
             static_ids = statics .split(',')
@@ -349,15 +291,15 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                     action_flag=CHANGE,
                 )
             else:
-                messages.warning(request, _("There was a problem publishing your content"))
+                messages.warning(request, _('There was a problem publishing your content'))
 
         if 'redirect' in request.GET:
             return HttpResponseRedirect(request.GET['redirect'])
 
         referrer = request.META.get('HTTP_REFERER', '')
-        path = admin_reverse("cms_articles_article_changelist")
+        path = admin_reverse('cms_articles_article_changelist')
         if request.GET.get('redirect_language'):
-            path = "%s?language=%s&article_id=%s" % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
+            path = '%s?language=%s&article_id=%s' % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
         if admin_reverse('index') not in referrer:
             if all_published:
                 if article:
@@ -381,9 +323,9 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         """
         article = get_object_or_404(self.model, pk=article_id)
         if not article.has_publish_permission(request):
-            return HttpResponseForbidden(force_text(_("You do not have permission to unpublish this article")))
+            return HttpResponseForbidden(force_text(_('You do not have permission to unpublish this article')))
         if not article.publisher_public_id:
-            return HttpResponseForbidden(force_text(_("This article was never published")))
+            return HttpResponseForbidden(force_text(_('This article was never published')))
         try:
             article.unpublish(language)
             message = _('The %(language)s article "%(article)s" was successfully unpublished') % {
@@ -403,9 +345,9 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         except ValidationError:
             exc = sys.exc_info()[1]
             messages.error(request, exc.message)
-        path = admin_reverse("cms_articles_article_changelist")
+        path = admin_reverse('cms_articles_article_changelist')
         if request.GET.get('redirect_language'):
-            path = "%s?language=%s&article_id=%s" % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
+            path = '%s?language=%s&article_id=%s' % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
         return HttpResponseRedirect(path)
 
     def delete_translation(self, request, object_id, extra_context=None):
@@ -428,7 +370,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             obj = None
 
         if not self.has_delete_permission(request, obj):
-            return HttpResponseForbidden(force_text(_("You do not have permission to change this article")))
+            return HttpResponseForbidden(force_text(_('You do not have permission to change this article')))
 
         if obj is None:
             raise Http404(
@@ -487,29 +429,29 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             return HttpResponseRedirect(admin_reverse('cms_articles_article_changelist'))
 
         context = {
-            "title": _("Are you sure?"),
-            "object_name": force_text(titleopts.verbose_name),
-            "object": titleobj,
-            "deleted_objects": deleted_objects,
-            "perms_lacking": perms_needed,
-            "opts": opts,
-            "root_path": admin_reverse('index'),
-            "app_label": app_label,
+            'title': _('Are you sure?'),
+            'object_name': force_text(titleopts.verbose_name),
+            'object': titleobj,
+            'deleted_objects': deleted_objects,
+            'perms_lacking': perms_needed,
+            'opts': opts,
+            'root_path': admin_reverse('index'),
+            'app_label': app_label,
         }
         context.update(extra_context or {})
         request.current_app = self.admin_site.name
         return render(request, self.delete_confirmation_template or [
-            "admin/%s/%s/delete_confirmation.html" % (app_label, titleopts.object_name.lower()),
-            "admin/%s/delete_confirmation.html" % app_label,
-            "admin/delete_confirmation.html"
+            'admin/%s/%s/delete_confirmation.html' % (app_label, titleopts.object_name.lower()),
+            'admin/%s/delete_confirmation.html' % app_label,
+            'admin/delete_confirmation.html'
         ], context)
 
     def preview_article(self, request, object_id, language):
         """Redirecting preview function based on draft_id
         """
         article = get_object_or_404(self.model, id=object_id)
-        attrs = "?%s" % get_cms_setting('CMS_TOOLBAR_URL__EDIT_ON')
-        attrs += "&language=" + language
+        attrs = '?%s' % get_cms_setting('CMS_TOOLBAR_URL__EDIT_ON')
+        attrs += '&language=' + language
         with force_language(language):
             url = article.get_absolute_url(language) + attrs
         return HttpResponseRedirect(url)

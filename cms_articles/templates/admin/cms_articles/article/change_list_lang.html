@@ -1,0 +1,58 @@
+{% load i18n cms_admin %}
+<div class="cms-tree-item-lang">
+    <div class="cms-tree-item-inner cms-pagetree-dropdown{% if has_change_permission or has_publish_permission %} js-cms-pagetree-dropdown{% endif %}">
+        {% if has_change_permission or has_publish_permission %}
+            <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}"
+                class="cms-pagetree-dropdown-trigger js-cms-pagetree-dropdown-trigger"
+                {# INFO: delegate click event to parent window when in sideframe #}
+                {% if lang in article.languages %} target="_top"{% endif %}>
+                {# INFO: renders <span class="{cls}" title="{title}"></span> #}
+                {% tree_publish_row article lang %}
+            </a>
+            <div class="cms-pagetree-dropdown-menu cms-pagetree-dropdown-menu-arrow-right-top js-cms-pagetree-dropdown-menu">
+                <ul class="cms-pagetree-dropdown-menu-inner">
+                    {% if lang in article.languages %}
+                        {% if has_change_permission %}
+                            <li>
+                                <a href="{% url 'admin:cms_articles_article_preview_article' article.id lang %}" target="_top">
+                                    <span class="cms-icon cms-icon-pencil" title="{% blocktrans with lang|upper as language %}Edit article in language {{ language }}{% endblocktrans %}"></span>
+                                    {% trans "Edit" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if has_publish_permission %}
+                            {% if article|is_dirty:lang or not article|is_published:lang %}
+                                <li>
+                                    <a href="{% url 'admin:cms_articles_article_publish_article' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                        <span class="cms-icon cms-icon-check-o"></span>
+                                        <span>{% trans "Publish" %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if article|is_published:lang %}
+                                <li>
+                                    <a href="{% url 'admin:cms_articles_article_unpublish' article.id lang %}?redirect_language={{ language }}{% if request.GET.article_id %}&amp;redirect_article_id={{ request.GET.article_id }}{% endif %}" class="js-cms-tree-lang-trigger">
+                                        <span class="cms-icon cms-icon-forbidden"></span>
+                                        <span>{% trans "Unpublish" %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if has_change_permission %}
+                        <li>
+                            <a href="{% url 'admin:cms_articles_article_change' article.id %}?language={{ lang }}">
+                                <span class="cms-icon cms-icon-cogs"></span>
+                                <span>{% if lang in article.languages %}{% trans "Settings" %}{% else %}{% trans "Translate" %}{% endif %}</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% else %}
+            <span class="cms-tree-lang-container">
+                {% tree_publish_row article lang %}
+            </span>
+        {% endif %}
+    </div>
+</div>
