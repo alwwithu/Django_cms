@@ -96,14 +96,3 @@ class Title(models.Model):
         return True
 
 
-
-class EmptyTitle(object):
-    title = ''
-    slug = ''
-    page_title = ''
-    meta_description = ''
-    published = False
-
-    def __init__(self, language):
-        self.language = language
-

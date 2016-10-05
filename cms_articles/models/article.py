@@ -404,15 +404,15 @@ class Article(models.Model):
     ## ## Title object access
 
     def get_title_obj(self, language=None, fallback=True, force_reload=False):
-        '''Helper function for accessing wanted / current title.
-        If wanted title doesn't exists, EmptyTitle instance will be returned.
-        '''
         language = self._get_title_cache(language, fallback, force_reload)
         if language in self.title_cache:
             return self.title_cache[language]
-        from .title import EmptyTitle
 
-        return EmptyTitle(language)
+        from .title import Title
+        title = Title()
+        title.article = self
+        title.language = language
+        return title
 
     def get_title_obj_attribute(self, attrname, language=None, fallback=True, force_reload=False):
         '''Helper function for getting attribute or None from wanted/current title.
