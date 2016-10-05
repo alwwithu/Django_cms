@@ -25,13 +25,13 @@ class CMSArticlesToolbar(CMSToolbar):
         self.article = getattr(self.request, 'current_article', None)
         if self.article:
             if self.toolbar.edit_mode:
-                url = admin_reverse('cms_articles_article_change', args=(self.article.pk,))
+                url = '{}?language={}'.format(admin_reverse('cms_articles_article_change', args=(self.article.pk,)), self.current_lang)
                 article_menu.add_modal_item(_('Article Settings'), url=url)
             else:
                 article_menu.add_link_item(_('Edit this article'), url='?edit')
-        url = admin_reverse('cms_articles_article_add')
+        url = '{}?language={}'.format(admin_reverse('cms_articles_article_add'), self.current_lang)
         if self.request.current_page and self.request.current_page.application_urls == 'CMSArticlesApp':
-            url += '?tree={}'.format(self.request.current_page.get_public_object().id)
+            url += '&tree={}'.format(self.request.current_page.get_public_object().id)
         article_menu.add_modal_item(_('New Article'), url=url)
 
     def post_template_populate(self):
