@@ -1,8 +1,7 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from django.core.management.base import BaseCommand, CommandError
 
 from ...utils import import_wordpress
+
 
 class Command(BaseCommand):
     help = 'Import given XML files exported from WordPress'
@@ -19,5 +18,6 @@ class Command(BaseCommand):
                 raise CommandError(e)
             if errors:
                 self.stderr.write(self.style.ERROR('Failed to import {} items'.format(wordpress_xml, e)))
-            self.stdout.write(self.style.SUCCESS('Successfully imported {} items from "{}"'.format(imported, wordpress_xml)))
-
+            self.stdout.write(self.style.SUCCESS(
+                'Successfully imported {} items from "{}"'.format(imported, wordpress_xml)
+            ))

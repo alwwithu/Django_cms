@@ -1,20 +1,18 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.utils.translation import ugettext as _
 
 from .archive import Archive
 from .conf import settings
-from .models import ArticlePlugin, ArticlesPlugin, ArticlesCategoryPlugin
+from .models import ArticlePlugin, ArticlesCategoryPlugin, ArticlesPlugin
 
 
 class ArticlePlugin(CMSPluginBase):
-    module  = _('Articles')
-    name    = _('Article')
-    model   = ArticlePlugin
-    cache   = False
+    module = _('Articles')
+    name = _('Article')
+    model = ArticlePlugin
+    cache = False
     text_enabled = True
     raw_id_fields = ['article']
 
@@ -29,15 +27,15 @@ class ArticlePlugin(CMSPluginBase):
     def get_render_template(self, context, instance, placeholder):
         return 'cms_articles/article/%s.html' % instance.template
 
+
 plugin_pool.register_plugin(ArticlePlugin)
 
 
-
 class ArticlesPlugin(CMSPluginBase):
-    module  = _('Articles')
-    name    = _('Articles')
-    model   = ArticlesPlugin
-    cache   = False
+    module = _('Articles')
+    name = _('Articles')
+    model = ArticlesPlugin
+    cache = False
     text_enabled = True
 
     def render(self, context, instance, placeholder):
@@ -63,23 +61,23 @@ class ArticlesPlugin(CMSPluginBase):
         articles.page_field = settings.CMS_ARTICLES_PAGE_FIELD
 
         context.update({
-            'plugin':       instance,
-            'archive':      archive,
-            'articles':     articles,
-            'placeholder':  placeholder,
+            'plugin': instance,
+            'archive': archive,
+            'articles': articles,
+            'placeholder': placeholder,
         })
         return context
 
     def get_render_template(self, context, instance, placeholder):
         return 'cms_articles/articles/%s.html' % instance.template
 
+
 plugin_pool.register_plugin(ArticlesPlugin)
 
 
-
 class ArticlesCategoryPlugin(ArticlesPlugin):
-    name    = _('Articles category')
-    model   = ArticlesCategoryPlugin
+    name = _('Articles category')
+    model = ArticlesCategoryPlugin
+
 
 plugin_pool.register_plugin(ArticlesCategoryPlugin)
-

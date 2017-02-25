@@ -1,16 +1,11 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from cms.utils.i18n import get_language_tuple
-from cms.models import Page
-
 from django import forms
-from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
-from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
+
 from djangocms_text_ckeditor.fields import HTMLFormField
 
 from ..conf import settings
@@ -19,15 +14,15 @@ from ..utils import is_valid_article_slug
 
 
 class ArticleForm(forms.ModelForm):
-    language            = forms.ChoiceField(label=_('Language'), choices=get_language_tuple(),
-                            help_text=_('The current language of the content fields.'))
-    title               = Title._meta.get_field('title').formfield()
-    slug                = Title._meta.get_field('slug').formfield()
-    description         = Title._meta.get_field('description').formfield()
-    page_title          = Title._meta.get_field('page_title').formfield()
-    menu_title          = Title._meta.get_field('menu_title').formfield()
-    meta_description    = Title._meta.get_field('meta_description').formfield()
-    image               = Title._meta.get_field('image').formfield()
+    language = forms.ChoiceField(label=_('Language'), choices=get_language_tuple(),
+                                 help_text=_('The current language of the content fields.'))
+    title = Title._meta.get_field('title').formfield()
+    slug = Title._meta.get_field('slug').formfield()
+    description = Title._meta.get_field('description').formfield()
+    page_title = Title._meta.get_field('page_title').formfield()
+    menu_title = Title._meta.get_field('menu_title').formfield()
+    meta_description = Title._meta.get_field('meta_description').formfield()
+    image = Title._meta.get_field('image').formfield()
 
     class Meta:
         model = Article
@@ -60,15 +55,12 @@ class ArticleForm(forms.ModelForm):
         if not slug:
             raise ValidationError(_('Slug must not be empty.'))
         return settings.CMS_ARTICLES_SLUG_FORMAT.format(
-            now = self.instance.creation_date or now(),
-            slug = slug,
-        )
-
+            now=self.instance.creation_date or now(),
+            slug=slug)
 
 
 class ArticleCreateForm(ArticleForm):
     content = HTMLFormField(label=_('Text'), help_text=_('Initial content of the article.'), required=False)
-
 
 
 class PublicationDatesForm(forms.ModelForm):
@@ -82,5 +74,3 @@ class PublicationDatesForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = ['publication_date', 'publication_end_date']
-
-

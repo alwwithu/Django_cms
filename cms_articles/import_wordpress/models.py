@@ -1,9 +1,9 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from json import loads
 
 from cms.api import create_page
 from cms.models import Page
 from cms.models.fields import PageField
-from cms_articles.api import create_article, publish_article, add_content
+from cms_articles.api import add_content, create_article, publish_article
 from cms_articles.conf import settings
 from django.core.files import File as DjangoFile
 from django.core.files.temp import NamedTemporaryFile
@@ -11,44 +11,48 @@ from django.db import models
 from django.utils.encoding import force_bytes, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from filer.fields.folder import FilerFolderField
-from filer.models import File, Folder
 from filer.management.commands.import_files import FileImporter
-from json import loads
-from urllib2 import urlopen
+from filer.models import File, Folder
 
 from .utils import create_redirect
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 
 @python_2_unicode_compatible
 class Author(models.Model):
-    author_id   = models.IntegerField(_('author id'), unique=True)
-    login       = models.CharField(_('login name'), max_length=255)
-    email       = models.EmailField(_('email'), blank=True, null=True)
-    first_name  = models.CharField(_('first name'), max_length=255, blank=True, null=True)
-    last_name   = models.CharField(_('last name'), max_length=255, blank=True, null=True)
-    user        = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    author_id = models.IntegerField(_('author id'), unique=True)
+    login = models.CharField(_('login name'), max_length=255)
+    email = models.EmailField(_('email'), blank=True, null=True)
+    first_name = models.CharField(_('first name'), max_length=255, blank=True, null=True)
+    last_name = models.CharField(_('last name'), max_length=255, blank=True, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('user'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return '{}'.format(self.login)
 
     class Meta:
-        verbose_name        = _('author')
+        verbose_name = _('author')
         verbose_name_plural = _('authors')
-
 
 
 @python_2_unicode_compatible
 class Category(models.Model):
-    term_id     = models.IntegerField(_('term id'), unique=True)
-    name        = models.CharField(_('name'), max_length=255)
-    slug        = models.SlugField(_('slug'))
-    parent      = models.CharField(_('parent slug'), max_length=255, blank=True, null=True)
+    term_id = models.IntegerField(_('term id'), unique=True)
+    name = models.CharField(_('name'), max_length=255)
+    slug = models.SlugField(_('slug'))
+    parent = models.CharField(_('parent slug'), max_length=255, blank=True, null=True)
     cached_name = models.CharField(_('name'), max_length=512, blank=True, null=True)
-    category    = models.ForeignKey('cms_articles.Category', verbose_name=_('articles category'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(
+        'cms_articles.Category', verbose_name=_('articles category'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         try:
@@ -65,54 +69,57 @@ class Category(models.Model):
         return name
 
     class Meta:
-        verbose_name        = _('category')
+        verbose_name = _('category')
         verbose_name_plural = _('categories')
-
 
 
 @python_2_unicode_compatible
 class Item(models.Model):
-    title       = models.TextField(_('title'), default='')
-    link        = models.CharField(_('link'), max_length=255)
-    pub_date    = models.DateTimeField(_('publication date'))
-    created_by  = models.ForeignKey(Author, verbose_name=_('created by'))
-    guid        = models.CharField(_('url'), max_length=255)
+    title = models.TextField(_('title'), default='')
+    link = models.CharField(_('link'), max_length=255)
+    pub_date = models.DateTimeField(_('publication date'))
+    created_by = models.ForeignKey(Author, verbose_name=_('created by'))
+    guid = models.CharField(_('url'), max_length=255)
     description = models.TextField(_('description'))
-    content     = models.TextField(_('content'))
-    excerpt     = models.TextField(_('excerpt'))
-    post_id     = models.IntegerField(_('post id'), unique=True)
-    post_date   = models.DateTimeField(_('post date'))
-    post_name   = models.CharField(_('post name'), max_length=255)
-    status      = models.CharField(_('status'), max_length=20)
+    content = models.TextField(_('content'))
+    excerpt = models.TextField(_('excerpt'))
+    post_id = models.IntegerField(_('post id'), unique=True)
+    post_date = models.DateTimeField(_('post date'))
+    post_name = models.CharField(_('post name'), max_length=255)
+    status = models.CharField(_('status'), max_length=20)
     post_parent = models.IntegerField(_('parent post id'))
-    post_type   = models.CharField(_('type'), max_length=20)
-    categories  = models.ManyToManyField(Category, _('categories'), blank=True)
-    postmeta    = models.TextField(_('metadata'))
-    article     = models.OneToOneField('cms_articles.Article', verbose_name=_('imported article'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
-    page        = models.OneToOneField('cms.Page', verbose_name=_('imported page'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
-    file        = models.OneToOneField(File, verbose_name=_('imported file'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
-    folder      = models.ForeignKey(Folder, verbose_name=_('attachments folder'),
-                    related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    post_type = models.CharField(_('type'), max_length=20)
+    categories = models.ManyToManyField(Category, _('categories'), blank=True)
+    postmeta = models.TextField(_('metadata'))
+    article = models.OneToOneField(
+        'cms_articles.Article', verbose_name=_('imported article'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    page = models.OneToOneField(
+        'cms.Page', verbose_name=_('imported page'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    file = models.OneToOneField(
+        File, verbose_name=_('imported file'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
+    folder = models.ForeignKey(
+        Folder, verbose_name=_('attachments folder'),
+        related_name='+', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return '{}'.format(self.title)
 
     class Meta:
-        verbose_name        = _('item')
+        verbose_name = _('item')
         verbose_name_plural = _('items')
 
     @property
     def children(self):
-        return Item.objects.filter(post_parent = self.post_id)
+        return Item.objects.filter(post_parent=self.post_id)
 
     @cached_property
     def parent(self):
         if self.post_parent:
             try:
-                return Item.objects.get(post_id = self.post_parent)
+                return Item.objects.get(post_id=self.post_parent)
             except:
                 pass
         return None
@@ -144,29 +151,25 @@ class Item(models.Model):
             image_item = Item.objects.get(post_id=int(self.meta['_thumbnail_id']))
             image = image_item.get_or_import_file(options)
         self.article = create_article(
-            tree        = options.article_tree,
-            template    = options.article_template,
-            title       = self.title,
-            language    = options.language,
-            description = self.excerpt,
-            created_by  = self.created_by.user or self.created_by.login,
-            image       = image,
-            publication_date = self.pub_date,
-            categories  = [ c.category for c in self.categories.exclude(category=None) ],
+            tree=options.article_tree,
+            template=options.article_template,
+            title=self.title,
+            language=options.language,
+            description=self.excerpt,
+            created_by=self.created_by.user or self.created_by.login,
+            image=image,
+            publicationdate=self.pub_date,
+            categories=[c.category for c in self.categories.exclude(category=None)],
         )
         self.article.creation_date = self.post_date
         self.article.save()
         content = '\n'.join('<p>{}</p>'.format(p) for p in self.content.split('\n\n'))
-        add_content(self.article,
-            language    = options.language,
-            slot        = options.article_slot,
-            content     = content,
-        )
+        add_content(self.article, language=options.language, slot=options.article_slot, content=content)
         if options.article_publish:
             self.article = publish_article(
-                article     = self.article,
-                language    = options.language,
-                changed_by  = self.created_by.user or self.created_by.login,
+                article=self.article,
+                language=options.language,
+                changed_by=self.created_by.user or self.created_by.login,
             )
             public = self.article.get_public_object()
             public.creation_date = self.pub_date
@@ -195,23 +198,19 @@ class Item(models.Model):
             return self.page
         # create new page
         self.page = create_page(
-            template    = options.page_template,
-            language    = options.language,
-            title       = self.title,
-            slug        = slug,
+            template=options.page_template,
+            language=options.language,
+            title=self.title,
+            slug=slug,
             meta_description=None,
-            created_by  = self.created_by.user or self.created_by.login,
-            parent      = parent,
-            publication_date = self.pub_date,
+            created_by=self.created_by.user or self.created_by.login,
+            parent=parent,
+            publication_date=self.pub_date,
         )
         self.page.creation_date = self.post_date
         self.page.save()
         content = '\n'.join('<p>{}</p>'.format(p) for p in self.content.split('\n\n'))
-        add_content(self.page,
-            language    = options.language,
-            slot        = options.page_slot,
-            content     = content,
-        )
+        add_content(self.page, language=options.language, slot=options.page_slot, content=content)
         if options.page_publish:
             self.page.publish(options.language)
             public = self.page.get_public_object()
@@ -266,84 +265,86 @@ class Item(models.Model):
         return self.folder
 
 
-
 @python_2_unicode_compatible
 class Options(models.Model):
-    name            = models.CharField(_('name'), max_length=255, unique=True)
+    name = models.CharField(_('name'), max_length=255, unique=True)
 
     # global options
-    language        = models.CharField(_('language'), max_length=15,
-                        help_text=_('The language of the content fields.'))
+    language = models.CharField(_('language'), max_length=15, help_text=_('The language of the content fields.'))
 
     # article specific options
-    article_tree    = models.ForeignKey(Page, verbose_name=_('tree'), related_name='+',
-                        help_text=_('All posts will be imported as articles in this tree.'),
-                        limit_choices_to={
-                            'publisher_is_draft': False,
-                            'application_urls': 'CMSArticlesApp',
-                            'site_id':  settings.SITE_ID,
-                        })
-    article_template = models.CharField(_('template'), max_length = 100,
-                        choices=settings.CMS_ARTICLES_TEMPLATES,
-                        default=settings.CMS_ARTICLES_TEMPLATES[0][0])
-    article_slot    = models.CharField(_('slot'), max_length=255, default=settings.CMS_ARTICLES_SLOT,
-                        help_text=_('The name of placeholder used to create content plugins in.'))
-    article_folder  = FilerFolderField(verbose_name=_('attachments folder'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('Select folder for articles. Subfolder will be created for each article with attachments.'))
-    article_redirects = models.BooleanField(_('create redirects'), default=True,
-                        help_text=_('Create django redirects for each article from the old path to the new imported path'))
-    article_publish = models.BooleanField(_('publish'), default=False,
-                        help_text=_('Publish imported articles.'))
+    article_tree = models.ForeignKey(
+        Page, verbose_name=_('tree'), related_name='+',
+        help_text=_('All posts will be imported as articles in this tree.'),
+        limit_choices_to={
+            'publisher_is_draft': False,
+            'application_urls': 'CMSArticlesApp',
+            'site_id': settings.SITE_ID,
+        })
+    article_template = models.CharField(
+        _('template'), max_length=100,
+        choices=settings.CMS_ARTICLES_TEMPLATES,
+        default=settings.CMS_ARTICLES_TEMPLATES[0][0])
+    article_slot = models.CharField(
+        _('slot'), max_length=255, default=settings.CMS_ARTICLES_SLOT,
+        help_text=_('The name of placeholder used to create content plugins in.'))
+    article_folder = FilerFolderField(
+        verbose_name=_('attachments folder'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('Select folder for articles. Subfolder will be created for each article with attachments.'))
+    article_redirects = models.BooleanField(
+        _('create redirects'), default=True,
+        help_text=_('Create django redirects for each article from the old path to the new imported path'))
+    article_publish = models.BooleanField(_('publish'), default=False, help_text=_('Publish imported articles.'))
 
     # page specific options
-    page_root       = PageField(verbose_name=_('root'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('All pages will be imported as sub-pages of this page.'))
-    page_template   = models.CharField(_('template'), max_length = 100,
-                        choices=Page.template_choices,
-                        default=Page.TEMPLATE_DEFAULT)
-    page_slot       = models.CharField(_('slot'), max_length=255, default='content',
-                        help_text=_('The name of placeholder used to create content plugins in.'))
-    page_folder     = FilerFolderField(verbose_name=_('attachments folder'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('Select folder for pages. Subfolder will be created for each page with attachments.'))
-    page_redirects  = models.BooleanField(_('create redirects'), default=True,
-                        help_text=_('Create django redirects for each page from the old path to the new imported path'))
-    page_publish    = models.BooleanField(_('publish'), default=False,
-                        help_text=_('Publish imported pages.'))
+    page_root = PageField(
+        verbose_name=_('root'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('All pages will be imported as sub-pages of this page.'))
+    page_template = models.CharField(
+        _('template'), max_length=100,
+        choices=Page.template_choices, default=Page.TEMPLATE_DEFAULT)
+    page_slot = models.CharField(
+        _('slot'), max_length=255, default='content',
+        help_text=_('The name of placeholder used to create content plugins in.'))
+    page_folder = FilerFolderField(
+        verbose_name=_('attachments folder'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('Select folder for pages. Subfolder will be created for each page with attachments.'))
+    page_redirects = models.BooleanField(
+        _('create redirects'), default=True,
+        help_text=_('Create django redirects for each page from the old path to the new imported path'))
+    page_publish = models.BooleanField(_('publish'), default=False, help_text=_('Publish imported pages.'))
 
     # file specific options
-    gallery_folder  = FilerFolderField(verbose_name=_('folder'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('Select folder for galleries. Subfolder will be created for each gallery.'))
+    gallery_folder = FilerFolderField(
+        verbose_name=_('folder'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('Select folder for galleries. Subfolder will be created for each gallery.'))
 
     # file specific options
-    slide_folder    = FilerFolderField(verbose_name=_('folder'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('Select folder for slides.'))
+    slide_folder = FilerFolderField(
+        verbose_name=_('folder'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('Select folder for slides.'))
 
     # file specific options
-    file_folder     = FilerFolderField(verbose_name=_('folder'),
-                        related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
-                        help_text=_('Select folder for other attachments.'))
+    file_folder = FilerFolderField(
+        verbose_name=_('folder'), related_name='+', on_delete=models.SET_NULL, blank=True, null=True,
+        help_text=_('Select folder for other attachments.'),
+    )
 
     def __str__(self):
         return '{}'.format(self.name)
 
     class Meta:
-        verbose_name        = _('options')
+        verbose_name = _('options')
         verbose_name_plural = _('options')
 
     @cached_property
     def folders(self):
         return {
-            'post':     self.article_folder,
-            'page':     self.page_folder,
-            'gallery':  self.gallery_folder,
-            'slide':    self.slide_folder,
+            'post': self.article_folder,
+            'page': self.page_folder,
+            'gallery': self.gallery_folder,
+            'slide': self.slide_folder,
         }
 
     def get_folder(self, post_type):
         return self.folders.get(post_type, self.file_folder)
-

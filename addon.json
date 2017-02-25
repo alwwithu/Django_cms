@@ -1,0 +1,6 @@
+{
+    "package-name": "django-cms-articles",
+    "installed-apps": [
+        "cms_articles"
+    ]
+}

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 import warnings
 
 from django.db.models import signals
@@ -32,7 +30,6 @@ def pre_delete_article(instance, **kwargs):
         placeholder.delete()
 
 
-signals.pre_save.connect(  pre_save_article,   sender=Article, dispatch_uid='cms_articles_pre_save_article')
-signals.post_save.connect( post_save_article,  sender=Article, dispatch_uid='cms_articles_post_save_article')
+signals.pre_save.connect(pre_save_article, sender=Article, dispatch_uid='cms_articles_pre_save_article')
+signals.post_save.connect(post_save_article, sender=Article, dispatch_uid='cms_articles_post_save_article')
 signals.pre_delete.connect(pre_delete_article, sender=Article, dispatch_uid='cms_articles_pre_delete_article')
-

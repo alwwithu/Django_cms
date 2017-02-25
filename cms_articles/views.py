@@ -1,30 +1,19 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
-from cms.views import details as page
+from cms.models import Page
+from cms.page_rendering import _handle_no_page
+from cms.utils import get_language_code, get_language_from_request
+from cms.utils.i18n import (
+    force_language, get_fallback_languages, get_language_list,
+    get_public_languages, get_redirect_on_fallback,
+)
 from cms.utils.moderator import use_draft
-
-
+from cms.views import details as page
 from django.conf import settings
 from django.contrib.auth.views import redirect_to_login
-from django.core.urlresolvers import resolve, Resolver404, reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.http import urlquote
 from django.utils.translation import get_language
-
-from cms.apphook_pool import apphook_pool
-from cms.appresolver import get_app_urls
-from cms.cache.page import get_page_cache
-from cms.models import Page
-from cms.page_rendering import _handle_no_page, render_page
-from cms.utils import get_language_code, get_language_from_request, get_cms_setting
-from cms.utils.i18n import (get_fallback_languages, force_language, get_public_languages,
-                            get_redirect_on_fallback, get_language_list,
-                            is_language_prefix_patterns_used)
-
-from django.views.generic import DetailView
-
-from .models import Article
 
 
 def article(request, slug):
@@ -94,9 +83,9 @@ def article(request, slug):
     ]
 
     if current_language not in user_languages:
-        #are we on root?
+        # are we on root?
         if not slug:
-            #redirect to supported language
+            # redirect to supported language
             languages = []
             for language in available_languages:
                 languages.append((language, language))
@@ -126,8 +115,7 @@ def article(request, slug):
                         # In the case where the article is not available in the
                     # preferred language, *redirect* to the fallback article. This
                     # is a design decision (instead of rendering in place)).
-                    if (hasattr(request, 'toolbar') and request.user.is_staff
-                            and request.toolbar.edit_mode):
+                    if (hasattr(request, 'toolbar') and request.user.is_staff and request.toolbar.edit_mode):
                         request.toolbar.redirect_url = path
                     elif path not in own_urls:
                         return HttpResponseRedirect(path)
@@ -153,7 +141,7 @@ def article(request, slug):
 
     response = TemplateResponse(request, article.template, context)
 
-    #response.add_post_render_callback(set_article_cache)
+    # response.add_post_render_callback(set_article_cache)
 
     # Add headers for X Frame Options - this really should be changed upon moving to class based views
     xframe_options = article.tree.get_xframe_options()
@@ -174,6 +162,3 @@ def article(request, slug):
     elif xframe_options == Page.X_FRAME_OPTIONS_DENY:
         response['X-Frame-Options'] = 'DENY'
     return response
-
-
-

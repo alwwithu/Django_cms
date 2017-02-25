@@ -1,16 +1,10 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
-from django.db import models
-from django.db.models import Q
-from django.utils import six
-
-from cms.cache.permissions import get_permission_cache, set_permission_cache
-from cms.exceptions import NoPermissionsException
 from cms.publisher import PublisherManager
-from cms.utils import get_cms_setting
 from cms.utils.i18n import get_fallback_languages
+from django.contrib.sites.models import Site
+from django.db.models import Q
 
 from .query import ArticleQuerySet
+
 
 class ArticleManager(PublisherManager):
     """Use draft() and public() methods for accessing the corresponding
@@ -50,10 +44,7 @@ class ArticleManager(PublisherManager):
                 continue
             field = cmsplugin.cmsplugin_ptr.field
             related_query_name = field.related_query_name()
-            if (
-                related_query_name and
-                related_query_name != '+'
-            ):
+            if related_query_name and not related_query_name.startswith('+'):
                 for field in cmsplugin.search_fields:
                     qp |= Q(**{
                         'placeholders__cmsplugin__{0}__{1}__icontains'.format(
@@ -67,7 +58,6 @@ class ArticleManager(PublisherManager):
         qs = qs.filter(qt | qp)
 
         return qs.distinct()
-
 
 
 class TitleManager(PublisherManager):
@@ -95,6 +85,7 @@ class TitleManager(PublisherManager):
                 raise
         return None
 
+    # created new public method to meet test case requirement and to get a list of titles for published articles
     def public(self):
         return self.get_queryset().filter(publisher_is_draft=False, published=True)
 
@@ -109,9 +100,9 @@ class TitleManager(PublisherManager):
             'slug',
             'title',
             'description',
+            'meta_description',
             'page_title',
             'menu_title',
-            'meta_description',
             'image',
         ]
         cleaned_data = form.cleaned_data
@@ -131,4 +122,3 @@ class TitleManager(PublisherManager):
                 setattr(obj, name, value)
         obj.save()
         return obj
-

@@ -1,21 +1,20 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
+# -*- coding: utf-8 -*-
 from cms import constants
-from cms.exceptions import LanguageError
-from cms.models import Page, CMSPlugin
-from cms.models.fields import PageField, PlaceholderField
+from cms.exceptions import (
+    LanguageError, PublicIsUnmodifiable, PublicVersionNeeded,
+)
+from cms.models import Page
 from cms.utils import i18n
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.helpers import reversion_register
 from django.db import models
 from django.utils.encoding import force_text, python_2_unicode_compatible
-from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.timezone import now
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language
 
 from ..conf import settings
-
 from .attribute import Attribute
 from .category import Category
 from .managers import ArticleManager
@@ -23,48 +22,53 @@ from .managers import ArticleManager
 
 @python_2_unicode_compatible
 class Article(models.Model):
-    tree            = models.ForeignKey(Page, verbose_name=_('tree'), related_name='cms_articles',
-                                help_text=_('The page the article is accessible at.'), limit_choices_to={
-                                    'publisher_is_draft': False,
-                                    'application_urls': 'CMSArticlesApp',
-                                    'site_id':  settings.SITE_ID,
-                                })
-    template        = models.CharField(_('template'), max_length=100,
-                                choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
-                                help_text=_('The template used to render the content.'))
-    attributes      = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='articles', blank=True)
-    categories      = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='articles', blank=True)
-    created_by      = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
-    changed_by      = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
-    creation_date   = models.DateTimeField(auto_now_add=True)
-    changed_date    = models.DateTimeField(auto_now=True)
-    publication_date        = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True,
-                                help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
-    publication_end_date    = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True,
-                                help_text=_('When to expire the article. Leave empty to never expire.'))
-    order_date      = models.DateTimeField(auto_now_add=True, editable=False)
-    login_required  = models.BooleanField(_('login required'), default=False)
+    tree = models.ForeignKey(
+        Page, verbose_name=_('tree'), related_name='cms_articles',
+        help_text=_('The page the article is accessible at.'), limit_choices_to={
+            'publisher_is_draft': False,
+            'application_urls': 'CMSArticlesApp',
+            'site_id': settings.SITE_ID,
+        })
+    template = models.CharField(
+        _('template'), max_length=100,
+        choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
+        help_text=_('The template used to render the content.'))
+    attributes = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='articles', blank=True)
+    categories = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='articles', blank=True)
+    created_by = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
+    changed_by = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    changed_date = models.DateTimeField(auto_now=True)
+    publication_date = models.DateTimeField(
+        _('publication date'), null=True, blank=True, db_index=True,
+        help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
+    publication_end_date = models.DateTimeField(
+        _('publication end date'), null=True, blank=True, db_index=True,
+        help_text=_('When to expire the article. Leave empty to never expire.'))
+    order_date = models.DateTimeField(auto_now_add=True, editable=False)
+    login_required = models.BooleanField(_('login required'), default=False)
 
     # Placeholders (plugins)
-    placeholders    = models.ManyToManyField('cms.Placeholder', related_name='cms_articles', editable=False)
+    placeholders = models.ManyToManyField('cms.Placeholder', related_name='cms_articles', editable=False)
 
     # Publisher fields
-    publisher_is_draft  = models.BooleanField(default=True, editable=False, db_index=True)
+    publisher_is_draft = models.BooleanField(default=True, editable=False, db_index=True)
     # This is misnamed - the one-to-one relation is populated on both ends
-    publisher_public    = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
-    languages           = models.CharField(max_length=255, editable=False, blank=True, null=True)
+    publisher_public = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
+    languages = models.CharField(max_length=255, editable=False, blank=True, null=True)
+
+    # If the draft is loaded from a reversion version save the revision id here.
+    revision_id = models.PositiveIntegerField(default=0, editable=False)
 
     # Managers
     objects = ArticleManager()
 
     class Meta:
-        permissions = (
-            ('publish_article', 'Can publish article'),
-        )
-        app_label           = 'cms_articles'
-        verbose_name        = _('article')
+        permissions = (('publish_article', 'Can publish article'),)
+        app_label = 'cms_articles'
+        verbose_name = _('article')
         verbose_name_plural = _('articles')
-        ordering            = ('-order_date',)
+        ordering = ('-order_date',)
 
     def __str__(self):
         try:
@@ -117,11 +121,36 @@ class Article(models.Model):
         except:
             return ''
 
+    def revert_to_live(self, language):
+        """Revert the draft version to the same state as the public version
+        """
+        if not self.publisher_is_draft:
+            # Revert can only be called on draft articles
+            raise PublicIsUnmodifiable('The public instance cannot be reverted. Use draft.')
+
+        if not self.publisher_public:
+            raise PublicVersionNeeded('A public version of this article is needed')
+
+        public = self.publisher_public
+        public._copy_titles(self, language)
+        public._copy_contents(self, language)
+        public._copy_attributes(self)
+
+        self.title_set.filter(language=language).update(
+            publisher_state=constants.PUBLISHER_STATE_DEFAULT,
+            published=True,
+        )
+
+        self._publisher_keep_state = True
+        self.save()
+
     def _copy_titles(self, target, language):
         '''
         Copy all the titles to a new article (which must have a pk).
         :param target: The article where the new titles should be stored
         '''
+        from .title import Title
+
         old_titles = dict(target.title_set.filter(language=language).values_list('language', 'pk'))
         for title in self.title_set.filter(language=language):
             old_pk = title.pk
@@ -135,7 +164,6 @@ class Article(models.Model):
             title._publisher_keep_state = True
             title.save()
 
-            from .title import Title
             old_title = Title.objects.get(pk=old_pk)
             old_title.publisher_public = title
             old_title.publisher_state = title.publisher_state
@@ -183,19 +211,19 @@ class Article(models.Model):
                 new_phs.append(ph)
                 # update the article copy
             if plugins:
-                copy_plugins_to(plugins, ph, no_signals=True)
+                copy_plugins_to(plugins, ph)
         target.placeholders.add(*new_phs)
 
     def _copy_attributes(self, target):
-        target.tree                 = self.tree
-        target.template             = self.template
-        target.publication_date     = self.publication_date
+        target.tree = self.tree
+        target.template = self.template
+        target.publication_date = self.publication_date
         target.publication_end_date = self.publication_end_date
-        target.login_required       = self.login_required
+        target.login_required = self.login_required
 
     def _copy_relations(self, target):
-        target.attributes           = self.attributes.all()
-        target.categories           = self.categories.all()
+        target.attributes = self.attributes.all()
+        target.categories = self.categories.all()
 
     def delete(self, *args, **kwargs):
         articles = [self.pk]
@@ -214,9 +242,10 @@ class Article(models.Model):
 
         created = not bool(self.pk)
 
-        from cms.utils.permissions import _thread_locals
+        from cms.utils.permissions import get_current_user
 
-        user = getattr(_thread_locals, 'user', None)
+        user = get_current_user()
+
         if user:
             try:
                 changed_by = force_text(user)
@@ -260,11 +289,13 @@ class Article(models.Model):
 
     def is_new_dirty(self):
         if self.pk:
+            fields = [
+                'publication_date', 'publication_end_date', 'tree', 'template', 'login_required',
+            ]
             try:
                 old_article = Article.objects.get(pk=self.pk)
             except Article.DoesNotExist:
                 return True
-            fields = ['tree', 'publication_date', 'publication_end_date', 'template', 'login_required']
             for field in fields:
                 old_val = getattr(old_article, field)
                 new_val = getattr(self, field)
@@ -334,8 +365,7 @@ class Article(models.Model):
         from cms.signals import post_publish
         post_publish.send(sender=Article, instance=self, language=language)
 
-        #from cms.cache import invalidate_cms_article_cache
-        #invalidate_cms_article_cache()
+        return True
 
     def unpublish(self, language):
         '''
@@ -364,9 +394,6 @@ class Article(models.Model):
         public_article.save()
         # trigger update home
         self.save()
-
-        #from cms.cache import invalidate_cms_article_cache
-        #invalidate_cms_article_cache()
 
         from cms.signals import post_unpublish
         post_unpublish.send(sender=Article, instance=self, language=language)
@@ -401,7 +428,7 @@ class Article(models.Model):
             return self.get_languages()
         return sorted([language for language in self.get_languages() if self.is_published(language)])
 
-    ## ## Title object access
+    # Title object access
 
     def get_title_obj(self, language=None, fallback=True, force_reload=False):
         language = self._get_title_cache(language, fallback, force_reload)
@@ -487,8 +514,9 @@ class Article(models.Model):
         '''
         get content for the description meta tag for the article depending on the given language
         '''
-        return (self.get_title_obj_attribute('meta_description', language, fallback, force_reload)
-            or strip_tags(self.get_title_obj_attribute('description', language, fallback, force_reload)))
+        return (
+            self.get_title_obj_attribute('meta_description', language, fallback, force_reload) or
+            strip_tags(self.get_title_obj_attribute('description', language, fallback, force_reload)))
 
     def _get_title_cache(self, language, fallback, force_reload):
         if not language:
@@ -522,18 +550,6 @@ class Article(models.Model):
 
     def get_template(self):
         return self.template
-
-    #def get_template_name(self):
-    #    '''
-    #    get the textual name (2nd parameter in get_cms_setting('TEMPLATES'))
-    #    of the template of this article or of the nearest
-    #    ancestor. failing to find that, return the name of the default template.
-    #    '''
-    #    template = self.template
-    #    for t in get_cms_setting('TEMPLATES'):
-    #        if t[0] == template:
-    #            return t[1]
-    #    return _('default')
 
     def has_change_permission(self, request, user=None):
         if not user:
@@ -584,3 +600,19 @@ class Article(models.Model):
     def get_xframe_options(self):
         return self.tree.get_xframe_options()
 
+
+def _reversion():
+    exclude_fields = [
+        'publisher_is_draft',
+        'publisher_public',
+        'publisher_state',
+    ]
+
+    reversion_register(
+        Page,
+        follow=["title_set", "placeholders"],
+        exclude_fields=exclude_fields
+    )
+
+
+_reversion()

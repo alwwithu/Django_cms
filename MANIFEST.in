@@ -1,6 +1,6 @@
 include LICENSE
 include README.md
+recursive-include */locale *
+recursive-include */static *
+recursive-include */templates *
 recursive-exclude * *.py[co]
-recursive-include cms_articles/locale *
-recursive-include cms_articles/static *
-recursive-include cms_articles/templates *

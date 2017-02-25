@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from django.conf.urls import url
 
 from . import views
@@ -13,4 +11,3 @@ else:
 urlpatterns = [
     url(regexp, views.article, name='article'),
 ]
-

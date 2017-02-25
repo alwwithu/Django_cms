@@ -1,4 +1,18 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+import datetime
+
+from cms.api import add_plugin
+from cms.utils.i18n import get_language_list
+from cms.utils.permissions import current_user
+from django.template.defaultfilters import slugify
+from django.template.loader import get_template
+from django.utils.encoding import force_text
+from django.utils.timezone import now
+
+from djangocms_text_ckeditor.cms_plugins import TextPlugin
+
+from .conf import settings
+from .models import Article, Title
+
 
 """
 Public Python API to create CMS articles.
@@ -7,29 +21,12 @@ WARNING: None of the functions defined in this module checks for permissions.
 You must implement the necessary permission checks in your own code before
 calling these methods!
 """
-import datetime
-
-from django.template.defaultfilters import slugify
-from django.template.loader import get_template
-from django.utils.encoding import force_text
-from django.utils.timezone import now
-
-from djangocms_text_ckeditor.cms_plugins import TextPlugin
-
-from cms.api import add_plugin
-from cms.utils.i18n import get_language_list
-from cms.utils.permissions import current_user
-
-from .conf import settings
-from .models import Article, Title
 
 
-def create_article(
-        tree, template, title, language, slug=None, description=None,
-        page_title=None, menu_title=None, meta_description=None,
-        created_by=None, image=None, publication_date=None, publication_end_date=None,
-        published=False, login_required=False, creation_date=None, categories=[],
-    ):
+def create_article(tree, template, title, language, slug=None, description=None,
+                   page_title=None, menu_title=None, meta_description=None,
+                   created_by=None, image=None, publication_date=None, publication_end_date=None,
+                   published=False, login_required=False, creation_date=None, categories=[]):
     """
     Create a CMS Article and it's title for the given language
     """
@@ -71,29 +68,29 @@ def create_article(
     with current_user(username):
         # create article
         article = Article.objects.create(
-            tree                = tree,
-            template            = template,
-            login_required      = login_required,
-            creation_date       = creation_date,
-            publication_date    = publication_date,
-            publication_end_date= publication_end_date,
-            languages           = language,
+            tree=tree,
+            template=template,
+            login_required=login_required,
+            creation_date=creation_date,
+            publication_date=publication_date,
+            publication_end_date=publication_end_date,
+            languages=language,
         )
         for category in categories:
             article.categories.add(category)
 
         # create title
         create_title(
-            article             = article,
-            language            = language,
-            title               = title,
-            slug                = slug,
-            description         = description,
-            page_title          = page_title,
-            menu_title          = menu_title,
-            meta_description    = meta_description,
-            creation_date       = creation_date,
-            image               = image,
+            article=article,
+            language=language,
+            title=title,
+            slug=slug,
+            description=description,
+            page_title=page_title,
+            menu_title=menu_title,
+            meta_description=meta_description,
+            creation_date=creation_date,
+            image=image,
         )
 
         # publish article
@@ -103,12 +100,9 @@ def create_article(
     return article.reload()
 
 
-
-def create_title(
-        article, language, title, slug=None, description=None,
-        page_title=None, menu_title=None, meta_description=None,
-        creation_date=None, image=None,
-    ):
+def create_title(article, language, title, slug=None, description=None,
+                 page_title=None, menu_title=None, meta_description=None,
+                 creation_date=None, image=None):
     """
     Create an article title.
     """
@@ -125,14 +119,14 @@ def create_title(
     # set default slug:
     if not slug:
         slug = settings.CMS_ARTICLES_SLUG_FORMAT.format(
-            now = creation_date or now(),
-            slug = slugify(title),
+            now=creation_date or now(),
+            slug=slugify(title),
         )
 
     # find unused slug:
-    base_slug   = slug
-    qs          = Title.objects.filter(language=language)
-    used_slugs  = list(s for s in qs.values_list('slug', flat=True) if s.startswith(base_slug))
+    base_slug = slug
+    qs = Title.objects.filter(language=language)
+    used_slugs = list(s for s in qs.values_list('slug', flat=True) if s.startswith(base_slug))
     i = 1
     while slug in used_slugs:
         slug = '%s-%s' % (base_slug, i)
@@ -140,19 +134,18 @@ def create_title(
 
     # create title
     title = Title.objects.create(
-        article     = article,
-        language    = language,
-        title       = title,
-        slug        = slug,
-        description = description,
-        page_title  = page_title,
-        menu_title  = menu_title,
-        meta_description = meta_description,
-        image       = image,
+        article=article,
+        language=language,
+        title=title,
+        slug=slug,
+        description=description,
+        page_title=page_title,
+        menu_title=menu_title,
+        meta_description=meta_description,
+        image=image,
     )
 
     return title
-
 
 
 def add_content(obj, language, slot, content):
@@ -161,7 +154,6 @@ def add_content(obj, language, slot, content):
     """
     placeholder = obj.placeholders.get(slot=slot)
     add_plugin(placeholder, TextPlugin, language, body=content)
-
 
 
 def publish_article(article, language, changed_by=None):
@@ -181,5 +173,3 @@ def publish_article(article, language, changed_by=None):
         article.publish(language)
 
     return article.reload()
-
-

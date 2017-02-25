@@ -1,54 +1,59 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+# -*- coding: utf-8 -*-
+from datetime import timedelta
 
 from cms.constants import PUBLISHER_STATE_DIRTY
-from cms.models.fields import PlaceholderField
 from cms.utils.helpers import reversion_register
-from datetime import timedelta
 from django.db import models
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.functional import cached_property
-from django.utils.translation import get_language, ugettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
+from django.utils.translation import ugettext_lazy as _
 from filer.fields.image import FilerImageField
 
-from ..conf import settings
+from djangocms_text_ckeditor.fields import HTMLField
 
 from .article import Article
 from .managers import TitleManager
 
 
-
 @python_2_unicode_compatible
 class Title(models.Model):
-    article             = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set')
-    language            = models.CharField(_('language'), max_length=15, db_index=True)
-    title               = models.CharField(_('title'), max_length=255)
-    slug                = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
-    description         = HTMLField(_('description'), blank=True, default='',
+    # These are the fields whose values are compared when saving
+    # a Title object to know if it has changed.
+    editable_fields = [
+        'title',
+        'slug',
+        'page_title',
+        'menu_title',
+        'meta_description',
+    ]
+
+    article = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set')
+    language = models.CharField(_('language'), max_length=15, db_index=True)
+    title = models.CharField(_('title'), max_length=255)
+    description = HTMLField(_('description'), blank=True, default='',
                             help_text=_('The text displayed in an articles overview.'))
-    page_title          = models.CharField(_('page title'), max_length=255, blank=True, null=True,
-                            help_text=_('overwrite the title (html title tag)'))
-    menu_title          = models.CharField(_('menu title'), max_length=255, blank=True, null=True,
-                            help_text=_('overwrite the title in the articles overview'))
-    meta_description    = models.TextField(_('meta description'), max_length=155, blank=True, null=True,
-                            help_text=_('The text displayed in search engines.'))
-    creation_date       = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
-    image               = FilerImageField(verbose_name=_('image'), related_name='+', blank=True, null=True)
+    page_title = models.CharField(_('page title'), max_length=255, blank=True, null=True,
+                                  help_text=_('overwrite the title (html title tag)'))
+    menu_title = models.CharField(_('menu title'), max_length=255, blank=True, null=True,
+                                  help_text=_('overwrite the title in the articles overview'))
+    meta_description = models.TextField(_('meta description'), max_length=155, blank=True, null=True,
+                                        help_text=_('The text displayed in search engines.'))
+    slug = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
+    creation_date = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
+    image = FilerImageField(verbose_name=_('image'), related_name='+', blank=True, null=True)
 
     # Publisher fields
-    published           = models.BooleanField(_('is published'), blank=True, default=False)
-    publisher_is_draft  = models.BooleanField(default=True, editable=False, db_index=True)
-
+    published = models.BooleanField(_('is published'), blank=True, default=False)
+    publisher_is_draft = models.BooleanField(default=True, editable=False, db_index=True)
     # This is misnamed - the one-to-one relation is populated on both ends
-    publisher_public    = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
-    publisher_state     = models.SmallIntegerField(default=0, editable=False, db_index=True)
+    publisher_public = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
+    publisher_state = models.SmallIntegerField(default=0, editable=False, db_index=True)
 
     objects = TitleManager()
 
     class Meta:
-        app_label = 'cms_articles'
         unique_together = (('language', 'article'),)
+        app_label = 'cms_articles'
 
     def __str__(self):
         return u'%s (%s, %s)' % (self.title, self.slug, self.language)
@@ -73,26 +78,35 @@ class Title(models.Model):
 
         if self.publisher_is_draft and not keep_state and self.is_new_dirty():
             self.publisher_state = PUBLISHER_STATE_DIRTY
+
         if keep_state:
             delattr(self, '_publisher_keep_state')
-        ret = super(Title, self).save_base(*args, **kwargs)
-        return ret
+        return super(Title, self).save_base(*args, **kwargs)
 
     def is_new_dirty(self):
-        if self.pk:
-            fields = [
-                'title', 'page_title', 'menu_title', 'meta_description', 'slug',
-            ]
-            try:
-                old_title = Title.objects.get(pk=self.pk)
-            except Title.DoesNotExist:
+        if not self.pk:
+            return True
+
+        try:
+            old_title = Title.objects.get(pk=self.pk)
+        except Title.DoesNotExist:
+            return True
+
+        for field in self.editable_fields:
+            old_val = getattr(old_title, field)
+            new_val = getattr(self, field)
+            if not old_val == new_val:
                 return True
-            for field in fields:
-                old_val = getattr(old_title, field)
-                new_val = getattr(self, field)
-                if not old_val == new_val:
-                    return True
-            return False
-        return True
+        return False
 
 
+def _reversion():
+    exclude_fields = ['publisher_is_draft', 'publisher_public', 'publisher_state']
+
+    reversion_register(
+        Title,
+        exclude_fields=exclude_fields
+    )
+
+
+_reversion()

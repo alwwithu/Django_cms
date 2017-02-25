@@ -1,68 +1,45 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 import copy
-from functools import wraps
-import json
 import re
 import sys
 import warnings
+from threading import local
 
-from django.utils.formats import localize
-
-import django
-from django.contrib.admin.helpers import AdminForm
+from cms.admin.placeholderadmin import PlaceholderAdminMixin
+from cms.constants import PUBLISHER_STATE_PENDING
+from cms.models import CMSPlugin, StaticPlaceholder
+from cms.utils import get_language_from_request
+from cms.utils.conf import get_cms_setting
+from cms.utils.i18n import (
+    force_language, get_language_list, get_language_object, get_language_tuple,
+)
+from cms.utils.urlutils import admin_reverse, static_with_version
 from django.conf.urls import url
 from django.contrib import admin, messages
-from django.contrib.admin.models import LogEntry, CHANGE
-from django.contrib.admin.options import IncorrectLookupParameters
-try:
-    from django.contrib.admin.utils import get_deleted_objects, quote
-except ImportError:
-    from django.contrib.admin.util import get_deleted_objects, quote
+from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
-try:
-    from django.contrib.sites.shortcuts import get_current_site
-except ImportError:
-    from django.contrib.sites.models import get_current_site
-from django.core.exceptions import (MultipleObjectsReturned, ObjectDoesNotExist,
-                                    PermissionDenied, ValidationError)
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import router, transaction
-from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.template import Context
-from django.template.loader import get_template
 from django.template.defaultfilters import escape
+from django.template.loader import get_template
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib.parse import unquote
-from django.utils.translation import ugettext_lazy as _, get_language
-from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
-
-from cms.admin.dialog.views import get_copy_dialog
-from cms.admin.placeholderadmin import PlaceholderAdminMixin
-from cms.admin.views import revert_plugins
-from cms.constants import PUBLISHER_STATE_PENDING
-from cms.models import Page, CMSPlugin, StaticPlaceholder
-from cms.toolbar_pool import toolbar_pool
-from cms.utils import helpers, permissions, get_language_from_request, admin as admin_utils, copy_plugins
-from cms.utils.i18n import get_language_list, get_language_tuple, get_language_object, force_language
-from cms.utils.admin import jsonify_request
-from cms.utils.compat.dj import is_installed
-from cms.utils.conf import get_cms_setting
-from cms.utils.helpers import find_placeholder_relation, current_site
-from cms.utils.urlutils import add_url_parameters, admin_reverse
-
-from threading import local
 
 from ..api import add_content
 from ..conf import settings
 from ..models import Article, Title
+from .forms import ArticleCreateForm, ArticleForm
 
-from .forms import ArticleForm, ArticleCreateForm, PublicationDatesForm
+try:
+    from django.contrib.admin.utils import get_deleted_objects
+except ImportError:
+    from django.contrib.admin.util import get_deleted_objects
+
 
 require_POST = method_decorator(require_POST)
 
@@ -70,11 +47,10 @@ _thread_locals = local()
 
 
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
-    search_fields   = ('=id', 'title_set__slug', 'title_set__title', 'title_set__description')
-    list_display    = ('__str__', 'order_date')
-    list_display    += tuple('lang_{}'.format(lang) for lang in get_language_list())
-    list_filter     = ['tree', 'attributes', 'categories', 'template', 'changed_by']
-    date_hierarchy  = 'order_date'
+    search_fields = ('=id', 'title_set__slug', 'title_set__title', 'title_set__description')
+    list_display = ('__str__', 'order_date') + tuple('lang_{}'.format(lang) for lang in get_language_list())
+    list_filter = ['tree', 'attributes', 'categories', 'template', 'changed_by']
+    date_hierarchy = 'order_date'
     filter_horizontal = ['attributes', 'categories']
 
     @property
@@ -82,23 +58,26 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         media = super(ArticleAdmin, self).media
         css = {
             'all': (
-                'cms/css/cms.base.css',
-                'cms/css/cms.pagetree.css',
+                static_with_version('cms/css/cms.base.css'),
+                static_with_version('cms/css/cms.pagetree.css'),
                 'cms_articles/css/changelist.css',
             )
         }
         media.add_css(css)
         js = (
-            'cms/js/dist/bundle.admin.base.min.js',
-            'cms/js/dist/bundle.admin.pagetree.min.js',
+            static_with_version('cms/js/dist/bundle.admin.base.min.js'),
+            static_with_version('cms/js/dist/bundle.admin.pagetree.min.js'),
+            'cms_articles/js/changelist.js',
         )
         media.add_js(js)
         return media
 
     lang_template = get_template('admin/cms_articles/article/change_list_lang.html')
+
     def __getattr__(self, name):
         if name.startswith('lang_'):
             lang = name[len('lang_'):]
+
             def lang_dropdown(obj):
                 return self.lang_template.render(Context({
                     'article': obj,
@@ -106,30 +85,33 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                     'language': _thread_locals.language,
                     'has_change_permission': obj.has_change_permission(_thread_locals.request),
                     'has_publish_permission': obj.has_publish_permission(_thread_locals.request),
-                    #'has_change_permission': False,
-                    #'has_publish_permission': False,
                     'request': _thread_locals.request,
                 }))
+
             lang_dropdown.short_description = lang
             lang_dropdown.allow_tags = True
             return lang_dropdown
         raise AttributeError(name)
 
     def get_fieldsets(self, request, obj=None):
-        language_dependent = ['title', 'slug', 'description', 'content', 'page_title', 'menu_title', 'meta_description', 'image']
+        language_dependent = ['title', 'slug', 'description', 'content', 'page_title',
+                              'menu_title', 'meta_description', 'image']
         if obj:
             language_dependent.remove('content')
         return [
             (None, {'fields': ['tree', 'template']}),
             (_('Language dependent settings'), {'fields': language_dependent}),
-            (_('Other settings'), {'fields': ['attributes', 'categories', 'publication_date', 'publication_end_date', 'login_required']}),
+            (_('Other settings'), {'fields': ['attributes', 'categories', 'publication_date',
+                                              'publication_end_date', 'login_required']}),
         ]
 
     def get_urls(self):
         """Get the admin urls
         """
         info = '%s_%s' % (self.model._meta.app_label, self.model._meta.model_name)
-        pat = lambda regex, fn: url(regex, self.admin_site.admin_view(fn), name='%s_%s' % (info, fn.__name__))
+
+        def pat(regex, fn):
+            return url(regex, self.admin_site.admin_view(fn), name='%s_%s' % (info, fn.__name__))
 
         url_patterns = [
             pat(r'^([0-9]+)/delete-translation/$', self.delete_translation),
@@ -143,24 +125,20 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super(ArticleAdmin, self).get_queryset(request).filter(
-            tree__site_id = settings.SITE_ID,
+            tree__site_id=settings.SITE_ID,
             publisher_is_draft=True,
         )
 
     def save_model(self, request, obj, form, change):
         new = obj.id is None
         super(ArticleAdmin, self).save_model(request, obj, form, change)
-        Title.objects.set_or_create(
-            request,
-            obj,
-            form,
-            form.cleaned_data['language'],
-        )
+        Title.objects.set_or_create(request, obj, form, form.cleaned_data['language'])
         if new and form.cleaned_data['content']:
-            add_content(obj,
-                language    = form.cleaned_data['language'],
-                slot        = settings.CMS_ARTICLES_SLOT,
-                content     = form.cleaned_data['content'],
+            add_content(
+                obj,
+                language=form.cleaned_data['language'],
+                slot=settings.CMS_ARTICLES_SLOT,
+                content=form.cleaned_data['content'],
             )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -169,7 +147,11 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         the request.
         """
         language = get_language_from_request(request)
-        form = super(ArticleAdmin, self).get_form(request, obj, form=(obj and ArticleForm or ArticleCreateForm), **kwargs)
+        form = super(ArticleAdmin, self).get_form(
+            request, obj,
+            form=(obj and ArticleForm or ArticleCreateForm),
+            **kwargs
+        )
         # get_form method operates by overriding initial fields value which
         # may persist across invocation. Code below deepcopies fields definition
         # to avoid leaks
@@ -226,7 +208,8 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         extra_context = self.update_language_tab_context(request, context=extra_context)
         language = extra_context['language']
         extra_context.update(self.get_unihandecode_context(language))
-        response = super(ArticleAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+        response = super(ArticleAdmin, self).change_view(request, object_id,
+                                                         form_url=form_url, extra_context=extra_context)
         if language and response.status_code == 302 and response._headers['location'][1] == request.path_info:
             location = response._headers['location']
             response._headers['location'] = (location[0], '%s?language=%s' % (location[1], language))
@@ -256,7 +239,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         })
         return context
 
-    #@require_POST
+    @require_POST
     @transaction.atomic
     def publish_article(self, request, article_id, language):
         try:
@@ -299,7 +282,11 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         referrer = request.META.get('HTTP_REFERER', '')
         path = admin_reverse('cms_articles_article_changelist')
         if request.GET.get('redirect_language'):
-            path = '%s?language=%s&article_id=%s' % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
+            path = '%s?language=%s&article_id=%s' % (
+                path,
+                request.GET.get('redirect_language'),
+                request.GET.get('redirect_article_id')
+            )
         if admin_reverse('index') not in referrer:
             if all_published:
                 if article:
@@ -307,7 +294,10 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                         path = article.get_absolute_url(language, fallback=True)
                     else:
                         public_article = Article.objects.get(publisher_public=article.pk)
-                        path = '%s?%s' % (public_article.get_absolute_url(language, fallback=True), get_cms_setting('CMS_TOOLBAR_URL__EDIT_OFF'))
+                        path = '%s?%s' % (
+                            public_article.get_absolute_url(language, fallback=True),
+                            get_cms_setting('CMS_TOOLBAR_URL__EDIT_OFF')
+                        )
                 else:
                     path = '%s?%s' % (referrer, get_cms_setting('CMS_TOOLBAR_URL__EDIT_OFF'))
             else:
@@ -315,7 +305,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
         return HttpResponseRedirect(path)
 
-    #@require_POST
+    @require_POST
     @transaction.atomic
     def unpublish(self, request, article_id, language):
         """
@@ -347,7 +337,11 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             messages.error(request, exc.message)
         path = admin_reverse('cms_articles_article_changelist')
         if request.GET.get('redirect_language'):
-            path = '%s?language=%s&article_id=%s' % (path, request.GET.get('redirect_language'), request.GET.get('redirect_article_id'))
+            path = '%s?language=%s&article_id=%s' % (
+                path,
+                request.GET.get('redirect_language'),
+                request.GET.get('redirect_article_id')
+            )
         return HttpResponseRedirect(path)
 
     def delete_translation(self, request, object_id, extra_context=None):

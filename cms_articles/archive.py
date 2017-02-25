@@ -1,8 +1,7 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 import calendar
-from django.utils.functional import cached_property
 from datetime import date
+
+from django.utils.functional import cached_property
 
 from .conf import settings
 
@@ -13,9 +12,9 @@ class Archive:
         self.request = request
         self.year = self.month = self.day = None
         try:
-            self.year  = int(request.GET[settings.CMS_ARTICLES_YEAR_FIELD])
+            self.year = int(request.GET[settings.CMS_ARTICLES_YEAR_FIELD])
             self.month = int(request.GET[settings.CMS_ARTICLES_MONTH_FIELD])
-            self.day   = int(request.GET[settings.CMS_ARTICLES_DAY_FIELD])
+            self.day = int(request.GET[settings.CMS_ARTICLES_DAY_FIELD])
         except:
             pass
 
@@ -37,7 +36,7 @@ class Archive:
             return date.today()
 
     def years(self):
-        for year in range(date.today().year, self.last.year-1, -1):
+        for year in range(date.today().year, self.last.year - 1, -1):
             yield YearArchive(year, self)
 
     @cached_property
@@ -46,7 +45,6 @@ class Archive:
             return date(self.year, self.month or 1, self.day or 1)
         else:
             return None
-
 
 
 class YearArchive:
@@ -75,11 +73,10 @@ class YearArchive:
     @cached_property
     def url(self):
         return '{path}?{y}={year}'.format(
-            path = self.archive.request.path,
-            y = settings.CMS_ARTICLES_YEAR_FIELD,
-            year = self.year,
+            path=self.archive.request.path,
+            y=settings.CMS_ARTICLES_YEAR_FIELD,
+            year=self.year,
         )
-
 
 
 class MonthArchive:
@@ -108,13 +105,12 @@ class MonthArchive:
     @cached_property
     def url(self):
         return '{path}?{y}={year}&{m}={month}'.format(
-            path = self.year_archive.archive.request.path,
-            y = settings.CMS_ARTICLES_YEAR_FIELD,
-            m = settings.CMS_ARTICLES_MONTH_FIELD,
-            year = self.year_archive.year,
-            month = self.month,
+            path=self.year_archive.archive.request.path,
+            y=settings.CMS_ARTICLES_YEAR_FIELD,
+            m=settings.CMS_ARTICLES_MONTH_FIELD,
+            year=self.year_archive.year,
+            month=self.month,
         )
-
 
 
 class DayArchive:
@@ -131,13 +127,11 @@ class DayArchive:
     @cached_property
     def url(self):
         return '{path}?{y}={year}&{m}={month}&{d}={day}'.format(
-            path = self.month_archive.year_archive.archive.request.path,
-            y = settings.CMS_ARTICLES_YEAR_FIELD,
-            m = settings.CMS_ARTICLES_MONTH_FIELD,
-            d = settings.CMS_ARTICLES_DAY_FIELD,
-            year = self.month_archive.year_archive.year,
-            month = self.month_archive.month,
-            day = self.day,
+            path=self.month_archive.year_archive.archive.request.path,
+            y=settings.CMS_ARTICLES_YEAR_FIELD,
+            m=settings.CMS_ARTICLES_MONTH_FIELD,
+            d=settings.CMS_ARTICLES_DAY_FIELD,
+            year=self.month_archive.year_archive.year,
+            month=self.month_archive.month,
+            day=self.day,
         )
-
-

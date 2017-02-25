@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+.tox
 build
 dist
 *.egg-info

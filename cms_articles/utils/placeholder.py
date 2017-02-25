@@ -2,29 +2,30 @@
 import operator
 import warnings
 
+from cms.exceptions import DuplicatePlaceholderWarning
+from cms.utils import get_cms_setting
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.query_utils import Q
-from django.template import TemplateSyntaxError, NodeList, Variable, Context, Template
+from django.template import (
+    Context, NodeList, Template, TemplateSyntaxError, Variable,
+)
 from django.template.base import VariableNode
 from django.template.loader import get_template
-from django.template.loader_tags import ExtendsNode, BlockNode
+from django.template.loader_tags import BlockNode, ExtendsNode
+from django.utils import six
+from django.utils.encoding import force_text
+
 try:
     from django.template.loader_tags import ConstantIncludeNode as IncludeNode
 except ImportError:
     from django.template.loader_tags import IncludeNode
-from django.utils import six
-from django.utils.encoding import force_text
 
 try:
     from sekizai.helpers import get_varname, is_variable_extend_node, engines
 except ImportError:
     from sekizai.helpers import get_varname, is_variable_extend_node
     engines = None
-
-
-from cms.exceptions import DuplicatePlaceholderWarning
-from cms.utils import get_cms_setting
 
 
 def _get_nodelist(tpl):
@@ -98,8 +99,8 @@ def get_toolbar_plugin_struct(plugins_list, slot, page, parent=None):
     for plugin in plugins_list:
         allowed_parents = plugin().get_parent_classes(slot, page)
         if parent:
-            ## skip to the next if this plugin is not allowed to be a child
-            ## of the parent
+            # skip to the next if this plugin is not allowed to be a child
+            # of the parent
             if allowed_parents and parent.__name__ not in allowed_parents:
                 continue
         else:
@@ -288,7 +289,7 @@ def _extend_blocks(extend_node, blocks):
     parent = extend_node.get_parent(get_context())
     # Search for new blocks
     for node in _get_nodelist(parent).get_nodes_by_type(BlockNode):
-        if not node.name in blocks:
+        if node.name not in blocks:
             blocks[node.name] = node
         else:
             # set this node as the super node (for {{ block.super }})

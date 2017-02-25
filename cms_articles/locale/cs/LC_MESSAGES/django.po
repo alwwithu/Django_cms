@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-05 02:36+0200\n"
+"POT-Creation-Date: 2017-02-26 11:26+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -17,199 +17,199 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: admin/article.py:124
+#: admin/article.py:103
 msgid "Language dependent settings"
 msgstr "Jazykově závislá nastavení"
 
-#: admin/article.py:125
+#: admin/article.py:104
 msgid "Other settings"
 msgstr "Ostatní nastevení"
 
-#: admin/article.py:270
+#: admin/article.py:253
 msgid "You do not have permission to publish this article"
 msgstr "Nemáte oprávnění publikovat tento článek"
 
-#: admin/article.py:285
+#: admin/article.py:268
 msgid "The content was successfully published."
 msgstr "Obsah byl úspěšně publikován."
 
-#: admin/article.py:294
+#: admin/article.py:277
 msgid "There was a problem publishing your content"
 msgstr "Nastal problém při publikování obsahu"
 
-#: admin/article.py:326
+#: admin/article.py:316
 msgid "You do not have permission to unpublish this article"
 msgstr "Nemáte oprávnění depublikovat tento článek"
 
-#: admin/article.py:328
+#: admin/article.py:318
 msgid "This article was never published"
 msgstr "Článek nebyl nikdy publikován"
 
-#: admin/article.py:331
+#: admin/article.py:321
 #, python-format
 msgid "The %(language)s article \"%(article)s\" was successfully unpublished"
 msgstr ""
 "Překlad do jazyka %(language)s článku \"%(article)s\" byl úspěšně "
 "depublikován"
 
-#: admin/article.py:373
+#: admin/article.py:367
 msgid "You do not have permission to change this article"
 msgstr "Nemáte oprávnění upravovat tento článek"
 
-#: admin/article.py:377
+#: admin/article.py:371
 #, python-format
 msgid "%(name)s object with primary key %(key)r does not exist."
 msgstr "Objekt typu %(name)s s id %(key)r neexistuje."
 
-#: admin/article.py:383
+#: admin/article.py:377
 msgid "There only exists one translation for this article"
 msgstr "Existuje pouze jeden překlad tohoto článku"
 
-#: admin/article.py:413
+#: admin/article.py:407
 #, python-format
 msgid "Title and plugins with language %(language)s was deleted"
 msgstr "Obsah pro jazyk %(language)s byl odstraněn"
 
-#: admin/article.py:432
+#: admin/article.py:426
 msgid "Are you sure?"
 msgstr "Jste si jisti?"
 
-#: admin/forms.py:22 admin/forms.py:75
+#: admin/forms.py:17 admin/forms.py:67
 msgid "Language"
 msgstr "Jazyk"
 
-#: admin/forms.py:23 admin/forms.py:76
+#: admin/forms.py:18 admin/forms.py:68
 msgid "The current language of the content fields."
 msgstr "Aktuální jazyk obsahu."
 
-#: admin/forms.py:54
+#: admin/forms.py:49
 msgid "Another article with this slug already exists"
 msgstr "Článek s tímto identifikátorem již existuje"
 
-#: admin/forms.py:61
+#: admin/forms.py:56
 msgid "Slug must not be empty."
 msgstr "Identifikátor nesmí být prázdný."
 
-#: admin/forms.py:70
+#: admin/forms.py:63
 msgid "Text"
 msgstr "Text"
 
-#: admin/forms.py:70
+#: admin/forms.py:63
 msgid "Initial content of the article."
 msgstr "Počáteční text článku."
 
-#: apps.py:9
+#: apps.py:7
 msgid "django CMS articles"
 msgstr "django CMS Články"
 
-#: cms_app.py:12
+#: cms_apps.py:9
 msgid "Articles tree"
 msgstr "Strom článků"
 
-#: cms_plugins.py:14 cms_plugins.py:37 cms_plugins.py:38 cms_toolbars.py:19
-#: cms_toolbars.py:21
+#: cms_plugins.py:12 cms_plugins.py:35 cms_plugins.py:36 cms_toolbars.py:17
+#: cms_toolbars.py:19
 msgid "Articles"
 msgstr "Články"
 
-#: cms_plugins.py:15 cms_toolbars.py:24
+#: cms_plugins.py:13 cms_toolbars.py:22
 msgid "Article"
 msgstr "Článek"
 
-#: cms_plugins.py:81
+#: cms_plugins.py:79
 msgid "Articles category"
 msgstr "Kategorie článků"
 
-#: cms_toolbars.py:29
+#: cms_toolbars.py:28
 msgid "Article Settings"
 msgstr "Nastavení článku"
 
-#: cms_toolbars.py:31
+#: cms_toolbars.py:30
 msgid "Edit this article"
 msgstr "Upravit tento článek"
 
-#: cms_toolbars.py:35
+#: cms_toolbars.py:34
 msgid "New Article"
 msgstr "Nový článek"
 
-#: cms_toolbars.py:43
+#: cms_toolbars.py:41
 msgid "Publish article now"
 msgstr "Publikovat článek teď"
 
-#: conf/default_settings.py:9 conf/default_settings.py:18
-#: conf/default_settings.py:23
+#: conf/default_settings.py:5 conf/default_settings.py:14
+#: conf/default_settings.py:19
 msgid "Default"
 msgstr "Výchozí"
 
-#: import_wordpress/admin.py:46
+#: import_wordpress/admin.py:41
 msgid "Failed to create user {}: {}"
 msgstr "Selhalo vytvoření uživatele {}: {}"
 
-#: import_wordpress/admin.py:48
+#: import_wordpress/admin.py:43
 msgid "Successfully created user {}"
 msgstr "Úspěšně vytvořen uživatel {}"
 
-#: import_wordpress/admin.py:49
+#: import_wordpress/admin.py:44
 msgid "Create users for selected authors"
 msgstr "Vytvořit uživatele pro vybrané autory"
 
-#: import_wordpress/admin.py:69
+#: import_wordpress/admin.py:66
 msgid "Successfully found user {} for author"
 msgstr "Úspěšně nalezen uživatel {} pro autora"
 
-#: import_wordpress/admin.py:71
+#: import_wordpress/admin.py:69
 msgid "Failed to find user for author {}"
 msgstr "Odpovídající uživatele pro autora {} nenalezen"
 
-#: import_wordpress/admin.py:72
+#: import_wordpress/admin.py:70
 msgid "Find users for selected authors"
 msgstr "Najít odpovídající uživatele pro vybrané autory"
 
-#: import_wordpress/admin.py:117
+#: import_wordpress/admin.py:116
 msgid "Successfullty imported {} authors"
 msgstr "Úspěšně importováno {} autorů"
 
-#: import_wordpress/admin.py:118
+#: import_wordpress/admin.py:117
 msgid "Successfullty imported {} categories"
 msgstr "Úspěšně importováno {} kategorií"
 
-#: import_wordpress/admin.py:119
+#: import_wordpress/admin.py:118
 msgid "Successfullty imported {} items"
 msgstr "Úspěšně importováno {} položek"
 
-#: import_wordpress/admin.py:140
+#: import_wordpress/admin.py:139
 msgid "post parent"
 msgstr "nadřazená položka"
 
-#: import_wordpress/admin.py:156
+#: import_wordpress/admin.py:155
 msgid "post children"
 msgstr "podřízené položky"
 
-#: import_wordpress/admin.py:164 import_wordpress/models.py:75
-#: models/title.py:26
+#: import_wordpress/admin.py:163 import_wordpress/models.py:78
+#: models/title.py:32
 msgid "title"
 msgstr "titulek"
 
-#: import_wordpress/admin.py:183
+#: import_wordpress/admin.py:182
 msgid "imported as"
 msgstr "imporováno jako"
 
-#: import_wordpress/admin.py:191
+#: import_wordpress/admin.py:190
 msgid "Running import"
 msgstr "Běžící import"
 
-#: import_wordpress/admin.py:200
+#: import_wordpress/admin.py:199
 msgid "Select predefined import options"
 msgstr "Vyberte předdefinované volby importu"
 
-#: import_wordpress/admin.py:206
+#: import_wordpress/admin.py:205
 msgid "Import selected items into CMS"
 msgstr "Imporovat vybrané položky do CMS"
 
-#: import_wordpress/admin.py:230
+#: import_wordpress/admin.py:229
 msgid "Global options"
 msgstr "Všeobecné volby"
 
-#: import_wordpress/admin.py:231
+#: import_wordpress/admin.py:230
 msgid "Article specific options"
 msgstr "Volby importu článků"
 
@@ -217,204 +217,204 @@ msgstr "Volby importu článků"
 msgid "Page specific options"
 msgstr "Volby importu stránek"
 
-#: import_wordpress/admin.py:233
+#: import_wordpress/admin.py:234
 msgid "File specific options"
 msgstr "Volby importu souborů"
 
-#: import_wordpress/admin.py:234
+#: import_wordpress/admin.py:235
 msgid "Gallery specific options"
 msgstr "Volby importu fotogalerií"
 
-#: import_wordpress/admin.py:235
+#: import_wordpress/admin.py:236
 msgid "Slide specific options"
 msgstr "Volby importu slidů"
 
-#: import_wordpress/apps.py:9
+#: import_wordpress/apps.py:7
 msgid "django CMS articles - import from WordPress"
 msgstr "django CMS Články - import z WordPressu"
 
-#: import_wordpress/forms.py:15
+#: import_wordpress/forms.py:10
 msgid "WordPress XML file"
 msgstr "XML soubor z WordPressu"
 
-#: import_wordpress/forms.py:16
+#: import_wordpress/forms.py:11
 msgid "Select XML file with posts exported from WP."
 msgstr "Vyberte XML soubor s položkami exportovanými z WP."
 
-#: import_wordpress/forms.py:29
+#: import_wordpress/forms.py:24
 msgid "Options"
 msgstr "Volby"
 
-#: import_wordpress/models.py:26
+#: import_wordpress/models.py:29
 msgid "author id"
 msgstr "id autora"
 
-#: import_wordpress/models.py:27
+#: import_wordpress/models.py:30
 msgid "login name"
 msgstr "přihlašovací jméno"
 
-#: import_wordpress/models.py:28
+#: import_wordpress/models.py:31
 msgid "email"
 msgstr "email"
 
-#: import_wordpress/models.py:29
+#: import_wordpress/models.py:32
 msgid "first name"
 msgstr "jméno"
 
-#: import_wordpress/models.py:30
+#: import_wordpress/models.py:33
 msgid "last name"
 msgstr "příjmení"
 
-#: import_wordpress/models.py:31
+#: import_wordpress/models.py:35
 msgid "user"
 msgstr "uživatel"
 
-#: import_wordpress/models.py:38
+#: import_wordpress/models.py:42
 msgid "author"
 msgstr "autor"
 
-#: import_wordpress/models.py:39
+#: import_wordpress/models.py:43
 msgid "authors"
 msgstr "autoři"
 
-#: import_wordpress/models.py:45
+#: import_wordpress/models.py:48
 msgid "term id"
 msgstr "id kategorie"
 
-#: import_wordpress/models.py:46 import_wordpress/models.py:49
-#: import_wordpress/models.py:272 models/attribute.py:10
+#: import_wordpress/models.py:49 import_wordpress/models.py:52
+#: import_wordpress/models.py:270 models/attribute.py:8
 msgid "name"
 msgstr "název"
 
-#: import_wordpress/models.py:47 models/title.py:27
+#: import_wordpress/models.py:50 models/title.py:41
 msgid "slug"
 msgstr "identifikátor"
 
-#: import_wordpress/models.py:48
+#: import_wordpress/models.py:51
 msgid "parent slug"
 msgstr "id rodiče"
 
-#: import_wordpress/models.py:50
+#: import_wordpress/models.py:54
 msgid "articles category"
 msgstr "kategorie článků"
 
-#: import_wordpress/models.py:68 models/category.py:17
+#: import_wordpress/models.py:72 models/category.py:17
 msgid "category"
 msgstr "kategorie"
 
-#: import_wordpress/models.py:69 import_wordpress/models.py:89
-#: models/article.py:36 models/category.py:18 models/plugins.py:83
+#: import_wordpress/models.py:73 import_wordpress/models.py:92
+#: models/article.py:37 models/category.py:18 models/plugins.py:78
 msgid "categories"
 msgstr "kategorie"
 
-#: import_wordpress/models.py:76
+#: import_wordpress/models.py:79
 msgid "link"
 msgstr "odkaz"
 
-#: import_wordpress/models.py:77 models/article.py:41
+#: import_wordpress/models.py:80 models/article.py:43
 msgid "publication date"
 msgstr "datum zveřejnění"
 
-#: import_wordpress/models.py:78 models/article.py:37
+#: import_wordpress/models.py:81 models/article.py:38
 msgid "created by"
 msgstr "vytvořil(a)"
 
-#: import_wordpress/models.py:79
+#: import_wordpress/models.py:82
 msgid "url"
 msgstr "url"
 
-#: import_wordpress/models.py:80 models/title.py:28
+#: import_wordpress/models.py:83 models/title.py:33
 msgid "description"
 msgstr "popis"
 
-#: import_wordpress/models.py:81
+#: import_wordpress/models.py:84
 msgid "content"
 msgstr "obsah"
 
-#: import_wordpress/models.py:82
+#: import_wordpress/models.py:85
 msgid "excerpt"
 msgstr "perex"
 
-#: import_wordpress/models.py:83
+#: import_wordpress/models.py:86
 msgid "post id"
 msgstr "id"
 
-#: import_wordpress/models.py:84
+#: import_wordpress/models.py:87
 msgid "post date"
 msgstr "datum"
 
-#: import_wordpress/models.py:85
+#: import_wordpress/models.py:88
 msgid "post name"
 msgstr "slug"
 
-#: import_wordpress/models.py:86
+#: import_wordpress/models.py:89
 msgid "status"
 msgstr "stav"
 
-#: import_wordpress/models.py:87
+#: import_wordpress/models.py:90
 msgid "parent post id"
 msgstr "id rodiče"
 
-#: import_wordpress/models.py:88
+#: import_wordpress/models.py:91
 msgid "type"
 msgstr "typ"
 
-#: import_wordpress/models.py:90
+#: import_wordpress/models.py:93
 msgid "metadata"
 msgstr "metadata"
 
-#: import_wordpress/models.py:91
+#: import_wordpress/models.py:95
 msgid "imported article"
 msgstr "článek"
 
-#: import_wordpress/models.py:93
+#: import_wordpress/models.py:98
 msgid "imported page"
 msgstr "importovaná stránka"
 
-#: import_wordpress/models.py:95
+#: import_wordpress/models.py:101
 msgid "imported file"
 msgstr "importovaný soubor"
 
-#: import_wordpress/models.py:97 import_wordpress/models.py:291
-#: import_wordpress/models.py:308
+#: import_wordpress/models.py:104 import_wordpress/models.py:292
+#: import_wordpress/models.py:310
 msgid "attachments folder"
 msgstr "adresář pro přílohy"
 
-#: import_wordpress/models.py:104
+#: import_wordpress/models.py:111
 msgid "item"
 msgstr "položka"
 
-#: import_wordpress/models.py:105
+#: import_wordpress/models.py:112
 msgid "items"
 msgstr "položky"
 
-#: import_wordpress/models.py:275 models/title.py:25
+#: import_wordpress/models.py:273 models/title.py:31
 msgid "language"
 msgstr "jazyk"
 
-#: import_wordpress/models.py:276
+#: import_wordpress/models.py:273
 msgid "The language of the content fields."
 msgstr "Jazyk obsahu."
 
-#: import_wordpress/models.py:279 models/article.py:26
+#: import_wordpress/models.py:277 models/article.py:26
 msgid "tree"
 msgstr "strom"
 
-#: import_wordpress/models.py:280
+#: import_wordpress/models.py:278
 msgid "All posts will be imported as articles in this tree."
 msgstr ""
 "Všechny položky typy post budou naimportovány jako články do tohoto stromu."
 
-#: import_wordpress/models.py:286 import_wordpress/models.py:303
-#: models/article.py:32
+#: import_wordpress/models.py:285 import_wordpress/models.py:304
+#: models/article.py:33
 msgid "template"
 msgstr "šablona"
 
-#: import_wordpress/models.py:289 import_wordpress/models.py:306
+#: import_wordpress/models.py:289 import_wordpress/models.py:307
 msgid "slot"
 msgstr "slot"
 
-#: import_wordpress/models.py:290 import_wordpress/models.py:307
+#: import_wordpress/models.py:290 import_wordpress/models.py:308
 msgid "The name of placeholder used to create content plugins in."
 msgstr "Název placeholderu, ve kterém bude zobrazen obsah."
 
@@ -426,18 +426,18 @@ msgstr ""
 "Vyberte složku pro články. Pro každý článek, který má přílohy, bude "
 "vytvořena podsložka."
 
-#: import_wordpress/models.py:294 import_wordpress/models.py:311
+#: import_wordpress/models.py:295 import_wordpress/models.py:313
 msgid "create redirects"
 msgstr "vytvořit přesměrování"
 
-#: import_wordpress/models.py:295
+#: import_wordpress/models.py:296
 msgid ""
 "Create django redirects for each article from the old path to the new "
 "imported path"
 msgstr ""
 "Vytvořit přesměrování pro každý článek z původní (WordPress) adresy na novou."
 
-#: import_wordpress/models.py:296 import_wordpress/models.py:313
+#: import_wordpress/models.py:297 import_wordpress/models.py:315
 msgid "publish"
 msgstr "publikovat"
 
@@ -445,7 +445,7 @@ msgstr "publikovat"
 msgid "Publish imported articles."
 msgstr "Publikovat importované články."
 
-#: import_wordpress/models.py:300
+#: import_wordpress/models.py:301
 msgid "root"
 msgstr "kořen"
 
@@ -453,7 +453,7 @@ msgstr "kořen"
 msgid "All pages will be imported as sub-pages of this page."
 msgstr "Všechny stránky budou importovány jako podstránky této stránky."
 
-#: import_wordpress/models.py:310
+#: import_wordpress/models.py:311
 msgid ""
 "Select folder for pages. Subfolder will be created for each page with "
 "attachments."
@@ -461,7 +461,7 @@ msgstr ""
 "Vyberte složku pro stránky. Pro každou stránku, která má přílohy, bude "
 "vytvořena podsložka."
 
-#: import_wordpress/models.py:312
+#: import_wordpress/models.py:314
 msgid ""
 "Create django redirects for each page from the old path to the new imported "
 "path"
@@ -469,30 +469,30 @@ msgstr ""
 "Vytvořit přesměrování pro každou stránku z původní (WordPress) adresy na "
 "novou."
 
-#: import_wordpress/models.py:314
+#: import_wordpress/models.py:315
 msgid "Publish imported pages."
 msgstr "Publikovat importované stránky."
 
-#: import_wordpress/models.py:317 import_wordpress/models.py:322
-#: import_wordpress/models.py:327
+#: import_wordpress/models.py:319 import_wordpress/models.py:324
+#: import_wordpress/models.py:329
 msgid "folder"
 msgstr "složka"
 
-#: import_wordpress/models.py:319
+#: import_wordpress/models.py:320
 msgid ""
 "Select folder for galleries. Subfolder will be created for each gallery."
 msgstr ""
 "Vyberte složku pro galerie. Pro každou galerii bude vytvořena podsložka."
 
-#: import_wordpress/models.py:324
+#: import_wordpress/models.py:325
 msgid "Select folder for slides."
 msgstr "Vyberte složku pro slidy."
 
-#: import_wordpress/models.py:329
+#: import_wordpress/models.py:330
 msgid "Select folder for other attachments."
 msgstr "Vyberte složku pro ostatní přílohy."
 
-#: import_wordpress/models.py:335 import_wordpress/models.py:336
+#: import_wordpress/models.py:337 import_wordpress/models.py:338
 msgid "options"
 msgstr "volby"
 
@@ -533,19 +533,19 @@ msgstr "Zrušit"
 msgid "The page the article is accessible at."
 msgstr "Stránka, na které bude článek dostupný."
 
-#: models/article.py:34
+#: models/article.py:35
 msgid "The template used to render the content."
 msgstr "Šablona, která bude použita k zobrazení článku."
 
-#: models/article.py:35 models/attribute.py:15 models/plugins.py:49
+#: models/article.py:36 models/attribute.py:13 models/plugins.py:44
 msgid "attributes"
 msgstr "vlastnosti"
 
-#: models/article.py:38
+#: models/article.py:39
 msgid "changed by"
 msgstr "změnil(a)"
 
-#: models/article.py:42
+#: models/article.py:44
 msgid ""
 "When the article should go live. Status must be \"Published\" for article to "
 "go live."
@@ -553,106 +553,106 @@ msgstr ""
 "Od kdy má být článek veřejně dostupný. Stav musí být \"Publikován\", aby byl "
 "článek veřejný."
 
-#: models/article.py:43
+#: models/article.py:46
 msgid "publication end date"
 msgstr "konec zveřejnění"
 
-#: models/article.py:44
+#: models/article.py:47
 msgid "When to expire the article. Leave empty to never expire."
 msgstr ""
 "Do kdy má být článek veřejně dostupný. Ponechte prázdné, pokud chcete, aby "
 "byl dostupný navždy."
 
-#: models/article.py:46
+#: models/article.py:49
 msgid "login required"
 msgstr "vyžadovat přihlášení"
 
-#: models/article.py:65 models/plugins.py:18 models/title.py:24
+#: models/article.py:69 models/plugins.py:15 models/title.py:30
 msgid "article"
 msgstr "článek"
 
-#: models/article.py:66
+#: models/article.py:70
 msgid "articles"
 msgstr "články"
 
-#: models/attribute.py:14
+#: models/attribute.py:12
 msgid "attribute"
 msgstr "vlastnost"
 
-#: models/category.py:13
+#: models/category.py:12
 msgid "page"
 msgstr "stránka"
 
-#: models/plugins.py:20 models/plugins.py:44
+#: models/plugins.py:17 models/plugins.py:40
 msgid "Template"
 msgstr "Šablona"
 
-#: models/plugins.py:23 models/plugins.py:47
+#: models/plugins.py:20 models/plugins.py:43
 msgid "The template used to render plugin."
 msgstr "Šablone použitá k zobrazení obsahu."
 
-#: models/plugins.py:43
+#: models/plugins.py:38
 msgid "Number of last articles"
 msgstr "Počet zobrazených článků"
 
-#: models/plugins.py:77
+#: models/plugins.py:72
 msgid "trees"
 msgstr "stromy"
 
-#: models/plugins.py:86
+#: models/plugins.py:81
 msgid "last {} articles"
 msgstr "posledních {} článků"
 
-#: models/plugins.py:108
+#: models/plugins.py:103
 msgid "include sub-categories"
 msgstr "zahrnout podkategorie"
 
-#: models/plugins.py:109
+#: models/plugins.py:104
 msgid ""
 "Check, if you want to include articles from sub-categories of this category."
 msgstr "Zaškrtněte, pokud chcete zahrnout články z podkategorií."
 
-#: models/plugins.py:112
+#: models/plugins.py:107
 msgid "last {} articles in this category"
 msgstr "posledních {} článků v této kategorii"
 
-#: models/title.py:29
+#: models/title.py:34
 msgid "The text displayed in an articles overview."
 msgstr "Text zobrazovaný v přehledu článků."
 
-#: models/title.py:30
+#: models/title.py:35
 msgid "page title"
 msgstr "titulek stránky"
 
-#: models/title.py:31
+#: models/title.py:36
 msgid "overwrite the title (html title tag)"
 msgstr "přepíše, co se zobrazuje v záhlaví stránky"
 
-#: models/title.py:32
+#: models/title.py:37
 msgid "menu title"
 msgstr "titulek v menu"
 
-#: models/title.py:33
+#: models/title.py:38
 msgid "overwrite the title in the articles overview"
 msgstr "přepíše, co se zobrazuje v menu a drobečkové navigaci"
 
-#: models/title.py:34
+#: models/title.py:39
 msgid "meta description"
 msgstr "popis (meta)"
 
-#: models/title.py:35
+#: models/title.py:40
 msgid "The text displayed in search engines."
 msgstr "Text zobrazovaný vyhledávači."
 
-#: models/title.py:36
+#: models/title.py:42
 msgid "creation date"
 msgstr "datum vytvoření"
 
-#: models/title.py:37
+#: models/title.py:43
 msgid "image"
 msgstr "obrázek"
 
-#: models/title.py:40
+#: models/title.py:46
 msgid "is published"
 msgstr "je publikován"
 
@@ -666,7 +666,6 @@ msgstr "Úprava článku"
 
 #: templates/admin/cms_articles/article/change_list_lang.html:18
 #, python-format
-#| msgid "Title and plugins with language %(language)s was deleted"
 msgid "Edit article in language %(language)s"
 msgstr "Upravit článek v jazyce %(language)s"
 
@@ -675,17 +674,14 @@ msgid "Edit"
 msgstr "Upravit"
 
 #: templates/admin/cms_articles/article/change_list_lang.html:28
-#| msgid "publish"
 msgid "Publish"
 msgstr "Publikovat"
 
 #: templates/admin/cms_articles/article/change_list_lang.html:36
-#| msgid "publish"
 msgid "Unpublish"
 msgstr "Depublikovat"
 
 #: templates/admin/cms_articles/article/change_list_lang.html:46
-#| msgid "Article Settings"
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -705,12 +701,12 @@ msgstr "další"
 msgid "Archive"
 msgstr "Archiv"
 
-#: templatetags/cms_articles.py:81
+#: templatetags/cms_articles.py:66
 #, python-format
 msgid "Article not found on %(domain)s"
 msgstr "Článek nebyl v doméně %(domain)s nalezen"
 
-#: templatetags/cms_articles.py:82
+#: templatetags/cms_articles.py:68
 #, python-format
 msgid ""
 "A template tag couldn't find the article with lookup arguments `"

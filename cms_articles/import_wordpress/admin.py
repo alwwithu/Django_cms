@@ -1,31 +1,26 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
+# -*- coding: utf-8 -*-
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.conf.urls import url
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from cms_articles.conf import settings
-from json import dumps
 
-from .forms import XMLImportForm, CMSImportForm
-from .models import Category, Author, Item, Options
+from .forms import CMSImportForm, XMLImportForm
+from .models import Author, Category, Item, Options
 
 User = get_user_model()
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    search_fields   = ['login', 'email', 'first_name', 'last_name']
-    list_display    = ['login', 'email', 'first_name', 'last_name', 'user']
-    list_editable   = ['user']
-    actions         = ['create_users', 'find_users']
+    search_fields = ['login', 'email', 'first_name', 'last_name']
+    list_display = ['login', 'email', 'first_name', 'last_name', 'user']
+    list_editable = ['user']
+    actions = ['create_users', 'find_users']
 
     def has_add_permission(self, request):
         return False
@@ -36,10 +31,10 @@ class AuthorAdmin(admin.ModelAdmin):
                 continue
             try:
                 author.user = User.objects.create(
-                    username    = author.login,
-                    email       = author.email,
-                    first_name  = author.first_name or '',
-                    last_name   = author.last_name or '',
+                    username=author.login,
+                    email=author.email,
+                    first_name=author.first_name or '',
+                    last_name=author.last_name or '',
                 )
                 author.save()
             except Exception as e:
@@ -66,33 +61,37 @@ class AuthorAdmin(admin.ModelAdmin):
 
             if author.user:
                 author.save()
-                self.message_user(request, _('Successfully found user {} for author').format(author.user, author), messages.SUCCESS)
+                self.message_user(
+                    request,
+                    _('Successfully found user {} for author').format(author.user, author),
+                    messages.SUCCESS)
             else:
                 self.message_user(request, _('Failed to find user for author {}').format(author), messages.ERROR)
     find_users.short_description = _('Find users for selected authors')
 
+
 admin.site.register(Author, AuthorAdmin)
 
 
-
 class CategoryAdmin(admin.ModelAdmin):
-    search_fields   = ['=term_id', 'name', 'slug']
-    list_display    = ['slug', 'cached_name', 'category']
-    list_editable   = ['category']
-    ordering        = ['cached_name']
+    search_fields = ['=term_id', 'name', 'slug']
+    list_display = ['slug', 'cached_name', 'category']
+    list_editable = ['category']
+    ordering = ['cached_name']
 
     def has_add_permission(self, request):
         return False
 
+
 admin.site.register(Category, CategoryAdmin)
 
 
-
 class ItemAdmin(admin.ModelAdmin):
-    search_fields   = ['=post_id', '=post_parent', 'categories__name', 'title']
-    list_filter     = ['post_type', 'status', 'categories']
-    list_display    = ['post_id', 'parent_link', 'children_link', 'title_link', 'post_type', 'post_date', 'status', 'imported_link']
-    actions         = ['cms_import']
+    search_fields = ['=post_id', '=post_parent', 'categories__name', 'title']
+    list_filter = ['post_type', 'status', 'categories']
+    list_display = ['post_id', 'parent_link', 'children_link', 'title_link',
+                    'post_type', 'post_date', 'status', 'imported_link']
+    actions = ['cms_import']
 
     def get_urls(self):
         return [
@@ -129,11 +128,11 @@ class ItemAdmin(admin.ModelAdmin):
     def parent_link(self, obj):
         if obj.post_parent:
             return '<a href="{url}">{label}</a>'.format(
-                url     = reverse('admin:{}_{}_changelist'.format(
-                            Item._meta.app_label,
-                            Item._meta.model_name,
-                        )) + '?post_id__exact={}'.format(obj.post_parent),
-                label   = obj.post_parent,
+                url=reverse('admin:{}_{}_changelist'.format(
+                    Item._meta.app_label,
+                    Item._meta.model_name,
+                )) + '?post_id__exact={}'.format(obj.post_parent),
+                label=obj.post_parent,
             )
         else:
             return ''
@@ -145,11 +144,11 @@ class ItemAdmin(admin.ModelAdmin):
         count = obj.children.count()
         if count:
             return '<a href="{url}">{label}</a>'.format(
-                url     = reverse('admin:{}_{}_changelist'.format(
-                            Item._meta.app_label,
-                            Item._meta.model_name,
-                        )) + '?post_parent__exact={}'.format(obj.post_id),
-                label   = count,
+                url=reverse('admin:{}_{}_changelist'.format(
+                    Item._meta.app_label,
+                    Item._meta.model_name,
+                )) + '?post_parent__exact={}'.format(obj.post_id),
+                label=count,
             )
         else:
             return ''
@@ -158,8 +157,8 @@ class ItemAdmin(admin.ModelAdmin):
 
     def title_link(self, obj):
         return '<a href="{url}" title="{url}" target="_blank">{title}</a>'.format(
-            url     = obj.guid,
-            title   = obj.title,
+            url=obj.guid,
+            title=obj.title,
         )
     title_link.short_description = _('title')
     title_link.admin_order_field = 'title'
@@ -175,8 +174,8 @@ class ItemAdmin(admin.ModelAdmin):
             url = obj.folder.get_admin_directory_listing_url_path()
         if url:
             return '<a href="{url}" target="_blank">{obj}</a>'.format(
-                obj = obj.article or obj.page or obj.file or obj.folder,
-                url = url,
+                obj=obj.article or obj.page or obj.file or obj.folder,
+                url=url,
             )
         else:
             return ''
@@ -191,7 +190,7 @@ class ItemAdmin(admin.ModelAdmin):
                     'title': _('Running import'),
                     'items': queryset,
                     'options': form.cleaned_data['options'],
-                    'media':    self.media,
+                    'media': self.media,
                     'opts': self.model._meta,
                 }, context_instance=RequestContext(request))
         else:
@@ -208,31 +207,34 @@ class ItemAdmin(admin.ModelAdmin):
     @transaction.atomic
     def import_item(self, request):
         try:
-            item_id     = int(request.GET['item_id'])
-            options_id  = int(request.GET['options_id'])
+            item_id = int(request.GET['item_id'])
+            options_id = int(request.GET['options_id'])
         except:
             return HttpResponseBadRequest()
-        item    = get_object_or_404(Item, id=item_id)
+        item = get_object_or_404(Item, id=item_id)
         options = get_object_or_404(Options, id=options_id)
         item.cms_import(options)
         return HttpResponse('0', content_type="text/json")
 
+
 admin.site.register(Item, ItemAdmin)
 
 
-
 class OptionsAdmin(admin.ModelAdmin):
-    search_fields   = ['name']
-    save_as         = True
+    search_fields = ['name']
+    save_as = True
 
-    fieldsets       = [
+    fieldsets = [
         (None, {'fields': ['name']}),
         (_('Global options'), {'fields': ['language']}),
-        (_('Article specific options'), {'fields': ['article_tree', 'article_template', 'article_slot', 'article_folder', 'article_redirects', 'article_publish']}),
-        (_('Page specific options'), {'fields': ['page_root', 'page_template', 'page_slot', 'page_folder', 'page_redirects', 'page_publish']}),
+        (_('Article specific options'), {'fields': ['article_tree', 'article_template', 'article_slot',
+                                                    'article_folder', 'article_redirects', 'article_publish']}),
+        (_('Page specific options'), {'fields': ['page_root', 'page_template', 'page_slot',
+                                                 'page_folder', 'page_redirects', 'page_publish']}),
         (_('File specific options'), {'fields': ['file_folder']}),
         (_('Gallery specific options'), {'fields': ['gallery_folder']}),
         (_('Slide specific options'), {'fields': ['slide_folder']}),
     ]
-admin.site.register(Options, OptionsAdmin)
 
+
+admin.site.register(Options, OptionsAdmin)

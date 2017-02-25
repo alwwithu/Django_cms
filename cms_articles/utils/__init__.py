@@ -1,8 +1,5 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from django.db.models import Q
 
-from ..conf import settings
 
 def is_valid_article_slug(article, language, slug):
     """Validates given slug depending on settings.
@@ -19,5 +16,3 @@ def is_valid_article_slug(article, language, slug):
         return False
 
     return True
-
-

@@ -1,27 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
+from __future__ import unicode_literals
 
-from setuptools import setup, find_packages
-
-from cms_articles import __version__
+from setuptools import find_packages, setup
 
 setup(
-    name            = 'django-cms-articles',
-    version         = __version__,
-    description     = 'django CMS application for managing articles',
-    author          = 'Jakub Dorňák',
-    author_email    = 'jakub.dornak@misli.cz',
-    license         = 'BSD',
-    url             = 'https://github.com/misli/django-cms-articles',
-    packages        = find_packages(),
+    name = 'django-cms-articles',
+    version = '0.1.1',
+    description = 'django CMS application for managing articles',
+    author = 'Jakub Dorňák',
+    author_email = 'jakub.dornak@misli.cz',
+    license = 'BSD',
+    url = 'https://github.com/misli/django-cms-articles',
+    packages = find_packages(),
     include_package_data = True,
     install_requires=[
-        'django-cms>=3.2',
+        'django-cms>=3.4,<3.5',
         'django-filer',
     ],
-    classifiers     = [
+    classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -33,7 +31,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',

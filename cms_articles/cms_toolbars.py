@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
 from cms.cms_toolbars import ADMIN_MENU_IDENTIFIER
 from cms.toolbar.items import SubMenu
 from cms.toolbar_base import CMSToolbar
@@ -25,7 +23,8 @@ class CMSArticlesToolbar(CMSToolbar):
         self.article = getattr(self.request, 'current_article', None)
         if self.article:
             if self.toolbar.edit_mode:
-                url = '{}?language={}'.format(admin_reverse('cms_articles_article_change', args=(self.article.pk,)), self.current_lang)
+                url = '{}?language={}'.format(
+                    admin_reverse('cms_articles_article_change', args=(self.article.pk,)), self.current_lang)
                 article_menu.add_modal_item(_('Article Settings'), url=url)
             else:
                 article_menu.add_link_item(_('Edit this article'), url='?edit')
@@ -35,9 +34,8 @@ class CMSArticlesToolbar(CMSToolbar):
         article_menu.add_modal_item(_('New Article'), url=url)
 
     def post_template_populate(self):
-        if (self.toolbar.edit_mode and self.article
-            and self.article.has_publish_permission(self.request)
-            and self.article.is_dirty(self.current_lang)):
+        if (self.toolbar.edit_mode and self.article and self.article.has_publish_permission(self.request) and
+                self.article.is_dirty(self.current_lang)):
             classes = ['cms-btn-action', 'cms-btn-publish', 'cms-btn-publish-active', 'cms-publish-article']
 
             title = _('Publish article now')
@@ -52,7 +50,5 @@ class CMSArticlesToolbar(CMSToolbar):
 
             self.toolbar.add_button(title, url=url, extra_classes=classes, side=self.toolbar.RIGHT, disabled=False)
 
-
     def request_hook(self):
         pass
-

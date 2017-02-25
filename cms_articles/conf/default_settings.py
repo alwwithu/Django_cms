@@ -1,8 +1,4 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals, with_statement
-
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-
 
 # by default, use the same templates as for cms pages
 CMS_ARTICLES_TEMPLATES = [
