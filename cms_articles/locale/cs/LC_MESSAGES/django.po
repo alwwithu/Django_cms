@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-26 11:26+0100\n"
+"POT-Creation-Date: 2017-02-26 12:21+0100\n"
 "Last-Translator: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language-Team: Jakub Dorňák <jakub.dornak@misli.cz>\n"
 "Language: \n"
@@ -562,6 +562,10 @@ msgid "When to expire the article. Leave empty to never expire."
 msgstr ""
 "Do kdy má být článek veřejně dostupný. Ponechte prázdné, pokud chcete, aby "
 "byl dostupný navždy."
+
+#: models/article.py:48
+msgid "publication or creation time"
+msgstr "čas zveřejnění nebo vytvoření"
 
 #: models/article.py:49
 msgid "login required"

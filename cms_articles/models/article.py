@@ -45,7 +45,7 @@ class Article(models.Model):
     publication_end_date = models.DateTimeField(
         _('publication end date'), null=True, blank=True, db_index=True,
         help_text=_('When to expire the article. Leave empty to never expire.'))
-    order_date = models.DateTimeField(auto_now_add=True, editable=False)
+    order_date = models.DateTimeField(_('publication or creation time'), auto_now_add=True, editable=False)
     login_required = models.BooleanField(_('login required'), default=False)
 
     # Placeholders (plugins)

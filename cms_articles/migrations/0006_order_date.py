@@ -27,12 +27,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='article',
             name='order_date',
-            field=models.DateTimeField(auto_now_add=True, null=True),
+            field=models.DateTimeField(null=True),
         ),
         migrations.RunPython(set_order_dates),
         migrations.AlterField(
             model_name='article',
             name='order_date',
-            field=models.DateTimeField(auto_now_add=True),
+            field=models.DateTimeField(auto_now_add=True, verbose_name='publication or creation time'),
         ),
     ]
