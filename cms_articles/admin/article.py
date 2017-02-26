@@ -21,7 +21,6 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import router, transaction
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.template import Context
 from django.template.defaultfilters import escape
 from django.template.loader import get_template
 from django.utils.decorators import method_decorator
@@ -79,14 +78,14 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             lang = name[len('lang_'):]
 
             def lang_dropdown(obj):
-                return self.lang_template.render(Context({
+                return self.lang_template.render({
                     'article': obj,
                     'lang': lang,
                     'language': _thread_locals.language,
                     'has_change_permission': obj.has_change_permission(_thread_locals.request),
                     'has_publish_permission': obj.has_publish_permission(_thread_locals.request),
                     'request': _thread_locals.request,
-                }))
+                })
 
             lang_dropdown.short_description = lang
             lang_dropdown.allow_tags = True
