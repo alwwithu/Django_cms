@@ -1,4 +1,5 @@
 from cms.models import CMSPlugin, Page
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -35,7 +36,8 @@ class ArticlePlugin(CMSPlugin):
 
 
 class ArticlesPluginBase(CMSPlugin):
-    number = models.IntegerField(_('Number of last articles'), default=3)
+    number = models.PositiveSmallIntegerField(_('Number of last articles'), default=3,
+                                              validators=[MinValueValidator(1)])
     template = models.CharField(
         _('Template'), max_length=100,
         choices=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES,
