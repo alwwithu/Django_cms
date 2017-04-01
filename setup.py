@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'django-cms>=3.4,<3.5',
         'django-filer',
+        'python-dateutil',
     ],
     classifiers = [
         'Development Status :: 5 - Production/Stable',
