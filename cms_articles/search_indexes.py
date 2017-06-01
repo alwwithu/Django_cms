@@ -1,5 +1,4 @@
 from cms.models import CMSPlugin
-from cms.signals import post_publish, post_unpublish
 from django.db.models import Q
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
@@ -10,6 +9,7 @@ from aldryn_search.utils import clean_join, get_index_base
 
 from .conf import settings
 from .models import Title
+from .signals import post_publish_article, post_unpublish_article
 
 
 class TitleIndex(get_index_base()):
@@ -111,14 +111,14 @@ class TitleIndex(get_index_base()):
         return kwargs.get('object_action') in self.object_actions
 
 
-@receiver(post_publish, dispatch_uid='publish_cms_article')
+@receiver(post_publish_article, dispatch_uid='publish_cms_article')
 def publish_cms_article(sender, instance, language, **kwargs):
     title = instance.publisher_public.get_title_obj(language)
     print('##################### publish_cms_article', title)
     add_to_index.send(sender=Title, instance=title, object_action='publish')
 
 
-@receiver(post_unpublish, dispatch_uid='unpublish_cms_article')
+@receiver(post_unpublish_article, dispatch_uid='unpublish_cms_article')
 def unpublish_cms_article(sender, instance, language, **kwargs):
     title = instance.publisher_public.get_title_obj(language)
     print('##################### unpublish_cms_article', title)

@@ -362,8 +362,8 @@ class Article(models.Model):
         self._publisher_keep_state = True
         self.save()
 
-        from cms.signals import post_publish
-        post_publish.send(sender=Article, instance=self, language=language)
+        from ..signals import post_publish_article
+        post_publish_article.send(sender=Article, instance=self, language=language)
 
         return True
 
