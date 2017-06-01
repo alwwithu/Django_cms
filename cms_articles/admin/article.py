@@ -256,7 +256,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             raise Http404('No article or stack found for publishing.')
         all_published = True
         if statics:
-            static_ids = statics .split(',')
+            static_ids = statics.split(',')
             for pk in static_ids:
                 static_placeholder = StaticPlaceholder.objects.get(pk=pk)
                 published = static_placeholder.publish(request, language)
