@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+{% load cms_static staticfiles %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {# INFO: we need to add styles here instead of "extrastyle" to avoid conflicts with adminstyle #}
+    <link rel="stylesheet" href="{% static_with_version 'cms/css/cms.base.css' %}">
+    <link rel="stylesheet" href="{% static_with_version 'cms/css/cms.pagetree.css' %}">
+    <link rel="stylesheet" href="{% static 'cms_articles/css/changelist.css' %}">
+    <script src="{% static_with_version 'cms/js/dist/bundle.admin.base.min.js' %}"></script>
+    <script src="{% static_with_version 'cms/js/dist/bundle.admin.pagetree.min.js' %}"></script>
+    <script src="{% static 'cms_articles/js/changelist.js' %}"></script>
+{% endblock extrahead %}

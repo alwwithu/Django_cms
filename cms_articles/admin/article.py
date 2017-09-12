@@ -12,7 +12,7 @@ from cms.utils.conf import get_cms_setting
 from cms.utils.i18n import (
     force_language, get_language_list, get_language_object, get_language_tuple,
 )
-from cms.utils.urlutils import admin_reverse, static_with_version
+from cms.utils.urlutils import admin_reverse
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.models import CHANGE, LogEntry
@@ -46,30 +46,25 @@ _thread_locals = local()
 
 
 class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
+    change_list_template = 'admin/cms_articles/article_changelist.html'
     search_fields = ('=id', 'title_set__slug', 'title_set__title', 'title_set__description')
-    list_display = ('__str__', 'order_date') + tuple('lang_{}'.format(lang) for lang in get_language_list())
+    list_display = ('__str__', 'order_date', 'preview_link') + tuple(
+        'lang_{}'.format(lang) for lang in get_language_list()
+    )
     list_filter = ['tree', 'attributes', 'categories', 'template', 'changed_by']
     date_hierarchy = 'order_date'
     filter_horizontal = ['attributes', 'categories']
 
-    @property
-    def media(self):
-        media = super(ArticleAdmin, self).media
-        css = {
-            'all': (
-                static_with_version('cms/css/cms.base.css'),
-                static_with_version('cms/css/cms.pagetree.css'),
-                'cms_articles/css/changelist.css',
-            )
-        }
-        media.add_css(css)
-        js = (
-            static_with_version('cms/js/dist/bundle.admin.base.min.js'),
-            static_with_version('cms/js/dist/bundle.admin.pagetree.min.js'),
-            'cms_articles/js/changelist.js',
-        )
-        media.add_js(js)
-        return media
+    preview_template = get_template('admin/cms_articles/article/change_list_preview.html')
+
+    def preview_link(self, obj):
+        return self.preview_template.render({
+            'article': obj,
+            'lang': _thread_locals.language,
+            'request': _thread_locals.request,
+        })
+    preview_link.short_description = _('Show')
+    preview_link.allow_tags = True
 
     lang_template = get_template('admin/cms_articles/article/change_list_lang.html')
 

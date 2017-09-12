@@ -1,5 +1,6 @@
 th.column-view,
-th[class*="column-lang_"] {
+th[class*="column-lang_"],
+th[class="column-preview_link"] {
     width: 1%;
     text-align: center;
 }
@@ -21,3 +22,13 @@ td[class*="field-lang_"] {
     display: block;
 }
 .cms-hover-tooltip {z-index: auto;}
+
+/* fix conflicts with djangocms-admin.css */
+.change-list table td .cms-pagetree-dropdown-menu a:not(.cke_button) {
+    line-height: 1.5;
+    padding: 10px 15px;
+}
+.change-list table td .cms-tree-item-preview a:not(.cke_button) {
+    font-size: 18px !important;
+    line-height: 18px;
+}

@@ -1,0 +1,10 @@
+{% load i18n cms_admin %}
+<div class="cms-tree-item cms-tree-item-preview
+    {# INFO: highlight active icon when in sidebar mode #}
+    {% if page.id|slugify == request.GET.page_id|slugify %} cms-tree-preview-active{% endif %}">
+    <div class="cms-tree-item-inner cms-hover-tooltip cms-hover-tooltip-left cms-hover-tooltip-delay" data-cms-tooltip="{% trans "View on site" %}">
+        <a class="js-cms-pagetree-page-view" href="{# url 'admin:cms_articles_article_preview_article' article.id lang #}"{% if lang in article.languages %} target="_top"{% endif %}>
+            <span class="sr-only">{% trans "View on site" %}</span>
+        </a>
+    </div>
+</div>
