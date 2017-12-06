@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pushd cms_articles
+    django-admin makemessages -l cs
+    vim locale/cs/LC_MESSAGES/django.po
+    django-admin compilemessages
+popd

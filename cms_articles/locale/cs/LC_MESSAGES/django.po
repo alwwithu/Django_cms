@@ -23,7 +23,7 @@ msgstr "Jazykově závislá nastavení"
 
 #: admin/article.py:104
 msgid "Other settings"
-msgstr "Ostatní nastevení"
+msgstr "Ostatní nastavení"
 
 #: admin/article.py:253
 msgid "You do not have permission to publish this article"
