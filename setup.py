@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 setup(
     name = 'django-cms-articles',
-    version = '1.1.2',
+    version = '1.1.3',
     description = 'django CMS application for managing articles',
     author = 'Jakub Dorňák',
     author_email = 'jakub.dornak@misli.cz',
