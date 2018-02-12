@@ -40,7 +40,7 @@ def create_article(tree, template, title, language, slug=None, description=None,
     get_template(template)
 
     # validate language:
-    assert language in get_language_list(tree.site_id), settings.CMS_LANGUAGES.get(tree.site_id)
+    assert language in get_language_list(tree.node.site_id), settings.CMS_LANGUAGES.get(tree.node.site_id)
 
     # validate publication date
     if publication_date:
@@ -60,7 +60,7 @@ def create_article(tree, template, title, language, slug=None, description=None,
     if created_by:
         try:
             username = created_by.get_username()
-        except:
+        except Exception:
             username = force_text(created_by)
     else:
         username = 'script'
@@ -110,7 +110,7 @@ def create_title(article, language, title, slug=None, description=None,
     assert isinstance(article, Article)
 
     # validate language:
-    assert language in get_language_list(article.tree.site_id)
+    assert language in get_language_list(article.tree.node.site_id)
 
     # validate creation date
     if creation_date:

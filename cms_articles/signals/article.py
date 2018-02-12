@@ -1,6 +1,5 @@
 import warnings
 
-from django.db.models import signals
 from django.template import TemplateDoesNotExist
 
 from ..models import Article
@@ -28,8 +27,3 @@ def pre_delete_article(instance, **kwargs):
             plugin._no_reorder = True
             plugin.delete(no_mp=True)
         placeholder.delete()
-
-
-signals.pre_save.connect(pre_save_article, sender=Article, dispatch_uid='cms_articles_pre_save_article')
-signals.post_save.connect(post_save_article, sender=Article, dispatch_uid='cms_articles_post_save_article')
-signals.pre_delete.connect(pre_delete_article, sender=Article, dispatch_uid='cms_articles_pre_delete_article')

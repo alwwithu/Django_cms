@@ -15,7 +15,7 @@ class Archive:
             self.year = int(request.GET[settings.CMS_ARTICLES_YEAR_FIELD])
             self.month = int(request.GET[settings.CMS_ARTICLES_MONTH_FIELD])
             self.day = int(request.GET[settings.CMS_ARTICLES_DAY_FIELD])
-        except:
+        except (KeyError, ValueError):
             pass
 
     def filter_articles(self):

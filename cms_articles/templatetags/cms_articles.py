@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from platform import python_version
 
-import django
 from classytags.arguments import Argument, MultiValueArgument
 from classytags.core import Options, Tag
 from classytags.helpers import AsTag
-from cms.templatetags.cms_tags import PlaceholderOptions
+from cms.exceptions import PlaceholderNotFound
+from cms.templatetags.cms_tags import DeclaredPlaceholder, PlaceholderOptions
+from cms.toolbar.utils import get_toolbar_from_request
 from cms.utils import get_language_from_request, get_site_id
+from cms.utils.compat.dj import get_middleware
 from cms.utils.moderator import use_draft
 from django import template
 from django.contrib.sites.models import Site
@@ -23,9 +24,6 @@ from ..conf import settings
 from ..models import Article
 from ..utils.placeholder import validate_placeholder_name
 
-DJANGO_VERSION = django.get_version()
-PYTHON_VERSION = python_version()
-
 register = template.Library()
 
 
@@ -35,7 +33,7 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
     - Integer: interpreted as `pk` of the desired article
     - `dict`: a dictionary containing keyword arguments to find the desired article
     (for instance: `{'pk': 1}`)
-    - `Article`: you can also pass a Article object directly, in which case there will be no database lookup.
+    - `Article`: you can also pass an Article object directly, in which case there will be no database lookup.
     - `None`: the current article will be used
     """
     if article_lookup is None:
@@ -72,9 +70,10 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
         if settings.DEBUG:
             raise Article.DoesNotExist(body)
         else:
+            mw = get_middleware()
             if getattr(settings, 'SEND_BROKEN_LINK_EMAILS', False):
                 mail_managers(subject, body, fail_silently=True)
-            elif 'django.middleware.common.BrokenLinkEmailsMiddleware' in settings.MIDDLEWARE_CLASSES:
+            elif 'django.middleware.common.BrokenLinkEmailsMiddleware' in mw:
                 middle = BrokenLinkEmailsMiddleware()
                 domain = request.get_host()
                 path = request.get_full_path()
@@ -110,22 +109,36 @@ class ArticlePlaceholder(Tag):
     )
 
     def render_tag(self, context, name, extra_bits, nodelist=None):
-        validate_placeholder_name(name)
+        request = context.get('request')
 
-        content_renderer = context.get('cms_articles_content_renderer')
-
-        if not content_renderer:
+        if not request:
             return ''
 
-        content = content_renderer.render_article_placeholder(
-            slot=name,
-            context=context,
-            nodelist=nodelist,
-        )
+        validate_placeholder_name(name)
+
+        toolbar = get_toolbar_from_request(request)
+        renderer = toolbar.get_content_renderer()
+        inherit = False
+
+        try:
+            content = renderer.render_page_placeholder(
+                slot=name,
+                context=context,
+                inherit=inherit,
+                page=request.current_article,
+                nodelist=nodelist,
+            )
+        except PlaceholderNotFound:
+            content = ''
+
+        if not content and nodelist:
+            return nodelist.render(context)
         return content
 
-    def get_name(self):
-        return self.kwargs['name'].var.value.strip('"').strip("'")
+    def get_declaration(self):
+        slot = self.kwargs['name'].var.value.strip('"').strip("'")
+
+        return DeclaredPlaceholder(slot=slot, inherit=False)
 
 
 register.tag('article_placeholder', ArticlePlaceholder)
@@ -214,7 +227,7 @@ class ShowArticleBreadcrumb(ShowBreadcrumb):
         context = super(ShowArticleBreadcrumb, self).get_context(context, start_level, template, only_visible)
         try:
             current_article = context['request'].current_article
-        except:
+        except (AttributeError, KeyError):
             pass
         else:
             context['ancestors'].append(NavigationNode(

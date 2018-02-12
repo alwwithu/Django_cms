@@ -120,7 +120,7 @@ class Item(models.Model):
         if self.post_parent:
             try:
                 return Item.objects.get(post_id=self.post_parent)
-            except:
+            except Item.DoesNotExist:
                 pass
         return None
 
@@ -279,7 +279,7 @@ class Options(models.Model):
         limit_choices_to={
             'publisher_is_draft': False,
             'application_urls': 'CMSArticlesApp',
-            'site_id': settings.SITE_ID,
+            'node__site_id': settings.SITE_ID,
         })
     article_template = models.CharField(
         _('template'), max_length=100,

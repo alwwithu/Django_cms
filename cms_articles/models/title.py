@@ -2,7 +2,6 @@
 from datetime import timedelta
 
 from cms.constants import PUBLISHER_STATE_DIRTY
-from cms.utils.helpers import reversion_register
 from django.db import models
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
@@ -98,15 +97,3 @@ class Title(models.Model):
             if not old_val == new_val:
                 return True
         return False
-
-
-def _reversion():
-    exclude_fields = ['publisher_is_draft', 'publisher_public', 'publisher_state']
-
-    reversion_register(
-        Title,
-        exclude_fields=exclude_fields
-    )
-
-
-_reversion()

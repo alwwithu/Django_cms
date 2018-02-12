@@ -8,6 +8,7 @@ CMS_ARTICLES_TEMPLATES = [
 # default slug format
 CMS_ARTICLES_SLUG_FORMAT = '{now:%Y-%m}-{slug}'
 CMS_ARTICLES_SLUG_REGEXP = r'[0-9]{4}-[0-9]{2}-([^/]+)'
+CMS_ARTICLES_SLUG_GROUP_INDEX = 0
 
 # templates used to render plugin article
 CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES = [

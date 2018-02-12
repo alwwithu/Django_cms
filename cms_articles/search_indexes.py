@@ -25,7 +25,7 @@ class TitleIndex(get_index_base()):
         return obj.article.login_required
 
     def prepare_site_id(self, obj):
-        return obj.article.tree.site_id
+        return obj.article.tree.node.site_id
 
     def get_language(self, obj):
         return obj.language

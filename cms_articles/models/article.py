@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from collections import OrderedDict
+
 from cms import constants
 from cms.exceptions import (
     LanguageError, PublicIsUnmodifiable, PublicVersionNeeded,
@@ -6,13 +8,13 @@ from cms.exceptions import (
 from cms.models import Page
 from cms.utils import i18n
 from cms.utils.copy_plugins import copy_plugins_to
-from cms.utils.helpers import reversion_register
 from django.db import models
 from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
 
 from ..conf import settings
 from .attribute import Attribute
@@ -27,7 +29,7 @@ class Article(models.Model):
         help_text=_('The page the article is accessible at.'), limit_choices_to={
             'publisher_is_draft': False,
             'application_urls': 'CMSArticlesApp',
-            'site_id': settings.SITE_ID,
+            'node__site_id': settings.SITE_ID,
         })
     template = models.CharField(
         _('template'), max_length=100,
@@ -39,12 +41,12 @@ class Article(models.Model):
     changed_by = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     changed_date = models.DateTimeField(auto_now=True)
-    publication_date = models.DateTimeField(
-        _('publication date'), null=True, blank=True, db_index=True,
-        help_text=_('When the article should go live. Status must be "Published" for article to go live.'))
-    publication_end_date = models.DateTimeField(
-        _('publication end date'), null=True, blank=True, db_index=True,
-        help_text=_('When to expire the article. Leave empty to never expire.'))
+
+    publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, help_text=_(
+        'When the article should go live. Status must be "Published" for article to go live.'), db_index=True)
+    publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True,
+                                                help_text=_('When to expire the article. Leave empty to never expire.'),
+                                                db_index=True)
     order_date = models.DateTimeField(_('publication or creation time'), auto_now_add=True, editable=False)
     login_required = models.BooleanField(_('login required'), default=False)
 
@@ -54,21 +56,42 @@ class Article(models.Model):
     # Publisher fields
     publisher_is_draft = models.BooleanField(default=True, editable=False, db_index=True)
     # This is misnamed - the one-to-one relation is populated on both ends
-    publisher_public = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
+    publisher_public = models.OneToOneField(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='publisher_draft',
+        null=True,
+        editable=False,
+    )
     languages = models.CharField(max_length=255, editable=False, blank=True, null=True)
 
-    # If the draft is loaded from a reversion version save the revision id here.
-    revision_id = models.PositiveIntegerField(default=0, editable=False)
+    # X Frame Options for clickjacking protection
+    @cached_property
+    def xframe_options(self):
+        return self.tree.xframe_options
+
+    # Fake page interface
+    parent_page = None
+
+    @cached_property
+    def node(self):
+        return self.tree.node
 
     # Managers
     objects = ArticleManager()
 
     class Meta:
-        permissions = (('publish_article', 'Can publish article'),)
-        app_label = 'cms_articles'
+        permissions = (
+            ('publish_article', 'Can publish article'),
+        )
+        ordering = ('-order_date',)
         verbose_name = _('article')
         verbose_name_plural = _('articles')
-        ordering = ('-order_date',)
+        app_label = 'cms_articles'
+
+    def __init__(self, *args, **kwargs):
+        super(Article, self).__init__(*args, **kwargs)
+        self.title_cache = {}
 
     def __str__(self):
         try:
@@ -94,6 +117,7 @@ class Article(models.Model):
     def get_absolute_url(self, language=None, fallback=True):
         if not language:
             language = get_language()
+
         return '{}{}{}{}'.format(
             self.tree.get_absolute_url(language, fallback),
             '' if settings.APPEND_SLASH else '/',
@@ -108,7 +132,7 @@ class Article(models.Model):
         '''
         try:
             return self.get_public_object().get_absolute_url(language, fallback)
-        except:
+        except Exception:
             return ''
 
     def get_draft_url(self, language=None, fallback=True):
@@ -118,7 +142,7 @@ class Article(models.Model):
         '''
         try:
             return self.get_draft_object().get_absolute_url(language, fallback)
-        except:
+        except Exception:
             return ''
 
     def revert_to_live(self, language):
@@ -183,9 +207,7 @@ class Article(models.Model):
         # TODO: Make this into a 'graceful' copy instead of deleting and overwriting
         # copy the placeholders (and plugins on those placeholders!)
         from cms.models.pluginmodel import CMSPlugin
-        from cms.plugin_pool import plugin_pool
 
-        plugin_pool.set_plugin_meta()
         for plugin in CMSPlugin.objects.filter(placeholder__cms_articles=target, language=language).order_by('-depth'):
             inst, cls = plugin.get_plugin_instance()
             if inst and getattr(inst, 'cmsplugin_ptr_id', False):
@@ -581,38 +603,23 @@ class Article(models.Model):
         '''
         Rescan and if necessary create placeholders in the current template.
         '''
-        # inline import to prevent circular imports
-        from cms.models.placeholdermodel import Placeholder
-        from ..utils.placeholder import get_placeholders
+        existing = OrderedDict()
+        placeholders = [pl.slot for pl in self.get_declared_placeholders()]
 
-        placeholders = get_placeholders(self.template)
-        found = {}
         for placeholder in self.placeholders.all():
             if placeholder.slot in placeholders:
-                found[placeholder.slot] = placeholder
-        for placeholder_name in placeholders:
-            if placeholder_name not in found:
-                placeholder = Placeholder.objects.create(slot=placeholder_name)
-                self.placeholders.add(placeholder)
-                found[placeholder_name] = placeholder
-        return found
+                existing[placeholder.slot] = placeholder
+
+        for placeholder in placeholders:
+            if placeholder not in existing:
+                existing[placeholder] = self.placeholders.create(slot=placeholder)
+        return existing
+
+    def get_declared_placeholders(self):
+        # inline import to prevent circular imports
+        from ..utils.placeholder import get_placeholders
+
+        return get_placeholders(self.get_template())
 
     def get_xframe_options(self):
         return self.tree.get_xframe_options()
-
-
-def _reversion():
-    exclude_fields = [
-        'publisher_is_draft',
-        'publisher_public',
-        'publisher_state',
-    ]
-
-    reversion_register(
-        Page,
-        follow=["title_set", "placeholders"],
-        exclude_fields=exclude_fields
-    )
-
-
-_reversion()

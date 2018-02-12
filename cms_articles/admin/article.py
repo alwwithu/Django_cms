@@ -119,7 +119,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super(ArticleAdmin, self).get_queryset(request).filter(
-            tree__site_id=settings.SITE_ID,
+            tree__node__site_id=settings.SITE_ID,
             publisher_is_draft=True,
         )
 
@@ -134,6 +134,8 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                 slot=settings.CMS_ARTICLES_SLOT,
                 content=form.cleaned_data['content'],
             )
+
+    SLUG_REGEXP = re.compile(settings.CMS_ARTICLES_SLUG_REGEXP)
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -163,8 +165,8 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                     if name in form.base_fields:
                         form.base_fields[name].initial = getattr(title_obj, name)
                 try:
-                    slug = re.search(settings.CMS_ARTICLES_SLUG_REGEXP, title_obj.slug).groups()[0]
-                except:
+                    slug = self.SLUG_REGEXP.search(title_obj.slug).groups()[settings.CMS_ARTICLES_SLUG_GROUP_INDEX]
+                except AttributeError:
                     warnings.warn('Failed to parse slug from CMS_ARTICLES_SLUG_REGEXP. '
                                   'It probably doesn\'t correspond to CMS_ARTICLES_SLUG_FORMAT.')
                     slug = title_obj.slug

@@ -209,7 +209,7 @@ class ItemAdmin(admin.ModelAdmin):
         try:
             item_id = int(request.GET['item_id'])
             options_id = int(request.GET['options_id'])
-        except:
+        except (KeyError, ValueError):
             return HttpResponseBadRequest()
         item = get_object_or_404(Item, id=item_id)
         options = get_object_or_404(Options, id=options_id)

@@ -3,9 +3,8 @@ from json import dumps
 from xml.etree.ElementTree import ElementTree
 
 from cms.utils.compat.dj import is_installed
-from django.utils.timezone import make_aware
-
 from dateutil.parser import parse
+from django.utils.timezone import make_aware
 
 from ..conf import settings
 
