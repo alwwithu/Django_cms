@@ -3,31 +3,19 @@
 
 {% block page_title %}{% article_attribute "page_title" %}{% endblock %}
 {% block meta_description %}{% article_attribute "meta_description" %}{% endblock %}
+{% block breadcrumb %}{% show_article_breadcrumb %}{% endblock %}
 
-{% block base_content %}
+{% block content %}
 
-<!-- Breadcrumb begin -->
-<div class="pad-left-10">
-    <div id="pkb-crumbs">
-        {% show_article_breadcrumb %}
-    </div>
-</div>
-<!-- Breadcrumb end -->
-
-
-<div class="article-title">
-    <h1 class="replace">{% block title %}{% article_attribute "title" %}{% endblock %}</h1>
-</div>
+<h1 class="article-title">{% block title %}{% article_attribute "title" %}{% endblock %}</h1>
 
 {% article_attribute "image" as image %}
 {% if image %}
-<a href="{% thumbnail image 1500x1500 %}" data-toggle="lightbox" data-title="{{ image.name }}">
-    <img class="article-image" alt="{{ image.name }}" src="{% thumbnail image 600x600 %}" />
+<a class="article-image" href="{% thumbnail image 1500x1500 %}" data-toggle="lightbox" data-title="{{ image.name }}">
+    <img alt="{{ image.name }}" src="{% thumbnail image 600x600 %}" />
 </a>
 {% endif %}
 
-<div id="content">
-    {% block content %}{% article_placeholder "content" %}{% endblock %}
-</div>
+{% article_placeholder "content" %}
 
 {% endblock %}

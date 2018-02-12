@@ -22,12 +22,12 @@
 
 <h3>{% trans 'Archive' %}</h3>
 
-<ul class="archive_years">
+<ul class="archive-years">
     {% for year_archive in archive.years %}
     <li>
         <a href="{{ year_archive.url }}">{{ year_archive.year }}</a>
         {% if year_archive.active %}
-        <ul class="archive_months">
+        <ul class="archive-months">
             {% for month_archive in year_archive.months %}
             <li>
                 <a href="{{ month_archive.url }}">{{ month_archive.date|date:"F Y" }}</a>
