@@ -621,5 +621,11 @@ class Article(models.Model):
 
         return get_placeholders(self.get_template())
 
+    def get_declared_static_placeholders(self, context):
+        # inline import to prevent circular imports
+        from cms.utils.placeholder import get_static_placeholders
+
+        return get_static_placeholders(self.get_template(), context)
+
     def get_xframe_options(self):
         return self.tree.get_xframe_options()
