@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from cms.utils.page import _page_is_published
-from django.utils import timezone
 
 
 def get_article_from_slug(tree, slug, preview=False, draft=False):
