@@ -29,8 +29,10 @@ class CMSArticlesToolbar(CMSToolbar):
             else:
                 article_menu.add_link_item(_('Edit this article'), url='?edit')
         url = '{}?language={}'.format(admin_reverse('cms_articles_article_add'), self.current_lang)
-        if self.request.current_page and self.request.current_page.application_urls == 'CMSArticlesApp':
-            url += '&tree={}'.format(self.request.current_page.get_public_object().id)
+        if self.request.current_page:
+            published_current_page = self.request.current_page.get_public_object()
+            if published_current_page and published_current_page.application_urls == 'CMSArticlesApp':
+                url += '&tree={}'.format(published_current_page.id)
         article_menu.add_modal_item(_('New Article'), url=url)
 
     def post_template_populate(self):
