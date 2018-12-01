@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from collections import OrderedDict
 
 from cms import constants
@@ -102,7 +104,7 @@ class Article(models.Model):
             except IndexError:
                 title = None
         if title is None:
-            title = u''
+            title = ''
         return force_text(title)
 
     def __repr__(self):
@@ -277,7 +279,7 @@ class Article(models.Model):
             else:
                 # limit changed_by and created_by to avoid problems with Custom User Model
                 if len(changed_by) > constants.PAGE_USERNAME_MAX_LENGTH:
-                    changed_by = u'{0}... (id={1})'.format(
+                    changed_by = '{0}... (id={1})'.format(
                         changed_by[:constants.PAGE_USERNAME_MAX_LENGTH - 15],
                         user.pk,
                     )

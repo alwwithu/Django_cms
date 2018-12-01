@@ -151,7 +151,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         # get_form method operates by overriding initial fields value which
         # may persist across invocation. Code below deepcopies fields definition
         # to avoid leaks
-        for field in form.base_fields.keys():
+        for field in tuple(form.base_fields.keys()):
             form.base_fields[field] = copy.deepcopy(form.base_fields[field])
 
         if 'language' in form.base_fields:

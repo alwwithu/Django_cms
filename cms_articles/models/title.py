@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from datetime import timedelta
 
 from cms.constants import PUBLISHER_STATE_DIRTY
@@ -55,7 +57,7 @@ class Title(models.Model):
         app_label = 'cms_articles'
 
     def __str__(self):
-        return u'%s (%s, %s)' % (self.title, self.slug, self.language)
+        return '%s (%s, %s)' % (self.title, self.slug, self.language)
 
     def is_dirty(self):
         return self.publisher_state == PUBLISHER_STATE_DIRTY
