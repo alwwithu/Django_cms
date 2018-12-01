@@ -23,7 +23,7 @@ def article(request, slug):
     renders the article.
     """
     # Get current CMS Page as article tree
-    tree = request.current_page
+    tree = request.current_page.get_public_object()
 
     # Check whether it really is a tree.
     # It could also be one of its sub-pages.
