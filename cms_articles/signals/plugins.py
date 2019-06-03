@@ -1,6 +1,5 @@
 from cms.constants import PUBLISHER_STATE_DIRTY
 from cms.models import CMSPlugin
-from cms.signals.plugins import get_placeholder
 
 
 def _set_dirty_placeholder(placeholder, language):
@@ -9,7 +8,14 @@ def _set_dirty_placeholder(placeholder, language):
 
 
 def _set_dirty_plugin(plugin):
-    placeholder = get_placeholder(plugin)
+    if plugin.placeholder_id:
+        try:
+            placeholder = plugin.placeholder
+        except Placeholder.DoesNotExist:
+            placeholder = None
+    else:
+        placeholder = plugin.placeholder
+
     if placeholder:
         _set_dirty_placeholder(placeholder, plugin.language)
 

@@ -25,7 +25,7 @@ class ArticlePlugin(CMSPlugin):
 
     def get_article(self, context):
         try:
-            edit_mode = context['request'].toolbar.edit_mode
+            edit_mode = context['request'].toolbar.edit_mode_active
         except (AttributeError, KeyError):
             edit_mode = False
 
@@ -53,7 +53,7 @@ class ArticlesPluginBase(CMSPlugin):
 
     def get_articles(self, context):
         try:
-            edit_mode = context['request'].toolbar.edit_mode
+            edit_mode = context['request'].toolbar.edit_mode_active
         except (AttributeError, KeyError):
             edit_mode = False
 

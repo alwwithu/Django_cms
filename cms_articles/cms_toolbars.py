@@ -22,7 +22,7 @@ class CMSArticlesToolbar(CMSToolbar):
         article_menu = self.toolbar.get_or_create_menu('cms-articles', _('Article'))
         self.article = getattr(self.request, 'current_article', None)
         if self.article:
-            if self.toolbar.edit_mode:
+            if self.toolbar.edit_mode_active:
                 url = '{}?language={}'.format(
                     admin_reverse('cms_articles_article_change', args=(self.article.pk,)), self.current_lang)
                 article_menu.add_modal_item(_('Article Settings'), url=url)
@@ -36,7 +36,7 @@ class CMSArticlesToolbar(CMSToolbar):
         article_menu.add_modal_item(_('New Article'), url=url)
 
     def post_template_populate(self):
-        if (self.toolbar.edit_mode and self.article and self.article.has_publish_permission(self.request) and
+        if (self.toolbar.edit_mode_active and self.article and self.article.has_publish_permission(self.request) and
                 self.article.is_dirty(self.current_lang)):
             classes = ['cms-btn-action', 'cms-btn-publish', 'cms-btn-publish-active', 'cms-publish-article']
 
