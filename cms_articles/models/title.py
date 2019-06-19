@@ -28,7 +28,7 @@ class Title(models.Model):
         'meta_description',
     ]
 
-    article = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set')
+    article = models.ForeignKey(Article, verbose_name=_('article'), related_name='title_set', on_delete=models.CASCADE)
     language = models.CharField(_('language'), max_length=15, db_index=True)
     title = models.CharField(_('title'), max_length=255)
     description = HTMLField(_('description'), blank=True, default='',
@@ -41,13 +41,14 @@ class Title(models.Model):
                                         help_text=_('The text displayed in search engines.'))
     slug = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
-    image = FilerImageField(verbose_name=_('image'), related_name='+', blank=True, null=True)
+    image = FilerImageField(verbose_name=_('image'), related_name='+', on_delete=models.CASCADE, blank=True, null=True)
 
     # Publisher fields
     published = models.BooleanField(_('is published'), blank=True, default=False)
     publisher_is_draft = models.BooleanField(default=True, editable=False, db_index=True)
     # This is misnamed - the one-to-one relation is populated on both ends
-    publisher_public = models.OneToOneField('self', related_name='publisher_draft', null=True, editable=False)
+    publisher_public = models.OneToOneField('self', related_name='publisher_draft', on_delete=models.CASCADE,
+                                            null=True, editable=False)
     publisher_state = models.SmallIntegerField(default=0, editable=False, db_index=True)
 
     objects = TitleManager()

@@ -27,7 +27,7 @@ from .managers import ArticleManager
 @python_2_unicode_compatible
 class Article(models.Model):
     tree = models.ForeignKey(
-        Page, verbose_name=_('tree'), related_name='cms_articles',
+        Page, verbose_name=_('tree'), related_name='cms_articles', on_delete=models.CASCADE,
         help_text=_('The page the article is accessible at.'), limit_choices_to={
             'publisher_is_draft': False,
             'application_urls': 'CMSArticlesApp',

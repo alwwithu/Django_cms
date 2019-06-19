@@ -9,7 +9,7 @@ from ..conf import settings
 @python_2_unicode_compatible
 class Category(models.Model):
     page = models.OneToOneField(
-        Page, verbose_name=_('page'), related_name='cms_articles_category',
+        Page, verbose_name=_('page'), related_name='cms_articles_category', on_delete=models.CASCADE,
         limit_choices_to={'publisher_is_draft': True, 'node__site_id': settings.SITE_ID})
 
     class Meta:

@@ -13,7 +13,8 @@ from .category import Category
 @python_2_unicode_compatible
 class ArticlePlugin(CMSPlugin):
     article = models.ForeignKey(
-        Article, verbose_name=_('article'), related_name='+', limit_choices_to={'publisher_is_draft': True})
+        Article, verbose_name=_('article'), related_name='+', on_delete=models.CASCADE,
+        limit_choices_to={'publisher_is_draft': True})
     template = models.CharField(
         _('Template'), max_length=100,
         choices=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES,
