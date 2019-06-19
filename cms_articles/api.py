@@ -1,8 +1,17 @@
+# -*- coding: utf-8 -*-
+"""
+Public Python API to create CMS Articles contents.
+
+WARNING: None of the functions defined in this module checks for permissions.
+You must implement the necessary permission checks in your own code before
+calling these methods!
+"""
 import datetime
 
 from cms.api import add_plugin
 from cms.utils.i18n import get_language_list
 from cms.utils.permissions import current_user
+from django.db import transaction
 from django.template.defaultfilters import slugify
 from django.template.loader import get_template
 from django.utils.encoding import force_text
@@ -14,15 +23,7 @@ from .conf import settings
 from .models import Article, Title
 
 
-"""
-Public Python API to create CMS articles.
-
-WARNING: None of the functions defined in this module checks for permissions.
-You must implement the necessary permission checks in your own code before
-calling these methods!
-"""
-
-
+@transaction.atomic
 def create_article(tree, template, title, language, slug=None, description=None,
                    page_title=None, menu_title=None, meta_description=None,
                    created_by=None, image=None, publication_date=None, publication_end_date=None,
@@ -100,6 +101,7 @@ def create_article(tree, template, title, language, slug=None, description=None,
     return article.reload()
 
 
+@transaction.atomic
 def create_title(article, language, title, slug=None, description=None,
                  page_title=None, menu_title=None, meta_description=None,
                  creation_date=None, image=None):
@@ -148,6 +150,7 @@ def create_title(article, language, title, slug=None, description=None,
     return title
 
 
+@transaction.atomic
 def add_content(obj, language, slot, content):
     """
     Adds a TextPlugin with given content to given slot
@@ -158,8 +161,8 @@ def add_content(obj, language, slot, content):
 
 def publish_article(article, language, changed_by=None):
     """
-    Publish an article. This sets `article.published` to `True`
-    and calls article.publish() which does the actual publishing.
+    Publish an article. This sets `article.published` to `True` and calls publish()
+    which does the actual publishing.
     """
     article = article.reload()
 
