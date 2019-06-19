@@ -40,6 +40,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='articlesplugin',
             name='trees',
-            field=models.ManyToManyField(blank=True, related_name='_articlesplugin_trees_+', to='cms.Page', verbose_name='trees'),
+            field=models.ManyToManyField(blank=True, limit_choices_to={'application_urls': 'CMSArticlesApp', 'node__site_id': 1, 'publisher_is_draft': False}, related_name='_articlesplugin_trees_+', to='cms.Page', verbose_name='trees'),
         ),
     ]

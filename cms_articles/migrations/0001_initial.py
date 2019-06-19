@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('template', models.CharField(choices=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES, default=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES[0][0], help_text='The template used to render plugin.', max_length=100, verbose_name='Template')),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='cms_articles.Article', verbose_name='article')),
+                ('article', models.ForeignKey(limit_choices_to={'publisher_is_draft': True}, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='cms_articles.Article', verbose_name='article')),
             ],
             options={
                 'abstract': False,
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('meta_description', models.TextField(blank=True, help_text='The text displayed in search engines.', max_length=155, null=True, verbose_name='description')),
                 ('slug', models.SlugField(max_length=255, verbose_name='slug')),
                 ('creation_date', models.DateTimeField(default=django.utils.timezone.now, editable=False, verbose_name='creation date')),
-                ('published', models.BooleanField(default=False, verbose_name='is published')),
+                ('published', models.BooleanField(blank=True, default=False, verbose_name='is published')),
                 ('publisher_is_draft', models.BooleanField(db_index=True, default=True, editable=False)),
                 ('publisher_state', models.SmallIntegerField(db_index=True, default=0, editable=False)),
                 ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='title_set', to='cms_articles.Article', verbose_name='article')),

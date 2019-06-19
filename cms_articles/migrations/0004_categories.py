@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='article',
             name='tree',
-            field=models.ForeignKey(help_text='The page the article is accessible at.', on_delete=django.db.models.deletion.CASCADE, related_name='cms_articles', to='cms.Page', verbose_name='tree'),
+            field=models.ForeignKey(help_text='The page the article is accessible at.', limit_choices_to={'application_urls': 'CMSArticlesApp', 'node__site_id': 1, 'publisher_is_draft': False}, on_delete=django.db.models.deletion.CASCADE, related_name='cms_articles', to='cms.Page', verbose_name='tree'),
         ),
         migrations.AlterField(
             model_name='articlesplugin',
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
             name='Category',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='cms_articles_category', to='cms.Page', verbose_name='page')),
+                ('page', models.OneToOneField(limit_choices_to={'node__site_id': 1, 'publisher_is_draft': True}, on_delete=django.db.models.deletion.CASCADE, related_name='cms_articles_category', to='cms.Page', verbose_name='page')),
             ],
             options={
                 'verbose_name': 'category',
