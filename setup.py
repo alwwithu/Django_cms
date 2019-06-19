@@ -16,6 +16,7 @@ setup(
     packages = find_packages(),
     include_package_data = True,
     install_requires=[
+        'django>=1.11,<2.2',
         'django-cms>=3.6,<3.7',
         'django-filer',
         'python-dateutil',
@@ -25,6 +26,7 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.11',
+        'Framework :: Django :: 2.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: Czech',
