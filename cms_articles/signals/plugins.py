@@ -1,5 +1,5 @@
 from cms.constants import PUBLISHER_STATE_DIRTY
-from cms.models import CMSPlugin
+from cms.models import CMSPlugin, Placeholder
 
 
 def _set_dirty_placeholder(placeholder, language):
