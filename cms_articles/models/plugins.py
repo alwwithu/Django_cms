@@ -120,7 +120,7 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
         except Category.DoesNotExist:
             category = Category.objects.create(page=page)
 
-        articles = super(ArticlesPlugin, self).get_articles(context)
+        articles = super(ArticlesCategoryPlugin, self).get_articles(context)
 
         if self.subcategories:
             if not self.placeholder.page.is_home:
