@@ -16,8 +16,8 @@ setup(
     packages = find_packages(),
     include_package_data = True,
     install_requires=[
-        'django>=1.11,<2.2',
-        'django-cms>=3.6,<3.7',
+        'django>=1.11',
+        'django-cms>=3.6,<3.8',
         'django-filer',
         'python-dateutil',
     ],
