@@ -95,8 +95,8 @@ class ArticlesPlugin(ArticlesPluginBase):
         return articles
 
     def copy_relations(self, oldinstance):
-        self.trees = oldinstance.trees.all()
-        self.categories = oldinstance.categories.all()
+        self.trees.set(oldinstance.trees.all())
+        self.categories.set(oldinstance.categories.all())
         super(ArticlesPlugin, self).copy_relations(oldinstance)
 
 

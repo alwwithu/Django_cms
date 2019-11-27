@@ -246,8 +246,8 @@ class Article(models.Model):
         target.login_required = self.login_required
 
     def _copy_relations(self, target):
-        target.attributes = self.attributes.all()
-        target.categories = self.categories.all()
+        target.attributes.set(self.attributes.all())
+        target.categories.set(self.categories.all())
 
     def delete(self, *args, **kwargs):
         articles = [self.pk]
