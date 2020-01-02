@@ -3,8 +3,6 @@ from json import loads
 from cms.api import create_page
 from cms.models import Page
 from cms.models.fields import PageField
-from cms_articles.api import add_content, create_article, publish_article
-from cms_articles.conf import settings
 from django.core.files import File as DjangoFile
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
@@ -15,6 +13,9 @@ from django.utils.translation import ugettext_lazy as _
 from filer.fields.folder import FilerFolderField
 from filer.management.commands.import_files import FileImporter
 from filer.models import File, Folder
+
+from cms_articles.api import add_content, create_article, publish_article
+from cms_articles.conf import settings
 
 from .utils import create_redirect
 
