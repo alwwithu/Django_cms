@@ -11,7 +11,6 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from filer.fields.folder import FilerFolderField
-from filer.management.commands.import_files import FileImporter
 from filer.models import File, Folder
 
 from cms_articles.api import add_content, create_article, publish_article
@@ -223,6 +222,7 @@ class Item(models.Model):
         return self.page
 
     def get_or_import_file(self, options):
+        from filer.management.commands.import_files import FileImporter
         assert self.post_type == 'attachment'
         if self.file:
             return self.file
