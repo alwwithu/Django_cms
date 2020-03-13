@@ -50,7 +50,7 @@ class ArticlesPluginBase(CMSPlugin):
         abstract = True
 
     def copy_relations(self, oldinstance):
-        self.attributes = oldinstance.attributes.all()
+        self.attributes.set(oldinstance.attributes.all())
 
     def get_articles(self, context):
         try:
