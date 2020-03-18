@@ -63,8 +63,8 @@ class ArticlesPluginBase(CMSPlugin):
         else:
             articles = Article.objects.public().published()
 
-        if self.attributes.count():
-            articles = articles.filter(attributes=self.attributes.all())
+        for attribute in self.attributes.all(): 
+            articles = articles.filter(attributes=attribute) 
 
         return articles
 
@@ -90,7 +90,7 @@ class ArticlesPlugin(ArticlesPluginBase):
             articles = articles.filter(tree__in=self.trees.all())
 
         if self.categories.count():
-            articles = articles.filter(categories=self.categories.all())
+            articles = articles.filter(categories__in=self.categories.all())
 
         return articles
 
