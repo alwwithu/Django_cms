@@ -55,10 +55,10 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     date_hierarchy = 'order_date'
     filter_horizontal = ['attributes', 'categories']
 
-    preview_template = get_template('admin/cms_articles/article/change_list_preview.html')
+    preview_template = 'admin/cms_articles/article/change_list_preview.html'
 
     def preview_link(self, obj):
-        return self.preview_template.render({
+        return get_template(self.preview_template).render({
             'article': obj,
             'lang': _thread_locals.language,
             'request': _thread_locals.request,
@@ -66,14 +66,14 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     preview_link.short_description = _('Show')
     preview_link.allow_tags = True
 
-    lang_template = get_template('admin/cms_articles/article/change_list_lang.html')
+    lang_template = 'admin/cms_articles/article/change_list_lang.html'
 
     def __getattr__(self, name):
         if name.startswith('lang_'):
             lang = name[len('lang_'):]
 
             def lang_dropdown(obj):
-                return self.lang_template.render({
+                return get_template(self.lang_template).render({
                     'article': obj,
                     'lang': lang,
                     'language': _thread_locals.language,
