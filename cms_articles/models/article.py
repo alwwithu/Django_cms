@@ -37,7 +37,8 @@ class Article(models.Model):
         _('template'), max_length=100,
         choices=settings.CMS_ARTICLES_TEMPLATES, default=settings.CMS_ARTICLES_TEMPLATES[0][0],
         help_text=_('The template used to render the content.'))
-    attributes = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='articles', blank=True)
+    attributes = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='articles', blank=True,
+                                        limit_choices_to={'site_id': settings.SITE_ID})
     categories = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='articles', blank=True)
     created_by = models.CharField(_('created by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
     changed_by = models.CharField(_('changed by'), max_length=constants.PAGE_USERNAME_MAX_LENGTH, editable=False)
