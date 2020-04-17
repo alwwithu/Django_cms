@@ -41,7 +41,7 @@ class Title(models.Model):
                                         help_text=_('The text displayed in search engines.'))
     slug = models.SlugField(_('slug'), max_length=255, db_index=True, unique=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, default=timezone.now)
-    image = FilerImageField(verbose_name=_('image'), related_name='+', on_delete=models.CASCADE, blank=True, null=True)
+    image = FilerImageField(verbose_name=_('image'), related_name='+', on_delete=models.PROTECT, blank=True, null=True)
 
     # Publisher fields
     published = models.BooleanField(_('is published'), blank=True, default=False)
