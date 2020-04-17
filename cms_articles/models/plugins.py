@@ -63,8 +63,8 @@ class ArticlesPluginBase(CMSPlugin):
         else:
             articles = Article.objects.public().published()
 
-        for attribute in self.attributes.all(): 
-            articles = articles.filter(attributes=attribute) 
+        for attribute in self.attributes.all():
+            articles = articles.filter(attributes=attribute)
 
         return articles
 
