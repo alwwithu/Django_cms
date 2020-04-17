@@ -27,7 +27,8 @@ from .models import Article, Title
 def create_article(tree, template, title, language, slug=None, description=None,
                    page_title=None, menu_title=None, meta_description=None,
                    created_by=None, image=None, publication_date=None, publication_end_date=None,
-                   published=False, login_required=False, creation_date=None, categories=[]):
+                   published=False, login_required=False, creation_date=None,
+                   attributes=[], categories=[]):
     """
     Create a CMS Article and it's title for the given language
     """
@@ -77,8 +78,8 @@ def create_article(tree, template, title, language, slug=None, description=None,
             publication_end_date=publication_end_date,
             languages=language,
         )
-        for category in categories:
-            article.categories.add(category)
+        article.attributes.set(attributes)
+        article.categories.set(categories)
 
         # create title
         create_title(
