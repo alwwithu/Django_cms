@@ -2,8 +2,11 @@ from cms.exceptions import LanguageError
 from cms.page_rendering import _handle_no_page, render_object_structure
 from cms.utils.conf import get_cms_setting
 from cms.utils.i18n import (
-    get_default_language_for_site, get_fallback_languages, get_language_list,
-    get_public_languages, get_redirect_on_fallback,
+    get_default_language_for_site,
+    get_fallback_languages,
+    get_language_list,
+    get_public_languages,
+    get_redirect_on_fallback,
 )
 from cms.utils.moderator import use_draft
 from cms.views import details as page
@@ -27,13 +30,13 @@ def article(request, slug):
 
     # Check whether it really is a tree.
     # It could also be one of its sub-pages.
-    if tree.application_urls != 'CMSArticlesApp':
+    if tree.application_urls != "CMSArticlesApp":
         # In such case show regular CMS Page
         return page(request, slug)
 
     # Get an Article object from the request
-    draft = use_draft(request) and request.user.has_perm('cms_articles.change_article')
-    preview = 'preview' in request.GET and request.user.has_perm('cms_articles.change_article')
+    draft = use_draft(request) and request.user.has_perm("cms_articles.change_article")
+    preview = "preview" in request.GET and request.user.has_perm("cms_articles.change_article")
 
     site = tree.node.site
     article = get_article_from_slug(tree, slug, preview, draft)
@@ -44,7 +47,7 @@ def article(request, slug):
 
     request.current_article = article
 
-    if hasattr(request, 'user') and request.user.is_staff:
+    if hasattr(request, "user") and request.user.is_staff:
         user_languages = get_language_list(site_id=site.pk)
     else:
         user_languages = get_public_languages(site_id=site.pk)
@@ -55,13 +58,12 @@ def article(request, slug):
     # and published only in live mode.
     # These languages are then filtered out by the user allowed languages
     available_languages = [
-        language for language in user_languages
-        if language in list(article.get_published_languages())
+        language for language in user_languages if language in list(article.get_published_languages())
     ]
 
     own_urls = [
         request.build_absolute_uri(request.path),
-        '/%s' % request.path,
+        "/%s" % request.path,
         request.path,
     ]
 
@@ -81,8 +83,7 @@ def article(request, slug):
 
     # Only fallback to languages the user is allowed to see
     fallback_languages = [
-        language for language in fallbacks
-        if language != request_language and language in available_languages
+        language for language in fallbacks if language != request_language and language in available_languages
     ]
     language_is_unavailable = request_language not in available_languages
 
@@ -100,7 +101,7 @@ def article(request, slug):
         redirect_url = False
 
     if redirect_url:
-        if request.user.is_staff and hasattr(request, 'toolbar') and request.toolbar.edit_mode_active:
+        if request.user.is_staff and hasattr(request, "toolbar") and request.toolbar.edit_mode_active:
             request.toolbar.redirect_url = redirect_url
         elif redirect_url not in own_urls:
             # prevent redirect to self
@@ -110,10 +111,10 @@ def article(request, slug):
     if article.login_required and not request.user.is_authenticated():
         return redirect_to_login(urlquote(request.get_full_path()), settings.LOGIN_URL)
 
-    if hasattr(request, 'toolbar'):
+    if hasattr(request, "toolbar"):
         request.toolbar.obj = article
 
-    structure_requested = get_cms_setting('CMS_TOOLBAR_URL__BUILD') in request.GET
+    structure_requested = get_cms_setting("CMS_TOOLBAR_URL__BUILD") in request.GET
 
     if article.has_change_permission(request) and structure_requested:
         return render_object_structure(request, article)

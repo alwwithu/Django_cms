@@ -13,20 +13,26 @@ from .category import Category
 @python_2_unicode_compatible
 class ArticlePlugin(CMSPlugin):
     article = models.ForeignKey(
-        Article, verbose_name=_('article'), related_name='+', on_delete=models.CASCADE,
-        limit_choices_to={'publisher_is_draft': True})
+        Article,
+        verbose_name=_("article"),
+        related_name="+",
+        on_delete=models.CASCADE,
+        limit_choices_to={"publisher_is_draft": True},
+    )
     template = models.CharField(
-        _('Template'), max_length=100,
+        _("Template"),
+        max_length=100,
         choices=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES,
         default=settings.CMS_ARTICLES_PLUGIN_ARTICLE_TEMPLATES[0][0],
-        help_text=_('The template used to render plugin.'))
+        help_text=_("The template used to render plugin."),
+    )
 
     def __str__(self):
         return self.article.get_title()
 
     def get_article(self, context):
         try:
-            edit_mode = context['request'].toolbar.edit_mode_active
+            edit_mode = context["request"].toolbar.edit_mode_active
         except (AttributeError, KeyError):
             edit_mode = False
 
@@ -37,14 +43,17 @@ class ArticlePlugin(CMSPlugin):
 
 
 class ArticlesPluginBase(CMSPlugin):
-    number = models.PositiveSmallIntegerField(_('Number of last articles'), default=3,
-                                              validators=[MinValueValidator(1)])
+    number = models.PositiveSmallIntegerField(
+        _("Number of last articles"), default=3, validators=[MinValueValidator(1)]
+    )
     template = models.CharField(
-        _('Template'), max_length=100,
+        _("Template"),
+        max_length=100,
         choices=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES,
         default=settings.CMS_ARTICLES_PLUGIN_ARTICLES_TEMPLATES[0][0],
-        help_text=_('The template used to render plugin.'))
-    attributes = models.ManyToManyField(Attribute, verbose_name=_('attributes'), related_name='+', blank=True)
+        help_text=_("The template used to render plugin."),
+    )
+    attributes = models.ManyToManyField(Attribute, verbose_name=_("attributes"), related_name="+", blank=True)
 
     class Meta:
         abstract = True
@@ -54,7 +63,7 @@ class ArticlesPluginBase(CMSPlugin):
 
     def get_articles(self, context):
         try:
-            edit_mode = context['request'].toolbar.edit_mode_active
+            edit_mode = context["request"].toolbar.edit_mode_active
         except (AttributeError, KeyError):
             edit_mode = False
 
@@ -72,16 +81,20 @@ class ArticlesPluginBase(CMSPlugin):
 @python_2_unicode_compatible
 class ArticlesPlugin(ArticlesPluginBase):
     trees = models.ManyToManyField(
-        Page, verbose_name=_('trees'), related_name='+', blank=True,
+        Page,
+        verbose_name=_("trees"),
+        related_name="+",
+        blank=True,
         limit_choices_to={
-            'publisher_is_draft': False,
-            'application_urls': 'CMSArticlesApp',
-            'node__site_id': settings.SITE_ID,
-        })
-    categories = models.ManyToManyField(Category, verbose_name=_('categories'), related_name='+', blank=True)
+            "publisher_is_draft": False,
+            "application_urls": "CMSArticlesApp",
+            "node__site_id": settings.SITE_ID,
+        },
+    )
+    categories = models.ManyToManyField(Category, verbose_name=_("categories"), related_name="+", blank=True)
 
     def __str__(self):
-        return _('last {} articles').format(self.number)
+        return _("last {} articles").format(self.number)
 
     def get_articles(self, context):
         articles = super(ArticlesPlugin, self).get_articles(context)
@@ -103,11 +116,13 @@ class ArticlesPlugin(ArticlesPluginBase):
 @python_2_unicode_compatible
 class ArticlesCategoryPlugin(ArticlesPluginBase):
     subcategories = models.BooleanField(
-        _('include sub-categories'), default=False,
-        help_text=_('Check, if you want to include articles from sub-categories of this category.'))
+        _("include sub-categories"),
+        default=False,
+        help_text=_("Check, if you want to include articles from sub-categories of this category."),
+    )
 
     def __str__(self):
-        return _('last {} articles in this category').format(self.number)
+        return _("last {} articles in this category").format(self.number)
 
     def get_articles(self, context):
         # no page - no category

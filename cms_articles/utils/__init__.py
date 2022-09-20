@@ -2,8 +2,7 @@ from django.db.models import Q
 
 
 def is_valid_article_slug(article, language, slug):
-    """Validates given slug depending on settings.
-    """
+    """Validates given slug depending on settings."""
     from ..models import Title
 
     qs = Title.objects.filter(slug=slug, language=language)

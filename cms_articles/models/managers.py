@@ -12,8 +12,7 @@ class ArticleManager(PublisherManager):
     """
 
     def get_queryset(self):
-        """Change standard model queryset to our own.
-        """
+        """Change standard model queryset to our own."""
         return ArticleQuerySet(self.model)
 
     def search(self, q, language=None, current_site_only=True):
@@ -37,20 +36,20 @@ class ArticleManager(PublisherManager):
         plugins = plugin_pool.get_all_plugins()
         for plugin in plugins:
             cmsplugin = plugin.model
-            if not (
-                hasattr(cmsplugin, 'search_fields') and
-                hasattr(cmsplugin, 'cmsplugin_ptr')
-            ):
+            if not (hasattr(cmsplugin, "search_fields") and hasattr(cmsplugin, "cmsplugin_ptr")):
                 continue
             field = cmsplugin.cmsplugin_ptr.field
             related_query_name = field.related_query_name()
-            if related_query_name and not related_query_name.startswith('+'):
+            if related_query_name and not related_query_name.startswith("+"):
                 for field in cmsplugin.search_fields:
-                    qp |= Q(**{
-                        'placeholders__cmsplugin__{0}__{1}__icontains'.format(
-                            related_query_name,
-                            field,
-                        ): q})
+                    qp |= Q(
+                        **{
+                            "placeholders__cmsplugin__{0}__{1}__icontains".format(
+                                related_query_name,
+                                field,
+                            ): q
+                        }
+                    )
         if language:
             qt &= Q(title_set__language=language)
             qp &= Q(cmsplugin__language=language)
@@ -97,13 +96,13 @@ class TitleManager(PublisherManager):
         set or create a title for a particular article and language
         """
         base_fields = [
-            'slug',
-            'title',
-            'description',
-            'meta_description',
-            'page_title',
-            'menu_title',
-            'image',
+            "slug",
+            "title",
+            "description",
+            "meta_description",
+            "page_title",
+            "menu_title",
+            "image",
         ]
         cleaned_data = form.cleaned_data
         try:
@@ -113,8 +112,8 @@ class TitleManager(PublisherManager):
             for name in base_fields:
                 if name in cleaned_data:
                     data[name] = cleaned_data[name]
-            data['article'] = article
-            data['language'] = language
+            data["article"] = article
+            data["language"] = language
             return self.create(**data)
         for name in base_fields:
             if name in form.base_fields:

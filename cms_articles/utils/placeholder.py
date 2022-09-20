@@ -3,7 +3,9 @@ import warnings
 
 from cms.exceptions import DuplicatePlaceholderWarning
 from cms.utils.placeholder import (
-    _get_nodelist, _scan_placeholders, validate_placeholder_name,
+    _get_nodelist,
+    _scan_placeholders,
+    validate_placeholder_name,
 )
 from django.template.loader import get_template
 
@@ -22,10 +24,10 @@ def get_placeholders(template):
         slot = placeholder.slot
 
         if slot in clean_placeholders:
-            warnings.warn("Duplicate {{% placeholder \"{0}\" %}} "
-                          "in template {1}."
-                          .format(slot, template, slot),
-                          DuplicatePlaceholderWarning)
+            warnings.warn(
+                'Duplicate {{% placeholder "{0}" %}} ' "in template {1}.".format(slot, template, slot),
+                DuplicatePlaceholderWarning,
+            )
         else:
             validate_placeholder_name(slot)
             placeholders.append(placeholder)

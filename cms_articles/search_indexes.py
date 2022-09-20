@@ -15,7 +15,7 @@ from .signals import post_publish_article, post_unpublish_article
 class TitleIndex(get_index_base()):
     index_title = True
 
-    object_actions = ('publish', 'unpublish')
+    object_actions = ("publish", "unpublish")
     haystack_use_for_indexing = settings.CMS_ARTICLES_USE_HAYSTACK
 
     def prepare_pub_date(self, obj):
@@ -56,10 +56,10 @@ class TitleIndex(get_index_base()):
 
         CMS_ARTICLES_PLACEHOLDERS_SEARCH_LIST = {}
         """
-        placeholders_search_list = getattr(settings, 'CMS_ARTICLES_PLACEHOLDERS_SEARCH_LIST', {})
+        placeholders_search_list = getattr(settings, "CMS_ARTICLES_PLACEHOLDERS_SEARCH_LIST", {})
 
-        included = placeholders_search_list.get('include', [])
-        excluded = placeholders_search_list.get('exclude', [])
+        included = placeholders_search_list.get("include", [])
+        excluded = placeholders_search_list.get("exclude", [])
         diff = set(included) - set(excluded)
         if diff:
             return article.placeholders.filter(slot__in=diff)
@@ -83,43 +83,48 @@ class TitleIndex(get_index_base()):
         if article_meta_description:
             text_bits.append(article_meta_description)
 
-        article_meta_keywords = getattr(current_article, 'get_meta_keywords', None)
+        article_meta_keywords = getattr(current_article, "get_meta_keywords", None)
 
         if callable(article_meta_keywords):
             text_bits.append(article_meta_keywords())
 
-        return clean_join(' ', text_bits)
+        return clean_join(" ", text_bits)
 
     def get_plugin_search_text(self, base_plugin, request):
         plugin_content_bits = get_plugin_index_data(base_plugin, request)
-        return clean_join(' ', plugin_content_bits)
+        return clean_join(" ", plugin_content_bits)
 
     def get_model(self):
         return Title
 
     def get_index_queryset(self, language):
-        queryset = Title.objects.public().filter(
-            Q(article__publication_date__lt=timezone.now()) | Q(article__publication_date__isnull=True),
-            Q(article__publication_end_date__gte=timezone.now()) | Q(article__publication_end_date__isnull=True),
-            language=language
-        ).select_related('article').distinct()
+        queryset = (
+            Title.objects.public()
+            .filter(
+                Q(article__publication_date__lt=timezone.now()) | Q(article__publication_date__isnull=True),
+                Q(article__publication_end_date__gte=timezone.now()) | Q(article__publication_end_date__isnull=True),
+                language=language,
+            )
+            .select_related("article")
+            .distinct()
+        )
         return queryset
 
     def should_update(self, instance, **kwargs):
         # We use the action flag to prevent
         # updating the cms article on save.
-        return kwargs.get('object_action') in self.object_actions
+        return kwargs.get("object_action") in self.object_actions
 
 
-@receiver(post_publish_article, dispatch_uid='publish_cms_article')
+@receiver(post_publish_article, dispatch_uid="publish_cms_article")
 def publish_cms_article(sender, instance, language, **kwargs):
     title = instance.publisher_public.get_title_obj(language)
-    print('##################### publish_cms_article', title)
-    add_to_index.send(sender=Title, instance=title, object_action='publish')
+    print("##################### publish_cms_article", title)
+    add_to_index.send(sender=Title, instance=title, object_action="publish")
 
 
-@receiver(post_unpublish_article, dispatch_uid='unpublish_cms_article')
+@receiver(post_unpublish_article, dispatch_uid="unpublish_cms_article")
 def unpublish_cms_article(sender, instance, language, **kwargs):
     title = instance.publisher_public.get_title_obj(language)
-    print('##################### unpublish_cms_article', title)
-    remove_from_index.send(sender=Title, instance=title, object_action='unpublish')
+    print("##################### unpublish_cms_article", title)
+    remove_from_index.send(sender=Title, instance=title, object_action="unpublish")

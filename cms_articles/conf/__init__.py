@@ -4,7 +4,6 @@ from . import default_settings as default_settings
 
 
 class LazySettings(object):
-
     def __dir__(self):
         return dir(wrapped_settings) + dir(default_settings)
 

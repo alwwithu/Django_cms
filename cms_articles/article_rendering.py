@@ -9,10 +9,10 @@ def render_article(request, article, current_language, slug):
     Renders an article
     """
     context = {}
-    context['article'] = article
-    context['lang'] = current_language
-    context['current_article'] = article
-    context['has_change_permissions'] = article.has_change_permission(request)
+    context["article"] = article
+    context["lang"] = current_language
+    context["current_article"] = article
+    context["has_change_permissions"] = article.has_change_permission(request)
 
     response = TemplateResponse(request, article.template, context)
     response.add_post_render_callback(set_page_cache)
@@ -32,7 +32,7 @@ def render_article(request, article, current_language, slug):
         # Do nothing, allowed is no header.
         return response
     elif xframe_options == Page.X_FRAME_OPTIONS_SAMEORIGIN:
-        response['X-Frame-Options'] = 'SAMEORIGIN'
+        response["X-Frame-Options"] = "SAMEORIGIN"
     elif xframe_options == Page.X_FRAME_OPTIONS_DENY:
-        response['X-Frame-Options'] = 'DENY'
+        response["X-Frame-Options"] = "DENY"
     return response

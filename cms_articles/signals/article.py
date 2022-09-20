@@ -18,12 +18,12 @@ def post_save_article(instance, raw, **kwargs):
         try:
             instance.rescan_placeholders()
         except TemplateDoesNotExist as e:
-            warnings.warn('Exception occurred: %s template does not exists' % e)
+            warnings.warn("Exception occurred: %s template does not exists" % e)
 
 
 def pre_delete_article(instance, **kwargs):
     for placeholder in instance.get_placeholders():
-        for plugin in placeholder.cmsplugin_set.all().order_by('-depth'):
+        for plugin in placeholder.cmsplugin_set.all().order_by("-depth"):
             plugin._no_reorder = True
             plugin.delete(no_mp=True)
         placeholder.delete()

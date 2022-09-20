@@ -11,8 +11,8 @@ def get_article_from_slug(tree, slug, preview=False, draft=False):
     """
     from ..models import Title
 
-    titles = Title.objects.select_related('article').filter(article__tree=tree)
-    published_only = (not draft and not preview)
+    titles = Title.objects.select_related("article").filter(article__tree=tree)
+    published_only = not draft and not preview
 
     if draft:
         titles = titles.filter(publisher_is_draft=True)

@@ -1,1 +1,1 @@
-default_app_config = 'cms_articles.apps.CMSArticlesConfig'
+default_app_config = "cms_articles.apps.CMSArticlesConfig"

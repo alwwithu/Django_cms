@@ -72,7 +72,7 @@ class YearArchive:
 
     @cached_property
     def url(self):
-        return '{path}?{y}={year}'.format(
+        return "{path}?{y}={year}".format(
             path=self.archive.request.path,
             y=settings.CMS_ARTICLES_YEAR_FIELD,
             year=self.year,
@@ -104,7 +104,7 @@ class MonthArchive:
 
     @cached_property
     def url(self):
-        return '{path}?{y}={year}&{m}={month}'.format(
+        return "{path}?{y}={year}&{m}={month}".format(
             path=self.year_archive.archive.request.path,
             y=settings.CMS_ARTICLES_YEAR_FIELD,
             m=settings.CMS_ARTICLES_MONTH_FIELD,
@@ -126,7 +126,7 @@ class DayArchive:
 
     @cached_property
     def url(self):
-        return '{path}?{y}={year}&{m}={month}&{d}={day}'.format(
+        return "{path}?{y}={year}&{m}={month}&{d}={day}".format(
             path=self.month_archive.year_archive.archive.request.path,
             y=settings.CMS_ARTICLES_YEAR_FIELD,
             m=settings.CMS_ARTICLES_MONTH_FIELD,

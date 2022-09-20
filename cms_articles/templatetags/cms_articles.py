@@ -39,14 +39,14 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
     if article_lookup is None:
         return request.current_article
     if isinstance(article_lookup, Article):
-        if hasattr(request, 'current_article') and request.current_article.pk == article_lookup.pk:
+        if hasattr(request, "current_article") and request.current_article.pk == article_lookup.pk:
             return request.current_article
         return article_lookup
     if isinstance(article_lookup, six.integer_types):
-        article_lookup = {'pk': article_lookup}
+        article_lookup = {"pk": article_lookup}
     elif not isinstance(article_lookup, dict):
-        raise TypeError('The article_lookup argument can be either a Dictionary, Integer, or Article.')
-    article_lookup.update({'site': site_id})
+        raise TypeError("The article_lookup argument can be either a Dictionary, Integer, or Article.")
+    article_lookup.update({"site": site_id})
     try:
         article = Article.objects.all().get(**article_lookup)
         if request and use_draft(request):
@@ -61,23 +61,22 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
                 return article
     except Article.DoesNotExist:
         site = Site.objects.get_current()
-        subject = _('Article not found on %(domain)s') % {'domain': site.domain}
-        body = (
-            _("A template tag couldn't find the article with lookup arguments `%(article_lookup)s\n`. "
-              "The URL of the request was: http://%(host)s%(path)s") %
-            {'article_lookup': repr(article_lookup), 'host': site.domain, 'path': request.path_info}
-        )
+        subject = _("Article not found on %(domain)s") % {"domain": site.domain}
+        body = _(
+            "A template tag couldn't find the article with lookup arguments `%(article_lookup)s\n`. "
+            "The URL of the request was: http://%(host)s%(path)s"
+        ) % {"article_lookup": repr(article_lookup), "host": site.domain, "path": request.path_info}
         if settings.DEBUG:
             raise Article.DoesNotExist(body)
         else:
             mw = get_middleware()
-            if getattr(settings, 'SEND_BROKEN_LINK_EMAILS', False):
+            if getattr(settings, "SEND_BROKEN_LINK_EMAILS", False):
                 mail_managers(subject, body, fail_silently=True)
-            elif 'django.middleware.common.BrokenLinkEmailsMiddleware' in mw:
+            elif "django.middleware.common.BrokenLinkEmailsMiddleware" in mw:
                 middle = BrokenLinkEmailsMiddleware()
                 domain = request.get_host()
                 path = request.get_full_path()
-                referer = force_text(request.META.get('HTTP_REFERER', ''), errors='replace')
+                referer = force_text(request.META.get("HTTP_REFERER", ""), errors="replace")
                 if not middle.is_ignorable_request(request, path, domain, referer):
                     mail_managers(subject, body, fail_silently=True)
             return None
@@ -99,20 +98,21 @@ class ArticlePlaceholder(Tag):
     or -- optional argument which if given will make the template tag a block
         tag whose content is shown if the placeholder is empty
     """
-    name = 'article_placeholder'
+
+    name = "article_placeholder"
     options = PlaceholderOptions(
-        Argument('name', resolve=False),
-        MultiValueArgument('extra_bits', required=False, resolve=False),
+        Argument("name", resolve=False),
+        MultiValueArgument("extra_bits", required=False, resolve=False),
         blocks=[
-            ('endarticle_placeholder', 'nodelist'),
+            ("endarticle_placeholder", "nodelist"),
         ],
     )
 
     def render_tag(self, context, name, extra_bits, nodelist=None):
-        request = context.get('request')
+        request = context.get("request")
 
         if not request:
-            return ''
+            return ""
 
         validate_placeholder_name(name)
 
@@ -129,19 +129,19 @@ class ArticlePlaceholder(Tag):
                 nodelist=nodelist,
             )
         except PlaceholderNotFound:
-            content = ''
+            content = ""
 
         if not content and nodelist:
             return nodelist.render(context)
         return content
 
     def get_declaration(self):
-        slot = self.kwargs['name'].var.value.strip('"').strip("'")
+        slot = self.kwargs["name"].var.value.strip('"').strip("'")
 
         return DeclaredPlaceholder(slot=slot, inherit=False)
 
 
-register.tag('article_placeholder', ArticlePlaceholder)
+register.tag("article_placeholder", ArticlePlaceholder)
 
 
 class ArticleAttribute(AsTag):
@@ -181,12 +181,13 @@ class ArticleAttribute(AsTag):
     varname -- context variable name. Output will be added to template context as this variable.
     This argument is required to follow the 'as' keyword.
     """
-    name = 'article_attribute'
+
+    name = "article_attribute"
     options = Options(
-        Argument('name', resolve=False),
-        Argument('article_lookup', required=False, default=None),
-        'as',
-        Argument('varname', required=False, resolve=False)
+        Argument("name", resolve=False),
+        Argument("article_lookup", required=False, default=None),
+        "as",
+        Argument("varname", required=False, resolve=False),
     )
 
     valid_attributes = [
@@ -202,10 +203,10 @@ class ArticleAttribute(AsTag):
     ]
 
     def get_value(self, context, name, article_lookup):
-        if 'request' not in context:
-            return ''
+        if "request" not in context:
+            return ""
         name = name.lower()
-        request = context['request']
+        request = context["request"]
         lang = get_language_from_request(request)
         article = _get_article_by_untyped_arg(article_lookup, request, get_site_id(None))
         if article and name in self.valid_attributes:
@@ -214,36 +215,38 @@ class ArticleAttribute(AsTag):
             if name not in ("changed_date", "image"):
                 ret_val = escape(ret_val)
             return ret_val
-        return ''
+        return ""
 
 
-register.tag('article_attribute', ArticleAttribute)
+register.tag("article_attribute", ArticleAttribute)
 
 
 class ShowArticleBreadcrumb(ShowBreadcrumb):
-    name = 'show_article_breadcrumb'
+    name = "show_article_breadcrumb"
 
     def get_context(self, context, start_level, template, only_visible):
         context = super(ShowArticleBreadcrumb, self).get_context(context, start_level, template, only_visible)
         try:
-            current_article = context['request'].current_article
+            current_article = context["request"].current_article
         except (AttributeError, KeyError):
             pass
         else:
-            context['ancestors'].append(NavigationNode(
-                title=current_article.get_menu_title(),
-                url=current_article.get_absolute_url(),
-                id=current_article.pk,
-                visible=True,
-            ))
+            context["ancestors"].append(
+                NavigationNode(
+                    title=current_article.get_menu_title(),
+                    url=current_article.get_absolute_url(),
+                    id=current_article.pk,
+                    visible=True,
+                )
+            )
         return context
 
 
-register.tag('show_article_breadcrumb', ShowArticleBreadcrumb)
+register.tag("show_article_breadcrumb", ShowArticleBreadcrumb)
 
 
 @register.simple_tag(takes_context=True)
 def url_page(context, page):
-    get = context['request'].GET.copy()
+    get = context["request"].GET.copy()
     get[settings.CMS_ARTICLES_PAGE_FIELD] = page
-    return '{}?{}'.format(context['request'].path, get.urlencode())
+    return "{}?{}".format(context["request"].path, get.urlencode())

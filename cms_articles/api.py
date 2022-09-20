@@ -24,18 +24,33 @@ from .models import Article, Title
 
 
 @transaction.atomic
-def create_article(tree, template, title, language, slug=None, description=None,
-                   page_title=None, menu_title=None, meta_description=None,
-                   created_by=None, image=None, publication_date=None, publication_end_date=None,
-                   published=False, login_required=False, creation_date=None,
-                   attributes=[], categories=[]):
+def create_article(
+    tree,
+    template,
+    title,
+    language,
+    slug=None,
+    description=None,
+    page_title=None,
+    menu_title=None,
+    meta_description=None,
+    created_by=None,
+    image=None,
+    publication_date=None,
+    publication_end_date=None,
+    published=False,
+    login_required=False,
+    creation_date=None,
+    attributes=[],
+    categories=[],
+):
     """
     Create a CMS Article and it's title for the given language
     """
 
     # validate tree
     tree = tree.get_public_object()
-    assert tree.application_urls == 'CMSArticlesApp'
+    assert tree.application_urls == "CMSArticlesApp"
 
     # validate template
     assert template in [tpl[0] for tpl in settings.CMS_ARTICLES_TEMPLATES]
@@ -65,7 +80,7 @@ def create_article(tree, template, title, language, slug=None, description=None,
         except Exception:
             username = force_text(created_by)
     else:
-        username = 'script'
+        username = "script"
 
     with current_user(username):
         # create article
@@ -103,9 +118,18 @@ def create_article(tree, template, title, language, slug=None, description=None,
 
 
 @transaction.atomic
-def create_title(article, language, title, slug=None, description=None,
-                 page_title=None, menu_title=None, meta_description=None,
-                 creation_date=None, image=None):
+def create_title(
+    article,
+    language,
+    title,
+    slug=None,
+    description=None,
+    page_title=None,
+    menu_title=None,
+    meta_description=None,
+    creation_date=None,
+    image=None,
+):
     """
     Create an article title.
     """
@@ -129,10 +153,10 @@ def create_title(article, language, title, slug=None, description=None,
     # find unused slug:
     base_slug = slug
     qs = Title.objects.filter(language=language)
-    used_slugs = list(s for s in qs.values_list('slug', flat=True) if s.startswith(base_slug))
+    used_slugs = list(s for s in qs.values_list("slug", flat=True) if s.startswith(base_slug))
     i = 1
     while slug in used_slugs:
-        slug = '%s-%s' % (base_slug, i)
+        slug = "%s-%s" % (base_slug, i)
         i += 1
 
     # create title
@@ -141,7 +165,7 @@ def create_title(article, language, title, slug=None, description=None,
         language=language,
         title=title,
         slug=slug,
-        description=description or '',
+        description=description or "",
         page_title=page_title,
         menu_title=menu_title,
         meta_description=meta_description,
@@ -171,7 +195,7 @@ def publish_article(article, language, changed_by=None):
     if changed_by:
         username = changed_by.get_username()
     else:
-        username = 'script'
+        username = "script"
 
     with current_user(username):
         article.publish(language)

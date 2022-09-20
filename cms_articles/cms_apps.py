@@ -4,11 +4,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class CMSArticlesApp(CMSApp):
-    name = _('Articles tree')
-    app_name = 'cms_articles'
+    name = _("Articles tree")
+    app_name = "cms_articles"
 
     def get_urls(self, page=None, language=None, **kwargs):
-        return ['cms_articles.urls']
+        return ["cms_articles.urls"]
 
 
 apphook_pool.register(CMSArticlesApp)
