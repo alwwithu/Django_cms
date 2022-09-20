@@ -1,0 +1,63 @@
+[tool.black]
+line-length = 120
+exclude = "migrations*"
+
+[tool.flake8]
+exclude = "leprikon/tests,leprikon/migrations,leprikon/migrations_0_1"
+max-line-length = 120
+
+[tool.isort]
+combine_as_imports = true
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+known_first_party = "cms_articles"
+line_length = 120
+multi_line_output = 3
+profile = "black"
+skip_glob = "*migrations*"
+use_parentheses = true
+
+[tool.poetry]
+name = "django-cms-articles"
+version = "1.6.1"
+description = "django CMS application for managing articles"
+authors = ["Jakub Dorňák <jakub.dornak@qbsoftware.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+packages = [{include = "cms_articles"}]
+repository = "https://github.com/misli/django-cms-articles"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 2",
+    "Framework :: Django :: 3",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: Czech",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django-cms = "*"
+django-filer = "*"
+python-dateutil = "*"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+flake8 = "*"
+isort = "*"
+pytest = "*"
+mypy = "*"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
