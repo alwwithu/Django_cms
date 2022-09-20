@@ -9,12 +9,7 @@ from cms.constants import PUBLISHER_STATE_PENDING
 from cms.models import CMSPlugin, StaticPlaceholder
 from cms.utils import get_language_from_request
 from cms.utils.conf import get_cms_setting
-from cms.utils.i18n import (
-    force_language,
-    get_language_list,
-    get_language_object,
-    get_language_tuple,
-)
+from cms.utils.i18n import force_language, get_language_list, get_language_object, get_language_tuple
 from cms.utils.urlutils import admin_reverse
 from django.conf.urls import url
 from django.contrib import admin, messages

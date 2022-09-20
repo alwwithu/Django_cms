@@ -2,11 +2,7 @@
 import warnings
 
 from cms.exceptions import DuplicatePlaceholderWarning
-from cms.utils.placeholder import (
-    _get_nodelist,
-    _scan_placeholders,
-    validate_placeholder_name,
-)
+from cms.utils.placeholder import _get_nodelist, _scan_placeholders, validate_placeholder_name
 from django.template.loader import get_template
 
 

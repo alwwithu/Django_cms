@@ -1,11 +1,10 @@
+from aldryn_search.helpers import get_plugin_index_data
+from aldryn_search.signals import add_to_index, remove_from_index
+from aldryn_search.utils import clean_join, get_index_base
 from cms.models import CMSPlugin
 from django.db.models import Q
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
-
-from aldryn_search.helpers import get_plugin_index_data
-from aldryn_search.signals import add_to_index, remove_from_index
-from aldryn_search.utils import clean_join, get_index_base
 
 from .conf import settings
 from .models import Title

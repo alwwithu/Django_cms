@@ -16,7 +16,6 @@ from django.template.defaultfilters import slugify
 from django.template.loader import get_template
 from django.utils.encoding import force_text
 from django.utils.timezone import now
-
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from .conf import settings

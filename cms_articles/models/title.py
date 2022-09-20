@@ -8,9 +8,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from filer.fields.image import FilerImageField
-
 from djangocms_text_ckeditor.fields import HTMLField
+from filer.fields.image import FilerImageField
 
 from .article import Article
 from .managers import TitleManager

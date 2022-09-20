@@ -4,11 +4,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 from cms import constants
-from cms.exceptions import (
-    LanguageError,
-    PublicIsUnmodifiable,
-    PublicVersionNeeded,
-)
+from cms.exceptions import LanguageError, PublicIsUnmodifiable, PublicVersionNeeded
 from cms.models import Page
 from cms.utils import i18n
 from cms.utils.copy_plugins import copy_plugins_to
@@ -17,8 +13,7 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.timezone import now
-from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 
 from ..conf import settings
 from .attribute import Attribute
