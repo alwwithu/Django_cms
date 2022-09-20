@@ -14,10 +14,10 @@ class Command(BaseCommand):
             try:
                 imported, errors = import_wordpress(wordpress_xml)
             except Exception as e:
-                self.stderr.write(self.style.ERROR('Failed to import "{}": {}'.format(wordpress_xml, e)))
+                self.stderr.write(self.style.ERROR('Failed to import "{}": {}.'.format(wordpress_xml, e)))
                 raise CommandError(e)
             if errors:
-                self.stderr.write(self.style.ERROR("Failed to import {} items".format(wordpress_xml, e)))
+                self.stderr.write(self.style.ERROR("Failed to import {} items.".format(wordpress_xml)))
             self.stdout.write(
-                self.style.SUCCESS('Successfully imported {} items from "{}"'.format(imported, wordpress_xml))
+                self.style.SUCCESS('Successfully imported {} items from "{}".'.format(imported, wordpress_xml))
             )
