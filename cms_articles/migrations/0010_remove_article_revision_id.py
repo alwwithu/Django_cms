@@ -8,12 +8,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms_articles', '0009_number_min_value'),
+        ("cms_articles", "0009_number_min_value"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='article',
-            name='revision_id',
+            model_name="article",
+            name="revision_id",
         ),
     ]

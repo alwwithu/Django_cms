@@ -6,8 +6,7 @@ from datetime import timedelta
 from cms.constants import PUBLISHER_STATE_DIRTY
 from django.db import models
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 
@@ -15,7 +14,6 @@ from .article import Article
 from .managers import TitleManager
 
 
-@python_2_unicode_compatible
 class Title(models.Model):
     # These are the fields whose values are compared when saving
     # a Title object to know if it has changed.

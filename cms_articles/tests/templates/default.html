@@ -1,0 +1,14 @@
+{% extends "cms_articles/base.html" %}
+{% load cms_tags thumbnail %}
+
+{% block page_title %}{% page_attribute "page_title" %}{% endblock %}
+{% block meta_description %}{% page_attribute "meta_description" %}{% endblock %}
+{% block breadcrumb %}{% endblock %}
+
+{% block content %}
+
+<h1 class="article-title">{% block title %}{% page_attribute "title" %}{% endblock %}</h1>
+
+{% placeholder "content" %}
+
+{% endblock %}

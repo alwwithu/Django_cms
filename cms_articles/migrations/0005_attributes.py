@@ -8,34 +8,46 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms_articles', '0004_categories'),
+        ("cms_articles", "0004_categories"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Attribute',
+            name="Attribute",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='name')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="name")),
             ],
             options={
-                'verbose_name': 'attribute',
-                'verbose_name_plural': 'attributes',
+                "verbose_name": "attribute",
+                "verbose_name_plural": "attributes",
             },
         ),
         migrations.AddField(
-            model_name='article',
-            name='attributes',
-            field=models.ManyToManyField(blank=True, related_name='articles', to='cms_articles.Attribute', verbose_name='attributes'),
+            model_name="article",
+            name="attributes",
+            field=models.ManyToManyField(
+                blank=True, related_name="articles", to="cms_articles.Attribute", verbose_name="attributes"
+            ),
         ),
         migrations.AddField(
-            model_name='articlescategoryplugin',
-            name='attributes',
-            field=models.ManyToManyField(blank=True, related_name='_articlescategoryplugin_attributes_+', to='cms_articles.Attribute', verbose_name='attributes'),
+            model_name="articlescategoryplugin",
+            name="attributes",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="_articlescategoryplugin_attributes_+",
+                to="cms_articles.Attribute",
+                verbose_name="attributes",
+            ),
         ),
         migrations.AddField(
-            model_name='articlesplugin',
-            name='attributes',
-            field=models.ManyToManyField(blank=True, related_name='_articlesplugin_attributes_+', to='cms_articles.Attribute', verbose_name='attributes'),
+            model_name="articlesplugin",
+            name="attributes",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="_articlesplugin_attributes_+",
+                to="cms_articles.Attribute",
+                verbose_name="attributes",
+            ),
         ),
     ]

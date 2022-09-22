@@ -9,18 +9,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms_articles', '0008_cms_3_4'),
+        ("cms_articles", "0008_cms_3_4"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='articlescategoryplugin',
-            name='number',
-            field=models.PositiveSmallIntegerField(default=3, validators=[django.core.validators.MinValueValidator(1)], verbose_name='Number of last articles'),
+            model_name="articlescategoryplugin",
+            name="number",
+            field=models.PositiveSmallIntegerField(
+                default=3,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="Number of last articles",
+            ),
         ),
         migrations.AlterField(
-            model_name='articlesplugin',
-            name='number',
-            field=models.PositiveSmallIntegerField(default=3, validators=[django.core.validators.MinValueValidator(1)], verbose_name='Number of last articles'),
+            model_name="articlesplugin",
+            name="number",
+            field=models.PositiveSmallIntegerField(
+                default=3,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="Number of last articles",
+            ),
         ),
     ]

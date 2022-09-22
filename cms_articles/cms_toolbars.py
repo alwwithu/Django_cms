@@ -5,7 +5,7 @@ from cms.toolbar_pool import toolbar_pool
 from cms.utils.i18n import force_language
 from cms.utils.urlutils import add_url_parameters, admin_reverse
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 @toolbar_pool.register

@@ -3,6 +3,7 @@ import re
 import sys
 import warnings
 from threading import local
+from urllib.parse import unquote
 
 from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from cms.constants import PUBLISHER_STATE_PENDING
@@ -11,9 +12,9 @@ from cms.utils import get_language_from_request
 from cms.utils.conf import get_cms_setting
 from cms.utils.i18n import force_language, get_language_list, get_language_object, get_language_tuple
 from cms.utils.urlutils import admin_reverse
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.admin.utils import get_deleted_objects
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import router, transaction
@@ -21,22 +22,16 @@ from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import escape
 from django.template.loader import get_template
+from django.urls import path
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
-from django.utils.six.moves.urllib.parse import unquote
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
 from ..api import add_content
 from ..conf import settings
 from ..models import Article, Title
 from .forms import ArticleCreateForm, ArticleForm
-
-try:
-    from django.contrib.admin.utils import get_deleted_objects
-except ImportError:
-    from django.contrib.admin.util import get_deleted_objects
-
 
 require_POST = method_decorator(require_POST)
 
@@ -116,14 +111,14 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         """Get the admin urls"""
         info = "%s_%s" % (self.model._meta.app_label, self.model._meta.model_name)
 
-        def pat(regex, fn):
-            return url(regex, self.admin_site.admin_view(fn), name="%s_%s" % (info, fn.__name__))
+        def make_path(regex, fn):
+            return path(regex, self.admin_site.admin_view(fn), name="%s_%s" % (info, fn.__name__))
 
         url_patterns = [
-            pat(r"^([0-9]+)/delete-translation/$", self.delete_translation),
-            pat(r"^([0-9]+)/([a-z\-]+)/publish/$", self.publish_article),
-            pat(r"^([0-9]+)/([a-z\-]+)/unpublish/$", self.unpublish),
-            pat(r"^([0-9]+)/([a-z\-]+)/preview/$", self.preview_article),
+            make_path("<int:article_id>/delete-translation/", self.delete_translation),
+            make_path("<int:article_id>/<language>/publish/", self.publish_article),
+            make_path("<int:article_id>/<language>/unpublish/", self.unpublish),
+            make_path("<int:article_id>/<language>/preview/", self.preview_article),
         ]
 
         url_patterns += super(ArticleAdmin, self).get_urls()
@@ -267,7 +262,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         # ensure user has permissions to publish this article
         if article:
             if not self.has_change_permission(request):
-                return HttpResponseForbidden(force_text(_("You do not have permission to publish this article")))
+                return HttpResponseForbidden(_("You do not have permission to publish this article"))
             article.publish(language)
         statics = request.GET.get("statics", "")
         if not statics and not article:
@@ -330,9 +325,9 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         """
         article = get_object_or_404(self.model, pk=article_id)
         if not article.has_publish_permission(request):
-            return HttpResponseForbidden(force_text(_("You do not have permission to unpublish this article")))
+            return HttpResponseForbidden(_("You do not have permission to unpublish this article"))
         if not article.publisher_public_id:
-            return HttpResponseForbidden(force_text(_("This article was never published")))
+            return HttpResponseForbidden(_("This article was never published"))
         try:
             article.unpublish(language)
             message = _('The %(language)s article "%(article)s" was successfully unpublished') % {
@@ -383,12 +378,12 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             obj = None
 
         if not self.has_delete_permission(request, obj):
-            return HttpResponseForbidden(force_text(_("You do not have permission to change this article")))
+            return HttpResponseForbidden(str(_("You do not have permission to change this article")))
 
         if obj is None:
             raise Http404(
                 _("%(name)s object with primary key %(key)r does not exist.")
-                % {"name": force_text(opts.verbose_name), "key": escape(object_id)}
+                % {"name": force_str(opts.verbose_name), "key": escape(object_id)}
             )
 
         if not len(list(obj.get_languages())) > 1:
@@ -411,7 +406,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                 raise PermissionDenied
 
             message = _("Title and plugins with language %(language)s was deleted") % {
-                "language": force_text(get_language_object(language)["name"])
+                "language": force_str(get_language_object(language)["name"])
             }
             self.log_change(request, titleobj, message)
             messages.info(request, message)
@@ -430,7 +425,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
         context = {
             "title": _("Are you sure?"),
-            "object_name": force_text(titleopts.verbose_name),
+            "object_name": force_str(titleopts.verbose_name),
             "object": titleobj,
             "deleted_objects": deleted_objects,
             "perms_lacking": perms_needed,
@@ -451,9 +446,9 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             context,
         )
 
-    def preview_article(self, request, object_id, language):
+    def preview_article(self, request, article_id, language):
         """Redirecting preview function based on draft_id"""
-        article = get_object_or_404(self.model, id=object_id)
+        article = get_object_or_404(self.model, id=article_id)
         attrs = "?%s" % get_cms_setting("CMS_TOOLBAR_URL__EDIT_ON")
         attrs += "&language=" + language
         with force_language(language):

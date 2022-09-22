@@ -9,11 +9,11 @@ from cms.models import Page
 from cms.utils import i18n
 from cms.utils.copy_plugins import copy_plugins_to
 from django.db import models
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.timezone import now
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from ..conf import settings
 from .attribute import Attribute
@@ -21,7 +21,6 @@ from .category import Category
 from .managers import ArticleManager
 
 
-@python_2_unicode_compatible
 class Article(models.Model):
     tree = models.ForeignKey(
         Page,
@@ -123,7 +122,7 @@ class Article(models.Model):
                 title = None
         if title is None:
             title = ""
-        return force_text(title)
+        return str(title)
 
     def __repr__(self):
         # This is needed to solve the infinite recursion when
@@ -289,7 +288,7 @@ class Article(models.Model):
 
         if user:
             try:
-                changed_by = force_text(user)
+                changed_by = force_str(user)
             except AttributeError:
                 # AnonymousUser may not have USERNAME_FIELD
                 changed_by = "anonymous"
@@ -407,9 +406,9 @@ class Article(models.Model):
         self._publisher_keep_state = True
         self.save()
 
-        from ..signals import post_publish_article
+        from cms.signals import post_publish
 
-        post_publish_article.send(sender=Article, instance=self, language=language)
+        post_publish.send(sender=Article, instance=self, language=language)
 
         return True
 

@@ -11,34 +11,64 @@ import filer.fields.image
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('filer', '0001_initial'),
-        ('cms_articles', '0002_remove_title_excerpt'),
+        ("filer", "0001_initial"),
+        ("cms_articles", "0002_remove_title_excerpt"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='title',
-            name='description',
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', help_text='The text displayed in an articles overview.', verbose_name='description'),
+            model_name="title",
+            name="description",
+            field=djangocms_text_ckeditor.fields.HTMLField(
+                blank=True,
+                default="",
+                help_text="The text displayed in an articles overview.",
+                verbose_name="description",
+            ),
         ),
         migrations.AddField(
-            model_name='title',
-            name='image',
-            field=filer.fields.image.FilerImageField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='filer.Image', verbose_name='image'),
+            model_name="title",
+            name="image",
+            field=filer.fields.image.FilerImageField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="+",
+                to="filer.Image",
+                verbose_name="image",
+            ),
         ),
         migrations.AlterField(
-            model_name='title',
-            name='menu_title',
-            field=models.CharField(blank=True, help_text='overwrite the title in the articles overview', max_length=255, null=True, verbose_name='menu title'),
+            model_name="title",
+            name="menu_title",
+            field=models.CharField(
+                blank=True,
+                help_text="overwrite the title in the articles overview",
+                max_length=255,
+                null=True,
+                verbose_name="menu title",
+            ),
         ),
         migrations.AlterField(
-            model_name='title',
-            name='meta_description',
-            field=models.TextField(blank=True, help_text='The text displayed in search engines.', max_length=155, null=True, verbose_name='meta description'),
+            model_name="title",
+            name="meta_description",
+            field=models.TextField(
+                blank=True,
+                help_text="The text displayed in search engines.",
+                max_length=155,
+                null=True,
+                verbose_name="meta description",
+            ),
         ),
         migrations.AlterField(
-            model_name='title',
-            name='page_title',
-            field=models.CharField(blank=True, help_text='overwrite the title (html title tag)', max_length=255, null=True, verbose_name='page title'),
+            model_name="title",
+            name="page_title",
+            field=models.CharField(
+                blank=True,
+                help_text="overwrite the title (html title tag)",
+                max_length=255,
+                null=True,
+                verbose_name="page title",
+            ),
         ),
     ]

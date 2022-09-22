@@ -1,12 +1,11 @@
 from cms.models import Page
 from django.db import models
-from django.utils.encoding import force_text, python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 
 
-@python_2_unicode_compatible
 class Category(models.Model):
     page = models.OneToOneField(
         Page,
@@ -22,4 +21,4 @@ class Category(models.Model):
         verbose_name_plural = _("categories")
 
     def __str__(self):
-        return force_text(self.page)
+        return force_str(self.page)

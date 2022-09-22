@@ -8,23 +8,29 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sites', '0002_alter_domain_unique'),
-        ('cms_articles', '0010_remove_article_revision_id'),
+        ("sites", "0002_alter_domain_unique"),
+        ("cms_articles", "0010_remove_article_revision_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attribute',
-            name='site',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='sites.Site'),
+            model_name="attribute",
+            name="site",
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to="sites.Site"),
         ),
         migrations.AlterUniqueTogether(
-            name='attribute',
-            unique_together={('site', 'name')},
+            name="attribute",
+            unique_together={("site", "name")},
         ),
         migrations.AlterField(
-            model_name='article',
-            name='attributes',
-            field=models.ManyToManyField(blank=True, limit_choices_to={'site_id': settings.SITE_ID}, related_name='articles', to='cms_articles.Attribute', verbose_name='attributes'),
+            model_name="article",
+            name="attributes",
+            field=models.ManyToManyField(
+                blank=True,
+                limit_choices_to={"site_id": settings.SITE_ID},
+                related_name="articles",
+                to="cms_articles.Attribute",
+                verbose_name="attributes",
+            ),
         ),
     ]

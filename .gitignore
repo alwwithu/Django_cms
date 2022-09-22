@@ -1,6 +1,8 @@
 *.pyc
 *.pyo
+.coverage
 .tox
+.vscode
 build
 dist
 *.egg-info

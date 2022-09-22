@@ -7,16 +7,14 @@ from cms.exceptions import PlaceholderNotFound
 from cms.templatetags.cms_tags import DeclaredPlaceholder, PlaceholderOptions
 from cms.toolbar.utils import get_toolbar_from_request
 from cms.utils import get_language_from_request, get_site_id
-from cms.utils.compat.dj import get_middleware
 from cms.utils.moderator import use_draft
 from django import template
 from django.contrib.sites.models import Site
 from django.core.mail import mail_managers
 from django.middleware.common import BrokenLinkEmailsMiddleware
-from django.utils import six
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from menus.base import NavigationNode
 from menus.templatetags.menu_tags import ShowBreadcrumb
 
@@ -42,7 +40,8 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
         if hasattr(request, "current_article") and request.current_article.pk == article_lookup.pk:
             return request.current_article
         return article_lookup
-    if isinstance(article_lookup, six.integer_types):
+
+    if isinstance(article_lookup, int):
         article_lookup = {"pk": article_lookup}
     elif not isinstance(article_lookup, dict):
         raise TypeError("The article_lookup argument can be either a Dictionary, Integer, or Article.")
@@ -69,14 +68,14 @@ def _get_article_by_untyped_arg(article_lookup, request, site_id):
         if settings.DEBUG:
             raise Article.DoesNotExist(body)
         else:
-            mw = get_middleware()
+            mw = settings.MIDDLEWARE
             if getattr(settings, "SEND_BROKEN_LINK_EMAILS", False):
                 mail_managers(subject, body, fail_silently=True)
             elif "django.middleware.common.BrokenLinkEmailsMiddleware" in mw:
                 middle = BrokenLinkEmailsMiddleware()
                 domain = request.get_host()
                 path = request.get_full_path()
-                referer = force_text(request.META.get("HTTP_REFERER", ""), errors="replace")
+                referer = force_str(request.headers.get("Referer", ""), errors="replace")
                 if not middle.is_ignorable_request(request, path, domain, referer):
                     mail_managers(subject, body, fail_silently=True)
             return None

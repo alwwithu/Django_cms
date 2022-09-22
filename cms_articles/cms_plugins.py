@@ -1,7 +1,7 @@
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .archive import Archive
 from .conf import settings

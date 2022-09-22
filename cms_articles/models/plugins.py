@@ -1,8 +1,7 @@
 from cms.models import CMSPlugin, Page
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 from .article import Article
@@ -10,7 +9,6 @@ from .attribute import Attribute
 from .category import Category
 
 
-@python_2_unicode_compatible
 class ArticlePlugin(CMSPlugin):
     article = models.ForeignKey(
         Article,
@@ -78,7 +76,6 @@ class ArticlesPluginBase(CMSPlugin):
         return articles
 
 
-@python_2_unicode_compatible
 class ArticlesPlugin(ArticlesPluginBase):
     trees = models.ManyToManyField(
         Page,
@@ -113,7 +110,6 @@ class ArticlesPlugin(ArticlesPluginBase):
         super(ArticlesPlugin, self).copy_relations(oldinstance)
 
 
-@python_2_unicode_compatible
 class ArticlesCategoryPlugin(ArticlesPluginBase):
     subcategories = models.BooleanField(
         _("include sub-categories"),

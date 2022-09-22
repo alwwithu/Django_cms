@@ -6,10 +6,10 @@ from cms.models.fields import PageField
 from django.core.files import File as DjangoFile
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
-from django.utils.encoding import force_bytes, python_2_unicode_compatible
+from django.utils.encoding import force_bytes
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from filer.fields.folder import FilerFolderField
 from filer.models import File, Folder
 
@@ -24,7 +24,6 @@ except ImportError:
     from urllib2 import urlopen
 
 
-@python_2_unicode_compatible
 class Author(models.Model):
     author_id = models.IntegerField(_("author id"), unique=True)
     login = models.CharField(_("login name"), max_length=255)
@@ -48,7 +47,6 @@ class Author(models.Model):
         verbose_name_plural = _("authors")
 
 
-@python_2_unicode_compatible
 class Category(models.Model):
     term_id = models.IntegerField(_("term id"), unique=True)
     name = models.CharField(_("name"), max_length=255)
@@ -83,7 +81,6 @@ class Category(models.Model):
         verbose_name_plural = _("categories")
 
 
-@python_2_unicode_compatible
 class Item(models.Model):
     title = models.TextField(_("title"), default="")
     link = models.CharField(_("link"), max_length=255)
@@ -282,7 +279,6 @@ class Item(models.Model):
         return self.folder
 
 
-@python_2_unicode_compatible
 class Options(models.Model):
     name = models.CharField(_("name"), max_length=255, unique=True)
 

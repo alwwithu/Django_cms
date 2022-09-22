@@ -1,12 +1,11 @@
 from django.contrib.sites.models import Site
 from django.db import models
-from django.utils.encoding import force_text, python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from ..conf import settings
 
 
-@python_2_unicode_compatible
 class Attribute(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE, default=settings.SITE_ID)
     name = models.CharField(_("name"), max_length=255)
@@ -18,4 +17,4 @@ class Attribute(models.Model):
         verbose_name_plural = _("attributes")
 
     def __str__(self):
-        return force_text(self.name)
+        return force_str(self.name)

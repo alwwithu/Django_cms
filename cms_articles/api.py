@@ -14,7 +14,7 @@ from cms.utils.permissions import current_user
 from django.db import transaction
 from django.template.defaultfilters import slugify
 from django.template.loader import get_template
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.timezone import now
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
@@ -77,7 +77,7 @@ def create_article(
         try:
             username = created_by.get_username()
         except Exception:
-            username = force_text(created_by)
+            username = force_str(created_by)
     else:
         username = "script"
 

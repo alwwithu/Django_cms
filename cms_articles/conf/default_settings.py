@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 # by default, use the same templates as for cms pages
 CMS_ARTICLES_TEMPLATES = [("cms_articles/default.html", _("Default"))]
