@@ -15,7 +15,7 @@ use_parentheses = true
 
 [tool.poetry]
 name = "django-cms-articles"
-version = "1.6.1"
+version = "2.0.0"
 description = "django CMS application for managing articles"
 authors = ["Jakub Dorňák <jakub.dornak@qbsoftware.com>"]
 license = "BSD-3-Clause"
