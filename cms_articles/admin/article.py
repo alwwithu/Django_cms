@@ -121,12 +121,12 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
             make_path("<int:article_id>/<language>/preview/", self.preview_article),
         ]
 
-        url_patterns += super(ArticleAdmin, self).get_urls()
+        url_patterns += super().get_urls()
         return url_patterns
 
     def get_queryset(self, request):
         return (
-            super(ArticleAdmin, self)
+            super()
             .get_queryset(request)
             .filter(
                 tree__node__site_id=settings.SITE_ID,
@@ -136,7 +136,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         new = obj.id is None
-        super(ArticleAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
         Title.objects.set_or_create(request, obj, form, form.cleaned_data["language"])
         if new and form.cleaned_data["content"]:
             add_content(
@@ -154,9 +154,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
         the request.
         """
         language = get_language_from_request(request)
-        form = super(ArticleAdmin, self).get_form(
-            request, obj, form=(obj and ArticleForm or ArticleCreateForm), **kwargs
-        )
+        form = super().get_form(request, obj, form=(obj and ArticleForm or ArticleCreateForm), **kwargs)
         # get_form method operates by overriding initial fields value which
         # may persist across invocation. Code below deepcopies fields definition
         # to avoid leaks
@@ -204,23 +202,21 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         _thread_locals.request = request
         _thread_locals.language = get_language_from_request(request)
-        return super(ArticleAdmin, self).changelist_view(request, extra_context=extra_context)
+        return super().changelist_view(request, extra_context=extra_context)
 
     def add_view(self, request, form_url="", extra_context=None):
         extra_context = self.update_language_tab_context(request, context=extra_context)
         extra_context.update(self.get_unihandecode_context(extra_context["language"]))
-        return super(ArticleAdmin, self).add_view(request, form_url, extra_context=extra_context)
+        return super().add_view(request, form_url, extra_context=extra_context)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = self.update_language_tab_context(request, context=extra_context)
         language = extra_context["language"]
         extra_context.update(self.get_unihandecode_context(language))
-        response = super(ArticleAdmin, self).change_view(
-            request, object_id, form_url=form_url, extra_context=extra_context
-        )
-        if language and response.status_code == 302 and response._headers["location"][1] == request.path_info:
-            location = response._headers["location"]
-            response._headers["location"] = (location[0], "%s?language=%s" % (location[1], language))
+        response = super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+        if language and response.status_code == 302 and response.headers["location"][1] == request.path_info:
+            location = response.headers["location"]
+            response.headers["location"] = (location[0], "%s?language=%s" % (location[1], language))
         return response
 
     def render_change_form(self, request, context, add=False, change=False, form_url="", obj=None):
@@ -234,7 +230,7 @@ class ArticleAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
                 "filled_languages": [lang for lang in filled_languages if lang in allowed_languages],
             }
         )
-        return super(ArticleAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+        return super().render_change_form(request, context, add, change, form_url, obj)
 
     def update_language_tab_context(self, request, context=None):
         if not context:

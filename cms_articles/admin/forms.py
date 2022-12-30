@@ -29,7 +29,7 @@ class ArticleForm(forms.ModelForm):
         fields = ["tree", "template", "login_required"]
 
     def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["language"].widget = forms.HiddenInput()
         if self.fields["tree"].widget.choices.queryset.count() == 1:
             self.fields["tree"].initial = self.fields["tree"].widget.choices.queryset.first()
@@ -67,7 +67,7 @@ class PublicationDatesForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(PublicationDatesForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["language"].widget = forms.HiddenInput()
 
     class Meta:

@@ -112,7 +112,7 @@ class ItemAdmin(admin.ModelAdmin):
                     self.model._meta.model_name,
                 ),
             ),
-        ] + super(ItemAdmin, self).get_urls()
+        ] + super().get_urls()
 
     def save_model(self, request, obj, form, change):
         pass
@@ -137,7 +137,7 @@ class ItemAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         if not obj:
             kwargs["form"] = XMLImportForm
-        return super(ItemAdmin, self).get_form(request, obj, **kwargs)
+        return super().get_form(request, obj, **kwargs)
 
     def parent_link(self, obj):
         if obj.post_parent:

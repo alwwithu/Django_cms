@@ -94,7 +94,7 @@ class ArticlesPlugin(ArticlesPluginBase):
         return _("last {} articles").format(self.number)
 
     def get_articles(self, context):
-        articles = super(ArticlesPlugin, self).get_articles(context)
+        articles = super().get_articles(context)
 
         if self.trees.count():
             articles = articles.filter(tree__in=self.trees.all())
@@ -107,7 +107,7 @@ class ArticlesPlugin(ArticlesPluginBase):
     def copy_relations(self, oldinstance):
         self.trees.set(oldinstance.trees.all())
         self.categories.set(oldinstance.categories.all())
-        super(ArticlesPlugin, self).copy_relations(oldinstance)
+        super().copy_relations(oldinstance)
 
 
 class ArticlesCategoryPlugin(ArticlesPluginBase):
@@ -131,11 +131,11 @@ class ArticlesCategoryPlugin(ArticlesPluginBase):
         except Category.DoesNotExist:
             category = Category.objects.create(page=page)
 
-        articles = super(ArticlesCategoryPlugin, self).get_articles(context)
+        articles = super().get_articles(context)
 
         if self.subcategories:
             if not self.placeholder.page.is_home:
-                articles = articles.filter(categories__page__in=self.placeholder.page.get_descendants(True))
+                articles = articles.filter(categories__page__node__path__startswith=page.node.path)
             # if self.placeholder.page.is_home, take all
         else:
             articles = articles.filter(categories=category)

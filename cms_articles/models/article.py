@@ -109,7 +109,7 @@ class Article(models.Model):
         app_label = "cms_articles"
 
     def __init__(self, *args, **kwargs):
-        super(Article, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.title_cache = {}
 
     def __str__(self):
@@ -310,7 +310,7 @@ class Article(models.Model):
         self.order_date = self.publication_date or self.creation_date
 
         if commit:
-            super(Article, self).save(**kwargs)
+            super().save(**kwargs)
 
     def save_base(self, *args, **kwargs):
         """Overridden save_base. If an instance is draft, and was changed, mark
@@ -325,7 +325,7 @@ class Article(models.Model):
             self.title_set.all().update(publisher_state=constants.PUBLISHER_STATE_DIRTY)
         if keep_state:
             delattr(self, "_publisher_keep_state")
-        return super(Article, self).save_base(*args, **kwargs)
+        return super().save_base(*args, **kwargs)
 
     def is_new_dirty(self):
         if self.pk:

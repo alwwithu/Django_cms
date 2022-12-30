@@ -224,7 +224,7 @@ class ShowArticleBreadcrumb(ShowBreadcrumb):
     name = "show_article_breadcrumb"
 
     def get_context(self, context, start_level, template, only_visible):
-        context = super(ShowArticleBreadcrumb, self).get_context(context, start_level, template, only_visible)
+        context = super().get_context(context, start_level, template, only_visible)
         try:
             current_article = context["request"].current_article
         except (AttributeError, KeyError):
