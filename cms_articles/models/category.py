@@ -1,3 +1,5 @@
+from itertools import chain
+
 from cms.models import Page
 from django.db import models
 from django.utils.encoding import force_str
@@ -21,4 +23,9 @@ class Category(models.Model):
         verbose_name_plural = _("categories")
 
     def __str__(self):
-        return force_str(self.page)
+        return " / ".join(
+            chain(
+                (force_str(p) for p in self.page.get_ancestor_pages()),
+                (force_str(self.page),),
+            )
+        )
