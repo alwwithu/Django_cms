@@ -9,12 +9,8 @@ from django.utils.timezone import make_aware
 from ..conf import settings
 
 if is_installed("django.contrib.redirects"):
+    from urllib.parse import urlparse
     from django.contrib.redirects.models import Redirect
-
-    try:
-        from urllib.parse import urlparse
-    except ImportError:
-        from urlparse import urlparse
 
     def create_redirect(old_url, new_url):
         old_path = urlparse(old_url).path
@@ -115,7 +111,7 @@ def import_wordpress(xmlfile):
             post_id = int(item.find("{http://wordpress.org/export/1.2/}post_id").text)
             title = item.find("title").text or ""
             link = item.find("link").text or ""
-            pub_date = parse(item.find("pubDate").text)
+            pub_date = item.find("pubDate").text
             created_by = item.find("{http://purl.org/dc/elements/1.1/}creator").text
             guid = item.find("guid").text
             description = item.find("description").text or ""
@@ -146,24 +142,27 @@ def import_wordpress(xmlfile):
             errors.append(error)
             continue
         try:
-            item = Item.objects.create(
-                title=title,
-                link=link,
-                pub_date=pub_date,
-                created_by=authors[created_by],
-                guid=guid,
-                description=description,
-                content=content,
-                excerpt=excerpt,
+            item = Item.objects.update_or_create(
                 post_id=post_id,
-                post_date=post_date,
-                post_name=post_name,
-                status=status,
-                post_parent=post_parent,
-                post_type=post_type,
-                postmeta=postmeta,
-            )
-            item.categories = cats
+                defaults=dict(
+                    title=title,
+                    link=link,
+                    pub_date=pub_date and parse(pub_date),
+                    created_by=authors.get(created_by),
+                    guid=guid,
+                    description=description,
+                    content=content,
+                    excerpt=excerpt,
+                    post_id=post_id,
+                    post_date=post_date,
+                    post_name=post_name,
+                    status=status,
+                    post_parent=post_parent,
+                    post_type=post_type,
+                    postmeta=postmeta,
+                ),
+            )[0]
+            item.categories.set(cats)
         except Exception as e:
             error = "Failed to save item with post_id {}: {}".format(post_id, e)
             logging.warning(error)

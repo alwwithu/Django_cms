@@ -6,7 +6,6 @@ from cms.models.fields import PageField
 from django.core.files import File as DjangoFile
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
-from django.utils.encoding import force_bytes
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -18,10 +17,8 @@ from cms_articles.conf import settings
 
 from .utils import create_redirect
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+from urllib.request import urlopen
+from urllib.parse import quote, urlparse
 
 
 class Author(models.Model):
@@ -83,9 +80,11 @@ class Category(models.Model):
 
 class Item(models.Model):
     title = models.TextField(_("title"), default="")
-    link = models.CharField(_("link"), max_length=255)
-    pub_date = models.DateTimeField(_("publication date"))
-    created_by = models.ForeignKey(Author, verbose_name=_("created by"))
+    link = models.CharField(_("link"), max_length=512)
+    pub_date = models.DateTimeField(_("publication date"), blank=True, null=True)
+    created_by = models.ForeignKey(
+        Author, verbose_name=_("created by"), on_delete=models.SET_NULL, blank=True, null=True
+    )
     guid = models.CharField(_("url"), max_length=255)
     description = models.TextField(_("description"))
     content = models.TextField(_("content"))
@@ -170,11 +169,12 @@ class Item(models.Model):
             description=self.excerpt,
             created_by=self.created_by.user or self.created_by.login,
             image=image,
-            publicationdate=self.pub_date,
+            publication_date=self.pub_date,
             categories=[c.category for c in self.categories.exclude(category=None)],
         )
-        self.article.creation_date = self.post_date
-        self.article.save()
+        if self.post_date:
+            self.article.creation_date = self.post_date
+            self.article.save()
         content = "\n".join("<p>{}</p>".format(p) for p in self.content.split("\n\n"))
         add_content(self.article, language=options.language, slot=options.article_slot, content=content)
         if options.article_publish:
@@ -240,8 +240,11 @@ class Item(models.Model):
         if self.file:
             return self.file
         # download content into deleted temp_file
+        parsed_url = urlparse(self.guid)
+        parsed_url = parsed_url._replace(path=quote(parsed_url.path))
+        url = parsed_url.geturl()
         temp_file = NamedTemporaryFile(delete=True)
-        temp_file.write(urlopen(force_bytes(self.guid)).read())
+        temp_file.write(urlopen(url).read())
         temp_file.flush()
         # create DjangoFile object
         django_file = DjangoFile(temp_file, name=self.guid.split("/")[-1])
@@ -288,6 +291,7 @@ class Options(models.Model):
     # article specific options
     article_tree = models.ForeignKey(
         Page,
+        on_delete=models.PROTECT,
         verbose_name=_("tree"),
         related_name="+",
         help_text=_("All posts will be imported as articles in this tree."),

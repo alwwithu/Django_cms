@@ -1,13 +1,14 @@
-# -*- coding: utf-8 -*-
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render
+
+# from django.template import RequestContext
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .forms import CMSImportForm, XMLImportForm
@@ -139,54 +140,53 @@ class ItemAdmin(admin.ModelAdmin):
             kwargs["form"] = XMLImportForm
         return super().get_form(request, obj, **kwargs)
 
+    @admin.display(description=_("post parent"), ordering="post_parent")
     def parent_link(self, obj):
         if obj.post_parent:
-            return '<a href="{url}">{label}</a>'.format(
-                url=reverse(
-                    "admin:{}_{}_changelist".format(
-                        Item._meta.app_label,
-                        Item._meta.model_name,
+            return mark_safe(
+                '<a href="{url}">{label}</a>'.format(
+                    url=reverse(
+                        "admin:{}_{}_changelist".format(
+                            Item._meta.app_label,
+                            Item._meta.model_name,
+                        )
                     )
+                    + "?post_id__exact={}".format(obj.post_parent),
+                    label=obj.post_parent,
                 )
-                + "?post_id__exact={}".format(obj.post_parent),
-                label=obj.post_parent,
             )
         else:
             return ""
 
-    parent_link.short_description = _("post parent")
-    parent_link.admin_order_field = "post_parent"
-    parent_link.allow_tags = True
-
+    @admin.display(description=_("post children"))
     def children_link(self, obj):
         count = obj.children.count()
         if count:
-            return '<a href="{url}">{label}</a>'.format(
-                url=reverse(
-                    "admin:{}_{}_changelist".format(
-                        Item._meta.app_label,
-                        Item._meta.model_name,
+            return mark_safe(
+                '<a href="{url}">{label}</a>'.format(
+                    url=reverse(
+                        "admin:{}_{}_changelist".format(
+                            Item._meta.app_label,
+                            Item._meta.model_name,
+                        )
                     )
+                    + "?post_parent__exact={}".format(obj.post_id),
+                    label=count,
                 )
-                + "?post_parent__exact={}".format(obj.post_id),
-                label=count,
             )
         else:
             return ""
 
-    children_link.short_description = _("post children")
-    children_link.allow_tags = True
-
+    @admin.display(description=_("title"), ordering="title")
     def title_link(self, obj):
-        return '<a href="{url}" title="{url}" target="_blank">{title}</a>'.format(
-            url=obj.guid,
-            title=obj.title,
+        return mark_safe(
+            '<a href="{url}" title="{url}" target="_blank">{title}</a>'.format(
+                url=obj.guid,
+                title=obj.title,
+            )
         )
 
-    title_link.short_description = _("title")
-    title_link.admin_order_field = "title"
-    title_link.allow_tags = True
-
+    @admin.display(description=_("imported as"))
     def imported_link(self, obj):
         url = None
         if obj.article or obj.page:
@@ -196,21 +196,22 @@ class ItemAdmin(admin.ModelAdmin):
         elif obj.folder:
             url = obj.folder.get_admin_directory_listing_url_path()
         if url:
-            return '<a href="{url}" target="_blank">{obj}</a>'.format(
-                obj=obj.article or obj.page or obj.file or obj.folder,
-                url=url,
+            return mark_safe(
+                '<a href="{url}" target="_blank">{obj}</a>'.format(
+                    obj=obj.article or obj.page or obj.file or obj.folder,
+                    url=url,
+                )
             )
         else:
             return ""
 
-    imported_link.short_description = _("imported as")
-    imported_link.allow_tags = True
-
+    @admin.action(description=_("Import selected items into CMS"))
     def cms_import(self, request, queryset):
         if request.POST.get("post", "no") == "yes":
             form = CMSImportForm(request.POST)
             if form.is_valid():
-                return render_to_response(
+                return render(
+                    request,
                     "cms_articles/import_wordpress/cms_import.html",
                     {
                         "title": _("Running import"),
@@ -219,11 +220,12 @@ class ItemAdmin(admin.ModelAdmin):
                         "media": self.media,
                         "opts": self.model._meta,
                     },
-                    context_instance=RequestContext(request),
+                    # context_instance=RequestContext(request), # TODO: delete this line
                 )
         else:
             form = CMSImportForm()
-        return render_to_response(
+        return render(
+            request,
             "cms_articles/import_wordpress/form.html",
             {
                 "title": _("Select predefined import options"),
@@ -232,10 +234,8 @@ class ItemAdmin(admin.ModelAdmin):
                 "form": form,
                 "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
             },
-            context_instance=RequestContext(request),
+            # context_instance=RequestContext(request),  # TODO: delete this line
         )
-
-    cms_import.short_description = _("Import selected items into CMS")
 
     @transaction.atomic
     def import_item(self, request):
