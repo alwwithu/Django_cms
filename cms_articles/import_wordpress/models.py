@@ -161,7 +161,10 @@ class Item(models.Model):
         image = None
         if "_thumbnail_id" in self.meta:
             image_item = Item.objects.get(post_id=int(self.meta["_thumbnail_id"]))
-            image = image_item.get_or_import_file(options)
+            try:
+                image = image_item.get_or_import_file(options)
+            except Exception:
+                pass
         self.article = create_article(
             tree=options.article_tree,
             template=options.article_template,
