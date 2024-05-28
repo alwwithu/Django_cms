@@ -15,7 +15,7 @@ if is_installed("django.contrib.redirects"):
     def create_redirect(old_url, new_url):
         old_path = urlparse(old_url).path
         new_path = urlparse(new_url).path
-        if old_path != "/" and new_path != old_path and new_path <=200 and old_path <=200:
+        if old_path != "/" and new_path != old_path and len(new_path) <=200 and len(old_path) <=200:
             return Redirect.objects.update_or_create(
                 defaults=dict(new_path=new_path),
                 site_id=settings.SITE_ID,
