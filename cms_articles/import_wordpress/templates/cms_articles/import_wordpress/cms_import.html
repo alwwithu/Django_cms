@@ -51,8 +51,9 @@
 (function($) {
     $(document).ready(function($) {
         var item_ids = [{% for item in items %}{{ item.id }}{% if not forloop.last %}, {% endif %}{% endfor %}];
-        import_item(item_ids.pop());
-        function import_item(item_id) {
+        function import_item() {
+            item_id = item_ids.shift();
+            if (!item_id) return;
             s = $("#status_" + item_id);
             s.removeClass("waiting");
             s.addClass("running");
@@ -68,10 +69,10 @@
             })
             .always(function() {
                 s.removeClass("running");
-                item_id = item_ids.shift();
-                if (item_id) import_item(item_id);
+                import_item();
             });
         }
+        import_item();
     });
 })(django.jQuery);
 

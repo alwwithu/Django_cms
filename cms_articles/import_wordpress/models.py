@@ -204,7 +204,7 @@ class Item(models.Model):
         slug = self.post_name or slugify(self.title)
         assert slug
         # handle existing page
-        self.page = Page.objects.filter(parent=parent, title_set__slug=slug).first()
+        self.page = Page.objects.filter(node__parent=parent.node, title_set__slug=slug).first()
         if self.page:
             self.save()
             return self.page
