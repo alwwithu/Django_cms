@@ -8,6 +8,7 @@ from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from filer.fields.folder import FilerFolderField
 from filer.models import File, Folder
@@ -184,7 +185,7 @@ class Item(models.Model):
                 changed_by=self.created_by.user or self.created_by.login,
             )
             public = self.article.get_public_object()
-            public.creation_date = self.pub_date
+            public.creation_date = self.pub_date or now()
             public.save()
         if options.article_redirects:
             create_redirect(self.link, self.article.get_absolute_url())
@@ -226,7 +227,7 @@ class Item(models.Model):
         if options.page_publish:
             self.page.publish(options.language)
             public = self.page.get_public_object()
-            public.creation_date = self.pub_date
+            public.creation_date = self.pub_date or now()
             public.save()
         if options.page_redirects:
             create_redirect(self.link, self.page.get_absolute_url())
@@ -256,7 +257,7 @@ class Item(models.Model):
         # import file
         self.file = FileImporter().import_file(file_obj=django_file, folder=folder)
         # set date and owner
-        self.file.created_at = self.pub_date
+        self.file.created_at = self.post_date
         self.file.owner = self.created_by.user
         self.file.save()
         # return imported file
