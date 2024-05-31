@@ -2,9 +2,10 @@ from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.auth import get_user_model
+from django.db.models import Case, Q, QuerySet, When
 from django.urls import reverse
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 
 # from django.template import RequestContext
@@ -103,6 +104,21 @@ class ItemAdmin(admin.ModelAdmin):
     ]
     actions = ["cms_import"]
 
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Item]:
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                is_imported=Case(
+                    When(
+                        Q(article__isnull=True) & Q(page__isnull=True) & Q(file__isnull=True) & Q(folder__isnull=True),
+                        then=True,
+                    ),
+                    default=False,
+                ),
+            )
+        )
+
     def get_urls(self):
         return [
             url(
@@ -186,7 +202,7 @@ class ItemAdmin(admin.ModelAdmin):
             )
         )
 
-    @admin.display(description=_("imported as"))
+    @admin.display(description=_("imported as"), ordering="is_imported")
     def imported_link(self, obj):
         url = None
         if obj.article or obj.page:

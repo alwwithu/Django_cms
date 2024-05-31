@@ -150,7 +150,10 @@ class Item(models.Model):
             obj = self.get_or_import_file(options)
         # also import children
         for child in self.children.all():
-            child.cms_import(options)
+            try:
+                child.cms_import(options)
+            except Exception as e:
+                pass
         return obj
 
     def get_or_import_article(self, options):
