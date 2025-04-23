@@ -21,7 +21,3 @@ Installation and usage is quite traightforward.
  * add "Articles Category" apphook to any django CMS page, which should act as category for articles
  * add "Articles" plugin to placeholder of your choice to show articles belonging to that page / category
 
-## Bugs and Feature requests
-
-Should you encounter any bug or have some feature request,
-create an issue at https://github.com/misli/django-cms-articles/issues.
